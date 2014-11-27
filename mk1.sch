@@ -1083,7 +1083,7 @@ F 3 "" H 2050 5700 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Notes 550  7650 0    60   ~ 0
-RAM $0000-$8000 (BOTTOM 32K)\nROM $C000-$FFFF (TOP 8K)
+RAM $0000-$8000 (BOTTOM 32K)\nROM $B000-$FFFF (TOP 16K)
 Text Label 3300 3950 1    60   ~ 0
 PHI2
 Text Label 8400 1950 2    60   ~ 0
