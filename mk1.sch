@@ -68,8 +68,6 @@ F 3 "" H 5650 2750 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Entry Wire Line
-	4000 3400 4100 3300
-Entry Wire Line
 	4000 3300 4100 3200
 Entry Wire Line
 	4000 3200 4100 3100
@@ -789,10 +787,6 @@ F 3 "~" H 800 7250 30  0000 C CNN
 	1    800  7250
 	1    0    0    -1  
 $EndComp
-Wire Bus Line
-	4100 1500 4100 3300
-Wire Bus Line
-	4100 3300 4000 3400
 Wire Wire Line
 	4000 3400 3700 3400
 Wire Wire Line
@@ -1307,4 +1301,8 @@ Wire Wire Line
 	9750 6600 9750 6650
 Wire Wire Line
 	9750 6650 9900 6650
+Entry Wire Line
+	4000 3400 4100 3300
+Wire Bus Line
+	4100 1500 4100 3400
 $EndSCHEMATC
