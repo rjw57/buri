@@ -1,4 +1,9 @@
-EESchema-DOCLIB  Version 2.0  Date: Sonntag, 03. August 2014 14:21:47
+EESchema-DOCLIB  Version 2.0  Date: Thu 27 Nov 2014 11:15:46 GMT
+#
+$CMP 6510
+D Western Digital Design Center - 65C02 8bit CPU
+K CPU, 65xx
+$ENDCMP
 #
 $CMP MC6850
 D Motorola MC6850 ACIA
