@@ -1,0 +1,63 @@
+EESchema-DOCLIB  Version 2.0  Date: Dienstag, 05. August 2014 07:04:08
+#
+$CMP 6510
+D Western Digital Design Center - 65C02 8bit CPU
+K CPU, 65xx
+$ENDCMP
+#
+$CMP MC6850
+D Motorola MC6850 ACIA
+K UART
+$ENDCMP
+#
+$CMP MC6850_
+D Motorola MC6850 ACIA
+K UART
+$ENDCMP
+#
+$CMP R6532
+D Mostek 6532 RIOT, RAM / IO / Timer
+K RIOT, MOS, 65xx
+$ENDCMP
+#
+$CMP R6532_
+D Mostek 6532 RIOT, RAM / IO / Timer
+K RIOT, MOS, 65xx
+$ENDCMP
+#
+$CMP W65C51N
+D W65C51N ACIA 
+K UART, 65xx
+$ENDCMP
+#
+$CMP WD65C02
+D Western Digital Design Center - 65C02 8bit CPU
+K CPU, 65xx
+$ENDCMP
+#
+$CMP WD65C02_
+D Western Digital Design Center - 65C02 8bit CPU (alternate Layout)
+K CPU, 65xx
+$ENDCMP
+#
+$CMP WD65C21
+D Western Digital Design Center W65C21 PIA - parallel Interface Adapter
+K PIA, 65xx
+$ENDCMP
+#
+$CMP WD65C22
+D Western Digital Design Center - 65C22 CIA, Complex Interface Adapter
+K CIA, 65xx
+$ENDCMP
+#
+$CMP WD65C816S
+D Western Digital Design Center W65C816 CPU - 16bit CPU
+K CPU, 65xx
+$ENDCMP
+#
+$CMP WD65C816S_
+D Western Digital Design Center W65C816 CPU - 16bit CPU
+K CPU, 65xx
+$ENDCMP
+#
+#End Doc Library
