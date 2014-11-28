@@ -13,3 +13,8 @@ directed in the schematic, pulling ~RST low and using R/~W as ~WE and A14 as
 This is intended to make the circuit compatible with the Arduino-based
 [MEEPROMER](http://www.ichbinzustaendig.de/dev/meeprommer-en).
 
+Note that the reset circuit has a pull up resistor to enable external pulling
+low of ~RST.
+
+SYNC and RDY are exposed on a jumper to allow external single-stepping of the
+CPU.
