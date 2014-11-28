@@ -1694,7 +1694,7 @@ Wire Wire Line
 Wire Wire Line
 	9700 1650 9300 1650
 Text Label 9300 1750 0    60   ~ 0
-~IRQ
+R/~W
 Text Label 10950 1750 2    60   ~ 0
 A14
 Wire Wire Line
@@ -1764,7 +1764,7 @@ Wire Wire Line
 Wire Wire Line
 	6650 6700 6550 6700
 Text Notes 10950 2000 2    60   ~ 0
-FOR ICP, SHORT 3&5, 4&6\nPULL ~RST~ LOW\nUSE ~IRQ~=~WE~, A14=~OE~
+FOR ICP, SHORT 3&5, 4&6\nPULL ~RST~ LOW\nUSE R/~W~=~WE~, A14=~OE~
 Entry Wire Line
 	3900 4550 4000 4650
 Wire Wire Line
