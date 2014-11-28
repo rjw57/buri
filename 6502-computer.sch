@@ -30,8 +30,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:mk1
-LIBS:mk1-cache
+LIBS:6502-computer
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
