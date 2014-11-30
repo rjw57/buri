@@ -1,6 +1,8 @@
 # Source files which make up this project
-ASM_SOURCES:=\
-	tight-loop.asm
+ASM_SOURCES:=rom.asm
+OTHER_SOURCES:= \
+	inc/interrupt_handlers.asm \
+	inc/vectors.asm
 
 # Output file
 OUTPUT:=rom.bin
@@ -30,5 +32,5 @@ clean:
 $(OUTPUT): $(objects) $(src_dir)/$(LINK_CONFIG)
 	$(LD65) -o "$(@:.bin=)" --config "$(src_dir)/$(LINK_CONFIG)" $(objects)
 
-%.o: $(src_dir)/%.asm
+%.o: $(src_dir)/%.asm $(addprefix $(src_dir)/,$(OTHER_SOURCES))
 	$(CA65) -o "$@" "$<"
