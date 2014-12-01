@@ -1,8 +1,12 @@
-; Imported symbols
-.import reset
-.import irq
-.import nmi
+;
+; Processor reset and interrupt vector table.
+;
 
-; Processor interrupt and reset vector table
+.import reset
+.import handle_irq
+.import handle_nmi
+
 .segment "VECTORS"
-.word irq, reset, nmi
+.word handle_irq
+.word reset
+.word handle_nmi
