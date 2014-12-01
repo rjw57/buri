@@ -1,36 +1,59 @@
 # Source files which make up this project
-ASM_SOURCES:=rom.asm
-OTHER_SOURCES:= \
-	inc/interrupt_handlers.asm \
-	inc/vectors.asm
-
-# Output file
-OUTPUT:=rom.bin
+ROM_SRCS := main.c vectors.asm
 
 # Config file for linker
-LINK_CONFIG:=mk1.cfg
+LINK_CONFIG := mk1.cfg
 
-# Location of cc65 binaries
-CA65:=ca65
-LD65:=ld65
+# Location of binaries used by this makefile
+CL65       := cl65
+MAKEDEPEND := makedepend
 
-# Define source and build directories
+# Define source directory (one containing Makefile) and build directory (one
+# make is run from).
 src_dir := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 build_dir := $(abspath $(shell pwd))
 
-# Output object files
-objects:=$(ASM_SOURCES:.asm=.o)
+# All source files for this project
+all_srcs := $(addprefix $(src_dir)/,$(ROM_SRCS))
+c_srcs := $(filter %.c,$(all_srcs))
+object_files += $(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
+asm_srcs := $(filter %.asm,$(all_srcs))
+object_files += $(patsubst %.asm,%.o,$(filter %.asm,$(ROM_SRCS)))
+clean_files += $(object_files)
 
-all: $(OUTPUT)
+# Append linker config configuration to cl65 command line
+CL65FLAGS += -C "$(src_dir)/$(LINK_CONFIG)"
+
+# ROM output
+rom_output:=rom.bin
+clean_files+=$(rom_output) $(patsubst %.bin,%,$(rom_output))
+
+all: $(rom_output)
 .PHONY: all
 
+# Calculate dependencies for C files
+depends_mkfile:=Makefile.depends
+clean_files+=$(depends_mkfile) $(depends_mkfile).bak
+$(depends_mkfile): $(c_srcs)
+	touch $(depends_mkfile)
+	$(MAKEDEPEND) -f "$@" -- $(c_srcs)
+
+depends: $(depends_mkfile)
+.PHONY: depends
+
 clean:
-	rm -f $(objects)
-	rm -f $(OUTPUT)
+	rm -f $(clean_files)
 .PHONY: clean
 
-$(OUTPUT): $(objects) $(src_dir)/$(LINK_CONFIG)
-	$(LD65) -o "$(@:.bin=)" --config "$(src_dir)/$(LINK_CONFIG)" $(objects)
+$(rom_output): $(object_files) $(src_dir)/$(LINK_CONFIG)
+	$(CL65) $(CL65FLAGS) -o "$(patsubst %.bin,%,$@)" $(object_files)
 
-%.o: $(src_dir)/%.asm $(addprefix $(src_dir)/,$(OTHER_SOURCES))
-	$(CA65) -o "$@" "$<"
+%.o: $(src_dir)/%.c $(depends_mkfile) $(src_dir)/$(LINK_CONFIG)
+	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
+
+%.o: $(src_dir)/%.asm $(src_dir)/$(LINK_CONFIG)
+	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
+
+
+# Include generated dependencies
+-include $(depends_mkfile)
