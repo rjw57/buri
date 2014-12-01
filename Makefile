@@ -1,8 +1,11 @@
-# Source files which make up this project
-ROM_SRCS := \
-	interrupts.s \
-	reset.s \
-	vectors.s
+# Define source directory (contains this Makefile) and build directory
+# (directory from which make was run).
+src_dir := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+build_dir := $(abspath $(shell pwd))
+
+# Source files which make up this project. Use wildcard to avoid having to add
+# files explicitly.
+ROM_SRCS := $(patsubst $(src_dir)/%,%,$(wildcard $(src_dir)/*.[cs]))
 
 # Config file for linker
 LINK_CONFIG := rom.cfg
@@ -13,11 +16,6 @@ CL65FLAGS += -O
 # Location of binaries used by this makefile
 CL65       := cl65
 MAKEDEPEND := makedepend
-
-# Define source directory (one containing Makefile) and build directory (one
-# make is run from).
-src_dir := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-build_dir := $(abspath $(shell pwd))
 
 # All source files for this project
 all_srcs := $(addprefix $(src_dir)/,$(ROM_SRCS))
