@@ -4,7 +4,7 @@ ROM_SRCS := \
 	vectors.s
 
 # Config file for linker
-LINK_CONFIG := mk1.cfg
+LINK_CONFIG := rom.cfg
 
 # cl65 command-line flags
 CL65FLAGS += -O
