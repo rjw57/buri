@@ -1,8 +1,13 @@
 # Source files which make up this project
-ROM_SRCS := main.c vectors.asm
+ROM_SRCS := \
+	main.c \
+	vectors.s
 
 # Config file for linker
 LINK_CONFIG := mk1.cfg
+
+# cl65 command-line flags
+CL65FLAGS += -O
 
 # Location of binaries used by this makefile
 CL65       := cl65
@@ -17,8 +22,8 @@ build_dir := $(abspath $(shell pwd))
 all_srcs := $(addprefix $(src_dir)/,$(ROM_SRCS))
 c_srcs := $(filter %.c,$(all_srcs))
 object_files += $(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
-asm_srcs := $(filter %.asm,$(all_srcs))
-object_files += $(patsubst %.asm,%.o,$(filter %.asm,$(ROM_SRCS)))
+asm_srcs := $(filter %.s,$(all_srcs))
+object_files += $(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
 clean_files += $(object_files)
 
 # Append linker config configuration to cl65 command line
@@ -26,7 +31,7 @@ CL65FLAGS += -C "$(src_dir)/$(LINK_CONFIG)"
 
 # ROM output
 rom_output:=rom.bin
-clean_files+=$(rom_output) $(patsubst %.bin,%,$(rom_output))
+clean_files+=$(rom_output)
 
 all: $(rom_output)
 .PHONY: all
@@ -46,12 +51,12 @@ clean:
 .PHONY: clean
 
 $(rom_output): $(object_files) $(src_dir)/$(LINK_CONFIG)
-	$(CL65) $(CL65FLAGS) -o "$(patsubst %.bin,%,$@)" $(object_files)
+	$(CL65) $(CL65FLAGS) -o "$@" $(object_files)
 
 %.o: $(src_dir)/%.c $(depends_mkfile) $(src_dir)/$(LINK_CONFIG)
 	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
 
-%.o: $(src_dir)/%.asm $(src_dir)/$(LINK_CONFIG)
+%.o: $(src_dir)/%.s $(src_dir)/$(LINK_CONFIG)
 	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
 
 

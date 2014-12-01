@@ -1,9 +1,6 @@
 ; Imported symbols
 .import _reset
 
-; Write code into ROM code segment
-.segment "ROCODE"
-
 ; Interrupt handler
 handle_irq:
 	rti		; Return from handler
