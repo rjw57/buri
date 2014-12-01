@@ -1,6 +1,7 @@
 # Source files which make up this project
 ROM_SRCS := \
-	main.c \
+	interrupts.s \
+	reset.s \
 	vectors.s
 
 # Config file for linker
