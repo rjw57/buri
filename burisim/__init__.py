@@ -44,7 +44,7 @@ class ReadOnlyMemoryError(RuntimeError):
 
 class BuriSim(object):
     ROM_RANGE = 0xC000, 0x10000
-    ACIA1_RANGE = 0x8000, 0x8004
+    ACIA1_RANGE = 0x8800, 0x8804
 
     def __init__(self):
         # Behaviour flags
@@ -171,7 +171,9 @@ class ACIA(object):
     _PMC_TABLE = [serial.PARITY_ODD, serial.PARITY_EVEN, serial.PARITY_NONE, serial.PARITY_NONE]
 
     # Status register bits
-    _ST_TRDE = 0b00010000
+    _ST_IRQ = 0b10000000
+    _ST_TDRE = 0b00010000
+    _ST_RDRF = 0b00001000
 
     def __init__(self, serial_port=None):
         self.serial_port = None
@@ -179,6 +181,7 @@ class ACIA(object):
             self.connect_to_serial(serial_port)
 
         # Registers
+        self._recv_data = 0
         self._status_reg = 0
         self._control_reg = 0
         self._command_reg = 0
@@ -188,11 +191,22 @@ class ACIA(object):
 
     @property
     def irq(self):
-        return self._status_reg & 0b10000000 != 0
+        return self._status_reg & ACIA._ST_IRQ != 0
 
     def poll(self):
         """Call regularly to check for incoming data."""
-        pass
+        # Early out if no serial port attached or no data waiting
+        sp = self.serial_port
+        if sp is None or sp.inWaiting() == 0:
+            return
+
+        # There is some data, transfer next data if receive data reg is empty
+        if self._status_reg & ACIA._ST_RDRF == 0:
+            self._recv_data = struct.unpack('B', sp.read(1))[0]
+            self._status_reg |= ACIA._ST_RDRF
+            self._trigger_irq()
+        else:
+            _LOGGER.warn('ACIA: dropping received data')
 
     def observe_mem(self, mem, start):
         """Add appropriate read/write observers to memory starting at a given
@@ -248,7 +262,8 @@ class ACIA(object):
         """
         if reg_idx == 0:
             # Read receiver register
-            return 0 # TODO
+            self._status_reg &= ~(ACIA._ST_RDRF) # clear data reg full flag
+            return self._recv_data
         elif reg_idx == 1:
             # Read status register clearing interrupt bit after the fact
             sr = self._status_reg
@@ -277,7 +292,7 @@ class ACIA(object):
     def _tx(self, value):
         """Transmit byte."""
         # Ensure transmit data reg. is empty
-        if self._status_reg & ACIA._ST_TRDE == 0:
+        if self._status_reg & ACIA._ST_TDRE == 0:
             _LOGGER.warn('serial port overflow: dropping output.')
             return
 
@@ -286,7 +301,7 @@ class ACIA(object):
             self.serial_port.write(struct.pack('B', value))
 
         # Set transmit data empty reg
-        self._status_reg |= ACIA._ST_TRDE
+        self._status_reg |= ACIA._ST_TDRE
 
         # Trigger IRQ if required
         tic = (self._command_reg >> 2) & 0b11
