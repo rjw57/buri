@@ -11,6 +11,7 @@ setup(
         'docopt',
         'future',
         'py65',
+        'pyserial',
     ],
     entry_points={
         'console_scripts': [
