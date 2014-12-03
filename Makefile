@@ -8,7 +8,9 @@ src_dir := src
 
 # Source files which make up this project. Use wildcard to avoid having to add
 # files explicitly.
-ROM_SRCS := $(patsubst $(proj_dir)/%,%,$(wildcard $(proj_dir)/$(src_dir)/*.[cs]))
+ROM_SRCS := \
+	$(patsubst $(proj_dir)/%,%,$(wildcard $(proj_dir)/$(src_dir)/*.[cs])) \
+	$(patsubst $(proj_dir)/%,%,$(wildcard $(proj_dir)/$(src_dir)/*.inc))
 
 # Config file for linker
 LINK_CONFIG := $(proj_dir)/rom.cfg
@@ -27,6 +29,7 @@ object_files += $(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
 asm_srcs := $(filter %.s,$(all_srcs))
 object_files += $(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
 clean_files += $(object_files)
+inc_srcs := $(filter %.inc,$(all_srcs))
 
 # Append linker config configuration to cl65 command line
 CL65FLAGS += -C "$(LINK_CONFIG)"
@@ -59,7 +62,7 @@ $(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.c $(depends_mkfile) $(LINK_CONFIG)
 	mkdir -p $(src_dir)
 	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
 
-$(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.s $(LINK_CONFIG)
+$(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.s $(inc_srcs) $(LINK_CONFIG)
 	mkdir -p $(src_dir)
 	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
 
