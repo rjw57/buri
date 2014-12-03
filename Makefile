@@ -31,12 +31,19 @@ object_files += $(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
 clean_files += $(object_files)
 inc_srcs := $(filter %.inc,$(all_srcs))
 
+# We are using the "none" target
+CL65FLAGS += -t none
+
 # Append linker config configuration to cl65 command line
 CL65FLAGS += -C "$(LINK_CONFIG)"
 
 # ROM output
 rom_output:=rom.bin
 clean_files+=$(rom_output)
+
+# Generate a map file
+CL65FLAGS += --mapfile "$(rom_output).map"
+clean_files+="$(rom_output).map"
 
 all: $(rom_output)
 .PHONY: all

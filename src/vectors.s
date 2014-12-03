@@ -7,6 +7,6 @@
 .import handle_nmi
 
 .segment "VECTORS"
-.word handle_irq
-.word reset
 .word handle_nmi
+.word reset
+.word handle_irq
