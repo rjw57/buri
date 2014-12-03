@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function
 from builtins import * # pylint: disable=wildcard-import,redefined-builtin
 from past.builtins import basestring # pylint: disable=redefined-builtin
 
+from contextlib import contextmanager
 from itertools import chain
 import logging
 import struct
@@ -35,6 +36,9 @@ class BuriSim(object):
     ROM_RANGE = 0xC000, 0x10000
 
     def __init__(self):
+        # Behaviour flags
+        self._raise_on_rom_write = True
+
         # Create memory space
         self.mem = ObservableMemory(addrWidth=MPU.ADDR_WIDTH)
 
@@ -42,7 +46,6 @@ class BuriSim(object):
         self.mpu = MPU(memory=self.mem)
 
         # Setup memory observers
-        self._raise_on_rom_write = True
         self._add_mem_observers()
 
         # Reset the computer
@@ -55,9 +58,24 @@ class BuriSim(object):
         """
         if isinstance(fobj_or_string, basestring):
             with open(fobj_or_string, 'rb') as fobj:
-                self._load_rom_from_bytes(fobj.read())
+                self.load_rom_bytes(fobj.read())
         else:
-            self._load_rom_from_bytes(fobj_or_string.read())
+            self.load_rom_bytes(fobj_or_string.read())
+
+    def load_rom_bytes(self, rom_bytes):
+        """Load a ROM image from the passed bytes object. The ROM is truncated
+        or repeated as necessary to fill the buri ROM region.
+
+        """
+        _LOGGER.info(
+            'Loading %s bytes from ROM image of %s bytes',
+            BuriSim.ROM_RANGE[1] - BuriSim.ROM_RANGE[0], len(rom_bytes)
+        )
+
+        # Copy ROM from 0xC000 to 0xFFFF. Loop if necessary.
+        with self.writable_rom():
+            for addr, val in zip(range(*BuriSim.ROM_RANGE), chain(rom_bytes)):
+                self.mem[addr] = struct.unpack('B', val)[0]
 
     def reset(self):
         """Perform a hardware reset."""
@@ -71,18 +89,17 @@ class BuriSim(object):
         """Single-step the processor."""
         self.mpu.step()
 
-    def _load_rom_from_bytes(self, rom_bytes):
-        """Internal method to actually load ROM image from bytes."""
-        _LOGGER.info(
-            'Loading %s bytes from ROM image of %s bytes',
-            BuriSim.ROM_RANGE[1] - BuriSim.ROM_RANGE[0], len(rom_bytes)
-        )
+    @contextmanager
+    def writable_rom(self):
+        """Return a context manager which will temporarily enable writing to
+        ROM within the context and restore the old state after. Imagine this as
+        a "EEPROM programmer".
 
-        # Copy ROM from 0xC000 to 0xFFFF. Loop if necessary.
+        """
+        old_val = self._raise_on_rom_write
         self._raise_on_rom_write = False
-        for addr, val in zip(range(*BuriSim.ROM_RANGE), chain(rom_bytes)):
-            self.mem[addr] = struct.unpack('B', val)[0]
-        self._raise_on_rom_write = True
+        yield
+        self._raise_on_rom_write = old_val
 
     def _add_mem_observers(self):
         """Internal method to add read/write observers to memory."""

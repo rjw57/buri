@@ -6,7 +6,7 @@ setup(
     description='Simulator for buri machine',
     author='Rich Wareham',
     author_email='rich.buri@richwareham.com',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     install_requires=[
         'docopt',
         'future',
