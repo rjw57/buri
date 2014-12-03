@@ -2,7 +2,24 @@
 ; Macros and global symbols for I/O.
 ;
 
+;; Well-known I/O devices
+ACIA1 		= $8800
+ACIA1_DATA 	= ACIA1
+ACIA1_STATUS 	= ACIA1 + 1
+ACIA1_CMD 	= ACIA1 + 2
+ACIA1_CTRL 	= ACIA1 + 3
+
+;; Constants
+ACIA_ST_TDRE = %00010000	; status: transmit data register empty
+ACIA_ST_RDRF = %00001000	; status: read data register full
+
+; Reset serial device
+.global srl_reset
+
+; Write single character
 .global srl_puts
+
+; Write string
 .global srl_putc
 
 ; Write a Pascal-style string to the serial port.

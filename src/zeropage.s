@@ -12,3 +12,4 @@ tmp2:	.res 2
 tmp3:	.res 2
 
 acia1_status_cache:	.res 1
+acia1_recv_data:	.res 1

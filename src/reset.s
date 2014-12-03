@@ -34,16 +34,10 @@ clear_zp:
 	bne	@loop			; if X has not wrapped, loop
 end_clear_zp:
 
-	; Setup ACIA1
-	lda	#%11000101		; no parity, tx IRQ
-	sta	ACIA1_CMD		; write command reg
-	lda	#%00011111		; 8 bits, 1 stop bit, 19200 baud
-	sta	ACIA1_CTRL		; write control reg
-	lda	ACIA1_STATUS		; load status reg
-	sta	acia1_status_cache	; store to cache
+	;; Reset serial port
+	jsr	srl_reset
 
 	;; Finished HW bootstap
-
 	cli				; enable interrupts
 
 	; Scream to the world!
