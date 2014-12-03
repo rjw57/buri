@@ -7,7 +7,11 @@ setup(
     author='Rich Wareham',
     author_email='rich.buri@richwareham.com',
     packages=find_packages(),
-    install_requires='py65',
+    install_requires=[
+        'docopt',
+        'future',
+        'py65',
+    ],
     entry_points={
         'console_scripts': [
             'burisim = burisim:main',
