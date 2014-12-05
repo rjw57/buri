@@ -24,6 +24,21 @@ str_nsc:	PString "No such command"
 	jsr	srl_getc		; A = next character
 	sta	tmp1			; copy to temporary
 
+	lda	#ASCII_BS
+	cmp	tmp1			; compare to back space
+	bne	@not_bs			; if not equal, continue
+@is_bs:
+	ldx	line_len		; look at input buffer length
+	beq	@loop			; ignore backspace if already zero
+
+	dex				; decrement line length
+	stx	line_len		; record new length
+
+	lda	tmp1
+	jsr	srl_putc		; echo character to console
+	jmp	@loop			; wait for next character
+@not_bs:
+
 	lda	#ASCII_CR
 	cmp	tmp1			; compare to carriage return
 	beq	@parse_line		; if equal, try to parse input buffer
@@ -39,7 +54,6 @@ str_nsc:	PString "No such command"
 	stx	line_len		; record new length
 
 	jsr	srl_putc		; echo character to console
-
 	jmp	@loop			; wait for next character
 @parse_line:
 	lda	#ASCII_CR
@@ -50,9 +64,21 @@ str_nsc:	PString "No such command"
 	lda	line_len		; load line length
 	beq	@parse_end		; do nothing more if zero
 
-	;; TODO: more processing
+@print_cmd_test:
+	lda	#'p'			; 'p' - print memory location
+	cmp	line_buffer		; look at first character
+	bne	@parse_no_command
+@print_cmd_impl:
+	;; TODO: implement
+	jmp	@parse_ok
+
+	;; TODO: more commands
+
 @parse_no_command:
 	WriteLnString str_nsc
+	jmp	@parse_end
+@parse_ok:
+	WriteLnString str_ok
 @parse_end:
 	lda	#0
 	sta	line_len		; reset line length

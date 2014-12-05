@@ -4,6 +4,7 @@
 
 ;; Constants
 
+ASCII_BS = $08				; ASCII backspace
 ASCII_NL = $0A				; ASCII newline
 ASCII_CR = $0D				; ASCII carriage return
 
@@ -34,4 +35,5 @@ SRL_BUF_MASK = SRL_BUF_SZ-1		; mask for rounding value into buffer len
 .globalzp acia1_recv_data
 
 .global srl_buffer
+
 .global line_buffer

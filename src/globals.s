@@ -20,6 +20,6 @@ srl_buf_start:	.res 1			; offset into serial buffer of start
 
 ; Non zeropage storage
 .segment "BSS"
-
-srl_buffer:	.res	SRL_BUF_SZ	; serial port input buffer
 line_buffer:	.res	MAX_LINE	; input line
+srl_buffer:	.res	SRL_BUF_SZ	; serial port input buffer
+
