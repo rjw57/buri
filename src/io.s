@@ -12,7 +12,7 @@
 .macro WaitTxFree
 	lda	#ACIA_ST_TDRE		; TDRE mask
 @wait_tx_free:
-	bit	acia1_status_cache	; look at TDRE bit
+	bit	ACIA1_STATUS		; look at TDRE bit
 	beq	@wait_tx_free		; loop while clear
 .endmacro
 
@@ -29,10 +29,6 @@
 	lda	#%00000101		; no parity, tx IRQ, IRQ enabled
 	sta	ACIA1_CMD		; write command reg
 	lda	ACIA1_DATA		; empty read register
-
-	;; Cache ACIA1 status register
-	lda	ACIA1_STATUS		; load status reg
-	sta	acia1_status_cache	; store to cache
 @exit:
 	rts
 .endproc
@@ -77,3 +73,26 @@
 	rts
 .endproc
 
+; Get next character into A. Blocks until character arrives.
+.proc srl_getc
+@wait_loop:
+	lda	srl_buf_len		; get input buffer length
+	beq	@wait_loop		; if empty, loop
+
+	ldx	srl_buf_start		; head of ring-buffer
+	ldy	srl_buffer, X		; load next character
+	
+	inx				; advance ring buffer pointer
+	stx	srl_buf_start		; write back
+	lda	#SRL_BUF_MASK
+	and	srl_buf_start		; handle wrapping
+	sta	srl_buf_start		; write back wrapped value
+
+	ldx	srl_buf_len		; load buffer length
+	dex				; decrement
+	stx	srl_buf_len		; write back
+
+	tya				; copy next character to A
+
+	rts
+.endproc

@@ -22,6 +22,9 @@ ACIA_ST_RDRF = %00001000	; status: read data register full
 ; Write string
 .global srl_putc
 
+; Get next character. Blocks until character arrives.
+.global srl_getc
+
 ; Write a Pascal-style string to the serial port.
 ; Corrupts: A and ptr1
 .macro WriteString Symbol
