@@ -21,7 +21,7 @@ from builtins import * # pylint: disable=wildcard-import,redefined-builtin
 from past.builtins import basestring # pylint: disable=redefined-builtin
 
 from contextlib import contextmanager
-from itertools import chain
+from itertools import cycle
 import logging
 import struct
 import sys
@@ -88,7 +88,7 @@ class BuriSim(object):
 
         # Copy ROM from 0xC000 to 0xFFFF. Loop if necessary.
         with self.writable_rom():
-            for addr, val in zip(range(*BuriSim.ROM_RANGE), chain(rom_bytes)):
+            for addr, val in zip(range(*BuriSim.ROM_RANGE), cycle(rom_bytes)):
                 self.mem[addr] = struct.unpack('B', val)[0]
 
     def reset(self):
@@ -224,6 +224,8 @@ class ACIA(object):
 
         """
         self.serial_port = serial_port
+        if self.serial_port is not None:
+            self.serial_port.timeout = 0
         self._update_serial_port()
 
     def hw_reset(self):
@@ -280,12 +282,12 @@ class ACIA(object):
 
     def _trigger_irq(self):
         """Trigger an interrupt."""
-        self._status_reg |= 0b10000000
+        self._status_reg |= 0b10010000
 
     def _prog_reset(self):
         """Perform a programmed reset."""
         # NOTE: does not change control reg
-        self._status_reg = 0b00000000
+        self._status_reg = 0b00010000
         self._command_reg = 0b00000000
         self._update_serial_port()
 
@@ -295,6 +297,9 @@ class ACIA(object):
         if self._status_reg & ACIA._ST_TDRE == 0:
             _LOGGER.warn('serial port overflow: dropping output.')
             return
+
+        # Clear transmit data empty reg
+        self._status_reg &= ~(ACIA._ST_TDRE)
 
         # Write output
         if self.serial_port is not None:
