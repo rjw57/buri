@@ -6,7 +6,7 @@
 
 .segment "RODATA"
 str_ok:		PString "OK"
-str_what:	PString "Syntax error"
+str_nsc:	PString "No such command"
 
 .segment "CODE"
 
@@ -50,8 +50,9 @@ str_what:	PString "Syntax error"
 	lda	line_len		; load line length
 	beq	@parse_end		; do nothing more if zero
 
-@parse_syntax_err:
-	WriteLnString str_what
+	;; TODO: more processing
+@parse_no_command:
+	WriteLnString str_nsc
 @parse_end:
 	lda	#0
 	sta	line_len		; reset line length
