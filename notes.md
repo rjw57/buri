@@ -18,3 +18,36 @@ low of ~RST.
 
 SYNC and RDY are exposed on a jumper to allow external single-stepping of the
 CPU.
+
+## Monitor board
+
+Use single 8-bit universal shift register for read/write to data bus. Set
+A0-A15 via two 8-bit parallel out shift registers.
+
+BE signal on processor is used as ~OE on registers -> when processor has bus,
+SR pins are set to high impedance.
+
+D0-D8 - S0, S1, DSR, CP, Q0
+
+A0-A15 - SHCP, STCP, DS
+
+Shared - ~MR
+
+=> 9 I/O lines to arduino. Outputs: MR, S0, S1, DSR, CP, SHCP, STCP, DS. Inputs: Q0.
+
+Maybe add R/~W as another output line? It may be that one of S0/S1 could suffice.
+
+We'll also need to take over PHI2 as a bus clock. Maybe separate processor BE
+from halt/single step? In which case we'd want to replace A0-A15 with universal
+shift registers too.
+
+~WE for EEPROM *only* controllable from monitor
+
+MR acts as processor halt signal?
+
+Another option:
+
+Bidirectional shift registers for address lines too allowing for observation of
+processor?
+
+
