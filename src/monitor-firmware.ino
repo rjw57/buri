@@ -1,10 +1,13 @@
 // Firmware for monitor board
 
 // Pin definitions
-#define MISO    2
-#define MOSI    3
+#define MISO    2   // NB: (1)
+#define MOSI    3   // NB: (1)
 #define SCLK    4
 #define DLOAD   8
+
+// (1) Since the monitor board is a slave device w.r.t. the processor board,
+// MISO is an OUTPUT and MOSI is an INPUT.
 
 // MAX7219 registers. Note that these are bit-reversed since the MAX7219
 // expects data to be shifted in MSB first.
@@ -39,8 +42,8 @@ byte sendAndReceive(byte output) {
 
 void setup() {
     // Setup all pin modes
-    pinMode(MISO, OUTPUT);
-    pinMode(MOSI, INPUT);
+    pinMode(MISO, OUTPUT);  // NB: (1)
+    pinMode(MOSI, INPUT);   // NB: (1)
     pinMode(SCLK, OUTPUT);
     pinMode(DLOAD, OUTPUT);
 
