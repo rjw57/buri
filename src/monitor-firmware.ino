@@ -85,7 +85,7 @@ void loop() {
         setMX7219Reg(MX7219_DIGIT_0 + (5-digit), MX7219_FONT[fontCode]);
     }
 
-    delay(500);
+    delay(250);
     loop_counter += 1;
 }
 
