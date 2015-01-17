@@ -4,8 +4,6 @@
 #include "mx7219.h"
 #include "pins.h"
 
-int loop_counter = 0;
-
 // 16-bit address bus value
 unsigned int address_bus;
 
@@ -29,9 +27,6 @@ void setup() {
 
     // Set up MX7219
     setupMX7219();
-
-    // Reset loop counter
-    loop_counter = 0;
 }
 
 void loop() {
