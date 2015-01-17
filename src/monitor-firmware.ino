@@ -40,9 +40,9 @@ void loop() {
     setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
 
-    delay(300);
-    address_bus += 1;
-    data_bus -= 1;
+    // delay(100);
+    address_bus += 3;
+    data_bus += 1;
 }
 
 // vim:filetype=c
