@@ -8,6 +8,9 @@
 #define SCLK    4
 #define DLOAD   8
 
+#define BTN_MODE    12
+#define BTN_SELECT  11
+
 // (1) Since the monitor board is a slave device w.r.t. the processor board,
 // MISO is an OUTPUT and MOSI is an INPUT.
 

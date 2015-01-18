@@ -10,6 +10,17 @@ unsigned int address_bus;
 // 8-bit data bus value
 byte data_bus;
 
+// Status bits
+byte status_bits;
+
+// Showing display test
+byte showing_dt;
+const int DPY_TST_DURATION = 500; // milliseconds
+
+// HACK: demo
+unsigned long next_demo_loop_at = 0;
+const long DEMO_LOOP_PERIOD = 250; // milliseconds
+
 void setup() {
     // Setup all pin modes
     pinMode(MISO, OUTPUT);  // NB: (1)
@@ -25,11 +36,26 @@ void setup() {
     // Initial address/data bus values
     address_bus = data_bus = 0;
 
+    // Initially all status bits are off
+    status_bits = 0;
+
     // Set up MX7219
     setupMX7219();
+    setMX7219Reg(MX7219_SCN_LIMIT, 0x06);   // Scan digits 0-6
+
+    // Display test
+    showing_dt = 1;
+
+    next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
 }
 
 void loop() {
+    // Display test off after DPY_TST_DURATION milliseconds
+    if(showing_dt && (millis() > DPY_TST_DURATION)) {
+        showing_dt = 1;
+        setMX7219Reg(MX7219_DPLY_TEST, 0x00);
+    }
+
     // Update address bus
     setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
@@ -40,9 +66,19 @@ void loop() {
     setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
 
-    // delay(100);
-    address_bus += 3;
-    data_bus += 1;
+    // Update status bits
+    setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
+
+    if(next_demo_loop_at < millis()) {
+    next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
+
+        address_bus += 1;
+        data_bus += 1;
+        status_bits <<= 1;
+        if(status_bits == 0) {
+            status_bits = 1;
+        }
+    }
 }
 
 // vim:filetype=c

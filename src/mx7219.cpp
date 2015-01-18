@@ -45,7 +45,7 @@ void setMX7219Reg(byte reg, byte value) {
 void setupMX7219() {
     setMX7219Reg(MX7219_DECODE_MODE, 0x00); // No decode
     setMX7219Reg(MX7219_INTENSITY, 0xFF);   // Maximum intensity
-    setMX7219Reg(MX7219_SCN_LIMIT, 0x05);   // Scan digits 0-5
-    setMX7219Reg(MX7219_DPLY_TEST, 0x00);   // No display test
+    setMX7219Reg(MX7219_SCN_LIMIT, 0x01);   // Scan digits 0-1
+    setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Display test on
     setMX7219Reg(MX7219_SHUTDOWN, 0x01);    // Normal operation
 }
