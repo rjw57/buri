@@ -20,7 +20,7 @@ const int DPY_TST_DURATION = 500; // milliseconds
 
 // HACK: demo
 unsigned long next_demo_loop_at = 0;
-const long DEMO_LOOP_PERIOD = 250; // milliseconds
+const long DEMO_LOOP_PERIOD = 100; // milliseconds
 
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
