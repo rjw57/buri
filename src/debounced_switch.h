@@ -9,7 +9,7 @@ public:
     DebouncedSwitch(int pin, bool activeLow = true);
 
     void poll();
-    int state();
+    int state() const;
 private:
     const unsigned long DEBOUNCE_TIME = 50; // milliseconds
 

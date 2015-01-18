@@ -22,7 +22,7 @@ void DebouncedSwitch::poll() {
     }
 }
 
-int DebouncedSwitch::state() {
+int DebouncedSwitch::state() const {
     return state_;
 }
 

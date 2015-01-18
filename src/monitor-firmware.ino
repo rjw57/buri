@@ -1,6 +1,7 @@
 // Firmware for monitor board
 
 #include "debounced_switch.h"
+#include "edge_trigger.h"
 #include "io.h"
 #include "mx7219.h"
 #include "pins.h"
@@ -24,6 +25,9 @@ const long DEMO_LOOP_PERIOD = 100; // milliseconds
 
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
+
+EdgeTrigger mode_trigger;
+EdgeTrigger select_trigger;
 
 void setup() {
     // Setup all pin modes
@@ -68,10 +72,8 @@ void loop() {
     select_switch.poll();
 
     // Update address bus
-    int ms = (mode_switch.state() == HIGH) ? 0x80 : 0x00;
-    int ss = (select_switch.state() == HIGH) ? 0x80 : 0x00;
-    setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF] | ms);
-    setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF] | ss);
+    setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
+    setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 2, MX7219_FONT[(address_bus>>8) & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 3, MX7219_FONT[(address_bus>>12) & 0xF]);
 
@@ -82,11 +84,22 @@ void loop() {
     // Update status bits
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
 
-    if(next_demo_loop_at < millis()) {
-    next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
+    // Update triggers
+    mode_trigger.update(mode_switch.state() == HIGH);
+    select_trigger.update(select_switch.state() == HIGH);
 
-        address_bus += 3;
+    if(mode_trigger.triggered()) {
         data_bus += 1;
+        mode_trigger.clear();
+    }
+
+    if(select_trigger.triggered()) {
+        address_bus += 1;
+        select_trigger.clear();
+    }
+
+    if(next_demo_loop_at < millis()) {
+        next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
         status_bits <<= 1;
         if(status_bits == 0) {
             status_bits = 1;
