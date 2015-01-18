@@ -1,5 +1,6 @@
 // Firmware for monitor board
 
+#include "debounced_switch.h"
 #include "io.h"
 #include "mx7219.h"
 #include "pins.h"
@@ -21,12 +22,18 @@ const int DPY_TST_DURATION = 500; // milliseconds
 unsigned long next_demo_loop_at = 0;
 const long DEMO_LOOP_PERIOD = 250; // milliseconds
 
+DebouncedSwitch mode_switch(BTN_MODE);
+DebouncedSwitch select_switch(BTN_SELECT);
+
 void setup() {
     // Setup all pin modes
     pinMode(MISO, OUTPUT);  // NB: (1)
     pinMode(MOSI, INPUT);   // NB: (1)
     pinMode(SCLK, OUTPUT);
     pinMode(DLOAD, OUTPUT);
+
+    pinMode(BTN_MODE, INPUT_PULLUP);
+    pinMode(BTN_SELECT, INPUT_PULLUP);
 
     // Initial pin values
     digitalWrite(SCLK, LOW);
@@ -56,9 +63,15 @@ void loop() {
         setMX7219Reg(MX7219_DPLY_TEST, 0x00);
     }
 
+    // Poll swiches
+    mode_switch.poll();
+    select_switch.poll();
+
     // Update address bus
-    setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
-    setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
+    int ms = (mode_switch.state() == HIGH) ? 0x80 : 0x00;
+    int ss = (select_switch.state() == HIGH) ? 0x80 : 0x00;
+    setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF] | ms);
+    setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF] | ss);
     setMX7219Reg(MX7219_DIGIT_0 + 2, MX7219_FONT[(address_bus>>8) & 0xF]);
     setMX7219Reg(MX7219_DIGIT_0 + 3, MX7219_FONT[(address_bus>>12) & 0xF]);
 
@@ -81,4 +94,4 @@ void loop() {
     }
 }
 
-// vim:filetype=c
+// vim:filetype=cpp
