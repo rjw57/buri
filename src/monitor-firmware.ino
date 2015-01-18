@@ -85,7 +85,7 @@ void loop() {
     if(next_demo_loop_at < millis()) {
     next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
 
-        address_bus += 1;
+        address_bus += 3;
         data_bus += 1;
         status_bits <<= 1;
         if(status_bits == 0) {
