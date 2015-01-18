@@ -19,9 +19,30 @@ byte status_bits;
 byte showing_dt;
 const int DPY_TST_DURATION = 500; // milliseconds
 
+// Display strings
+byte displayWords[][6] = {
+    { 0x15, 0x18, 0x12, 0x1A, 0x1A, 0x1A }, // "run   "
+    { 0x16, 0x17, 0x0A, 0x15, 0x17, 0x1A }, // "StArt "
+    { 0x10, 0x0A, 0x11, 0x17, 0x1A, 0x1A }, // "HALt  "
+    { 0x16, 0x17, 0x13, 0x14, 0x1A, 0x1A }, // "StoP  "
+    { 0x16, 0x17, 0x0E, 0x14, 0x1A, 0x1A }, // "StEP  "
+    { 0x0C, 0x19, 0x0C, 0x11, 0x0E, 0x1A }, // "CYCLE "
+    { 0x01, 0x12, 0x16, 0x17, 0x1A, 0x1A }, // "1nSt  "
+};
+const int displayWordCount = sizeof(displayWords) / sizeof(displayWords[0]);
+
+void showWord(int wordIdx) {
+    byte* wordData = displayWords[wordIdx];
+    for(int digit=0; digit<6; ++digit) {
+        setMX7219Reg(MX7219_DIGIT_0 + (5-digit), MX7219_FONT[wordData[digit]]);
+    }
+}
+
 // HACK: demo
-unsigned long next_demo_loop_at = 0;
-const long DEMO_LOOP_PERIOD = 100; // milliseconds
+unsigned long next_demo_loop_at;
+const long DEMO_LOOP_PERIOD = 500; // milliseconds
+unsigned long demo_loop_count;
+int demo_mode;
 
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
@@ -58,6 +79,8 @@ void setup() {
     showing_dt = 1;
 
     next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
+    demo_loop_count = 0;
+    demo_mode = 0;
 }
 
 void loop() {
@@ -71,15 +94,23 @@ void loop() {
     mode_switch.poll();
     select_switch.poll();
 
-    // Update address bus
-    setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
-    setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
-    setMX7219Reg(MX7219_DIGIT_0 + 2, MX7219_FONT[(address_bus>>8) & 0xF]);
-    setMX7219Reg(MX7219_DIGIT_0 + 3, MX7219_FONT[(address_bus>>12) & 0xF]);
+    switch(demo_mode) {
+    case 0:
+        // Update address bus
+        setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
+        setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
+        setMX7219Reg(MX7219_DIGIT_0 + 2, MX7219_FONT[(address_bus>>8) & 0xF]);
+        setMX7219Reg(MX7219_DIGIT_0 + 3, MX7219_FONT[(address_bus>>12) & 0xF]);
 
-    // Update data bus
-    setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
-    setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
+        // Update data bus
+        setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
+        setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
+        break;
+
+    case 1:
+        showWord(demo_loop_count % displayWordCount);
+        break;
+    }
 
     // Update status bits
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
@@ -89,7 +120,7 @@ void loop() {
     select_trigger.update(select_switch.state() == HIGH);
 
     if(mode_trigger.triggered()) {
-        data_bus += 1;
+        demo_mode = (demo_mode + 1) % 2;
         mode_trigger.clear();
     }
 
@@ -100,6 +131,8 @@ void loop() {
 
     if(next_demo_loop_at < millis()) {
         next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
+        demo_loop_count += 1;
+
         status_bits <<= 1;
         if(status_bits == 0) {
             status_bits = 1;
