@@ -50,7 +50,7 @@ void showWord(int wordIdx) {
 
 // HACK: demo
 unsigned long next_demo_loop_at;
-const long DEMO_LOOP_PERIOD = 100; // milliseconds
+const long DEMO_LOOP_PERIOD = 50; // milliseconds
 unsigned long demo_loop_count;
 
 DebouncedSwitch mode_switch(BTN_MODE);
@@ -113,7 +113,6 @@ void loop() {
 
     if(mode_trigger.triggered()) {
         halted = !halted;
-        mode_trigger.clear();
     }
 
     if(halted) {
@@ -130,7 +129,6 @@ void loop() {
         if(select_trigger.triggered()) {
             address_bus += 1;
             data_bus += 7;
-            select_trigger.clear();
         }
     } else {
         // Show running dots
@@ -138,7 +136,15 @@ void loop() {
         for(int digit=0; digit<6; ++digit) {
             setMX7219Reg(MX7219_DIGIT_0 + digit, (point == (5-digit)) ? 0x80 : 0x00);
         }
+
+        // HACK: fiddle with address/data bus
+        address_bus += 31;
+        data_bus += 1;
     }
+
+    // Clear mode/select trigger
+    mode_trigger.clear();
+    select_trigger.clear();
 
     if(next_demo_loop_at < millis()) {
         status_bits += 1;
