@@ -14,9 +14,10 @@ byte data_bus;
 // Status bits
 byte status_bits;
 
-// Showing display test
-byte showing_dt;
-const int DPY_TST_DURATION = 1000; // milliseconds
+// Showing display test and time at which test started
+bool showing_dt;
+unsigned long dt_shown_at;
+const int DPY_TST_DURATION = 500; // milliseconds
 
 // Is processor stopped?
 bool halted;
@@ -73,19 +74,19 @@ void setup() {
     digitalWrite(MISO, LOW);
     digitalWrite(DLOAD, LOW);
 
+    // Set up MX7219 with display test on
+    setupMX7219();
+    setMX7219Reg(MX7219_SCN_LIMIT, 0x06);   // Scan digits 0-6
+    setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Enable display test
+    showing_dt = true; dt_shown_at = millis();
+
     // Initial address/data bus values
     address_bus = data_bus = 0;
 
     // Initially all status bits are off
     status_bits = 0;
 
-    // Set up MX7219
-    setupMX7219();
-    setMX7219Reg(MX7219_SCN_LIMIT, 0x06);   // Scan digits 0-6
-
-    // Display test
-    showing_dt = 1;
-
+    // Processor is in running state
     halted = false;
 
     next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
@@ -94,8 +95,8 @@ void setup() {
 
 void loop() {
     // Display test off after DPY_TST_DURATION milliseconds
-    if(showing_dt && (millis() > DPY_TST_DURATION)) {
-        showing_dt = 1;
+    if(showing_dt && (millis() - dt_shown_at > DPY_TST_DURATION)) {
+        showing_dt = false;
         setMX7219Reg(MX7219_DPLY_TEST, 0x00);
     }
 
