@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include "io.h"
 #include "mx7219.h"
 #include "pins.h"
 
@@ -33,8 +32,8 @@ const int MX7219_FONT_N_CHARS = sizeof(MX7219_FONT)/sizeof(byte);
 void setMX7219Reg(byte reg, byte value) {
     // Shift reg then byte since MX7219 expects data in MSB order.
     digitalWrite(DLOAD, LOW);
-    sendAndReceive(reg, MSB_FIRST);
-    sendAndReceive(value, MSB_FIRST);
+    shiftOut(MISO, SCLK, MSBFIRST, reg);
+    shiftOut(MISO, SCLK, MSBFIRST, value);
 
     // Pulse DLOAD
     digitalWrite(DLOAD, HIGH);
