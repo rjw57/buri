@@ -11,7 +11,7 @@ public:
     void poll();
     int state() const;
 private:
-    const unsigned long DEBOUNCE_TIME = 50; // milliseconds
+    const unsigned long DEBOUNCE_TIME = 20; // milliseconds
 
     bool            activeLow_;
     int             state_;
