@@ -153,5 +153,3 @@ void loop() {
         demo_loop_count += 1;
     }
 }
-
-// vim:filetype=cpp
