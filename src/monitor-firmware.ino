@@ -100,7 +100,7 @@ void loop() {
         setMX7219Reg(MX7219_DPLY_TEST, 0x00);
     }
 
-    // Poll swiches
+    // Poll switches
     mode_switch.poll();
     select_switch.poll();
 
