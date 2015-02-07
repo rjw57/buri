@@ -15,8 +15,8 @@
 #define BTN_SELECT  11
 
 #define BUS_SDTA    5
-#define BUS_PLBAR   9
-#define BUS_CP      10
+#define BUS_S0      9
+#define BUS_S1      10
 
 // (1) Since the monitor board is a slave device w.r.t. the processor board,
 // MISO is an OUTPUT and MOSI is an INPUT.

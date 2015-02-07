@@ -70,8 +70,8 @@ void setup() {
     pinMode(HALT, OUTPUT);
 
     pinMode(BUS_SDTA, INPUT);
-    pinMode(BUS_PLBAR, OUTPUT);
-    pinMode(BUS_CP, OUTPUT);
+    pinMode(BUS_S0, OUTPUT);
+    pinMode(BUS_S1, OUTPUT);
 
     // Set up MX7219 with display test on
     setupMX7219();
@@ -79,9 +79,9 @@ void setup() {
     setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Enable display test
     unsigned long dt_shown_at = millis();   // Record display test time
 
-    // Set bus shift registers to parallel load
-    digitalWrite(BUS_PLBAR, LOW);
-    digitalWrite(BUS_CP, LOW);
+    // Set bus shift registers to hold
+    digitalWrite(BUS_S0, LOW);
+    digitalWrite(BUS_S1, LOW);
 
     // Initial address/data bus values
     address_bus = data_bus = 0;
@@ -114,15 +114,23 @@ void loop() {
     mode_trigger.update(mode_switch.state() == HIGH);
     select_trigger.update(select_switch.state() == HIGH);
 
+    // Load bus reg.
+    digitalWrite(BUS_S0, HIGH);
+    digitalWrite(BUS_S1, HIGH);
+    digitalWrite(SCLK, LOW);    // pulse SCLK
+    digitalWrite(SCLK, HIGH);
+
     // Read from bus shift reg
-    digitalWrite(BUS_CP, LOW);
-    digitalWrite(BUS_CP, HIGH);
-    digitalWrite(BUS_PLBAR, HIGH);
-    data_bus = shiftIn(BUS_SDTA, BUS_CP, MSBFIRST);
+    digitalWrite(BUS_S0, HIGH);
+    digitalWrite(BUS_S1, LOW);
+    data_bus = shiftIn(BUS_SDTA, SCLK, MSBFIRST);
     address_bus =
-        (static_cast<unsigned int>(shiftIn(BUS_SDTA, BUS_CP, MSBFIRST)) << 8) |
-        static_cast<unsigned int>(shiftIn(BUS_SDTA, BUS_CP, MSBFIRST));
-    digitalWrite(BUS_PLBAR, LOW);
+        (static_cast<unsigned int>(shiftIn(BUS_SDTA, SCLK, MSBFIRST)) << 8) |
+        static_cast<unsigned int>(shiftIn(BUS_SDTA, SCLK, MSBFIRST));
+
+    // Back to hold state
+    digitalWrite(BUS_S0, LOW);
+    digitalWrite(BUS_S1, LOW);
 
     // Update control lines
     digitalWrite(HALT, halted ? HIGH : LOW);
