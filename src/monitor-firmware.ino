@@ -66,11 +66,22 @@ void setup() {
     pinMode(BTN_MODE, INPUT_PULLUP);
     pinMode(BTN_SELECT, INPUT_PULLUP);
 
+    pinMode(STEP, OUTPUT);
+    pinMode(HALT, OUTPUT);
+
+    pinMode(BUS_SDTA, INPUT);
+    pinMode(BUS_PLBAR, OUTPUT);
+    pinMode(BUS_CP, OUTPUT);
+
     // Set up MX7219 with display test on
     setupMX7219();
     setMX7219Reg(MX7219_SCN_LIMIT, 0x06);   // Scan digits 0-6
     setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Enable display test
     unsigned long dt_shown_at = millis();   // Record display test time
+
+    // Set bus shift registers to parallel load
+    digitalWrite(BUS_PLBAR, LOW);
+    digitalWrite(BUS_CP, LOW);
 
     // Initial address/data bus values
     address_bus = data_bus = 0;
@@ -103,6 +114,19 @@ void loop() {
     mode_trigger.update(mode_switch.state() == HIGH);
     select_trigger.update(select_switch.state() == HIGH);
 
+    // Read from bus shift reg
+    digitalWrite(BUS_CP, LOW);
+    digitalWrite(BUS_CP, HIGH);
+    digitalWrite(BUS_PLBAR, HIGH);
+    data_bus = shiftIn(BUS_SDTA, BUS_CP, MSBFIRST);
+    address_bus =
+        (static_cast<unsigned int>(shiftIn(BUS_SDTA, BUS_CP, MSBFIRST)) << 8) |
+        static_cast<unsigned int>(shiftIn(BUS_SDTA, BUS_CP, MSBFIRST));
+    digitalWrite(BUS_PLBAR, LOW);
+
+    // Update control lines
+    digitalWrite(HALT, halted ? HIGH : LOW);
+
     if(mode_trigger.triggered()) {
         halted = !halted;
     }
@@ -119,8 +143,12 @@ void loop() {
         setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
 
         if(select_trigger.triggered()) {
-            address_bus += 1;
-            data_bus += 7;
+            //address_bus += 1;
+            //data_bus += 7;
+
+            // Pulse step pin
+            digitalWrite(STEP, HIGH);
+            digitalWrite(STEP, LOW);
         }
     } else {
         // Show running dots
@@ -130,8 +158,8 @@ void loop() {
         }
 
         // HACK: fiddle with address/data bus
-        address_bus += 31;
-        data_bus += 1;
+        //abddress_bus += 31;
+        //udata_bus += 1;
     }
 
     // Clear mode/select trigger
