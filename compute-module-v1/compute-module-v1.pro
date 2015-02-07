@@ -1,4 +1,4 @@
-update=Wed 10 Dec 2014 14:13:58 GMT
+update=Sat 07 Feb 2015 16:01:47 GMT
 version=1
 last_client=eeschema
 [cvpcb]
@@ -47,6 +47,9 @@ LibName16=valves
 version=1
 [eeschema]
 version=1
+PageLayoutDescrFile=
+SubpartIdSeparator=0
+SubpartFirstId=65
 LibDir=../lib
 NetFmtName=
 RptD_X=0
@@ -86,3 +89,4 @@ LibName29=contrib
 LibName30=valves
 LibName31=65xx/65xx
 LibName32=compute-module-v1
+LibName33=IC_raspberry
