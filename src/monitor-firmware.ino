@@ -14,11 +14,20 @@ byte data_bus;
 // Status bits
 byte status_bits;
 
+enum StatusBitMask {
+    SB_RWBAR        = 0x01,
+    SB_IRQBAR       = 0x02,
+    SB_BE           = 0x04,
+    SB_SYNC         = 0x08,
+    SB_RSTBAR       = 0x10,
+    SB_RDY          = 0x20,
+};
+
 // How long to show display test for
 const int DPY_TST_DURATION = 500; // milliseconds
 
-// Is processor stopped?
-bool halted;
+// Are we wanting the processor to be halted?
+bool halt_request;
 
 enum Words {
     WORD_RUN, WORD_START, WORD_HALT, WORD_STOP, WORD_STEP,
@@ -46,11 +55,6 @@ void showWord(int wordIdx) {
     }
 }
 
-// HACK: demo
-unsigned long next_demo_loop_at;
-const long DEMO_LOOP_PERIOD = 50; // milliseconds
-unsigned long demo_loop_count;
-
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
 
@@ -59,8 +63,8 @@ EdgeTrigger select_trigger;
 
 void setup() {
     // Setup all pin modes
-    pinMode(MISO, OUTPUT);  // NB: (1)
-    pinMode(MOSI, INPUT);   // NB: (1)
+    pinMode(MOSI, OUTPUT);
+    pinMode(MISO, INPUT);
     pinMode(SCLK, OUTPUT);
     pinMode(DLOAD, OUTPUT);
     pinMode(BTN_MODE, INPUT_PULLUP);
@@ -69,9 +73,7 @@ void setup() {
     pinMode(STEP, OUTPUT);
     pinMode(HALT, OUTPUT);
 
-    pinMode(BUS_SDTA, INPUT);
-    pinMode(BUS_S0, OUTPUT);
-    pinMode(BUS_S1, OUTPUT);
+    pinMode(BUS_PLBAR, OUTPUT);
 
     // Set up MX7219 with display test on
     setupMX7219();
@@ -79,9 +81,8 @@ void setup() {
     setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Enable display test
     unsigned long dt_shown_at = millis();   // Record display test time
 
-    // Set bus shift registers to hold
-    digitalWrite(BUS_S0, LOW);
-    digitalWrite(BUS_S1, LOW);
+    // Set bus shift registers to load
+    digitalWrite(BUS_PLBAR, LOW);
 
     // Initial address/data bus values
     address_bus = data_bus = 0;
@@ -90,10 +91,7 @@ void setup() {
     status_bits = 0;
 
     // Processor is in running state
-    halted = false;
-
-    next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
-    demo_loop_count = 0;
+    halt_request = false;
 
     // OK, all done, just wait for display test to time out
     while(millis() - dt_shown_at < DPY_TST_DURATION) {
@@ -107,39 +105,49 @@ void loop() {
     mode_switch.poll();
     select_switch.poll();
 
-    // Update status bits
-    setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
-
     // Update triggers
     mode_trigger.update(mode_switch.state() == HIGH);
     select_trigger.update(select_switch.state() == HIGH);
 
-    // Load bus reg.
-    digitalWrite(BUS_S0, HIGH);
-    digitalWrite(BUS_S1, HIGH);
-    digitalWrite(SCLK, LOW);    // pulse SCLK
-    digitalWrite(SCLK, HIGH);
-
-    // Read from bus shift reg
-    digitalWrite(BUS_S0, HIGH);
-    digitalWrite(BUS_S1, LOW);
-    data_bus = shiftIn(BUS_SDTA, SCLK, MSBFIRST);
-    address_bus =
-        (static_cast<unsigned int>(shiftIn(BUS_SDTA, SCLK, MSBFIRST)) << 8) |
-        static_cast<unsigned int>(shiftIn(BUS_SDTA, SCLK, MSBFIRST));
-
-    // Back to hold state
-    digitalWrite(BUS_S0, LOW);
-    digitalWrite(BUS_S1, LOW);
-
-    // Update control lines
-    digitalWrite(HALT, halted ? HIGH : LOW);
-
     if(mode_trigger.triggered()) {
-        halted = !halted;
+        halt_request = !halt_request;
     }
 
-    if(halted) {
+    // Stop loading bus reg. and prepare for shifting
+    digitalWrite(SCLK, HIGH);
+    digitalWrite(BUS_PLBAR, HIGH);
+
+    // Read from bus shift reg
+    status_bits = shiftIn(MISO, SCLK, MSBFIRST);
+    data_bus = shiftIn(MISO, SCLK, MSBFIRST);
+    address_bus =
+        (static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST)) << 8) |
+        static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST));
+
+    // Back to loading stata
+    digitalWrite(BUS_PLBAR, LOW);
+
+    // Update control lines
+    digitalWrite(HALT, halt_request ? HIGH : LOW);
+
+    // Update status bits
+    setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
+
+    // Check halt state by directly observing RDY
+    if(status_bits & SB_RDY) {
+        // Processor running, show running dots
+        int point = (millis() >> 7) % 6;
+        for(int digit=0; digit<6; ++digit) {
+            setMX7219Reg(MX7219_DIGIT_0 + digit, (point == (5-digit)) ? 0x80 : 0x00);
+        }
+    } else {
+        // step only makes sense if processor halted
+        if(select_trigger.triggered()) {
+            // Pulse step pin
+            digitalWrite(STEP, HIGH);
+            digitalWrite(STEP, LOW);
+        }
+
         // Update address bus
         setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
         setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
@@ -149,35 +157,9 @@ void loop() {
         // Update data bus
         setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
         setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
-
-        if(select_trigger.triggered()) {
-            //address_bus += 1;
-            //data_bus += 7;
-
-            // Pulse step pin
-            digitalWrite(STEP, HIGH);
-            digitalWrite(STEP, LOW);
-        }
-    } else {
-        // Show running dots
-        int point = (millis() >> 7) % 6;
-        for(int digit=0; digit<6; ++digit) {
-            setMX7219Reg(MX7219_DIGIT_0 + digit, (point == (5-digit)) ? 0x80 : 0x00);
-        }
-
-        // HACK: fiddle with address/data bus
-        //abddress_bus += 31;
-        //udata_bus += 1;
     }
 
     // Clear mode/select trigger
     mode_trigger.clear();
     select_trigger.clear();
-
-    if(next_demo_loop_at < millis()) {
-        status_bits += 1;
-
-        next_demo_loop_at = millis() + DEMO_LOOP_PERIOD;
-        demo_loop_count += 1;
-    }
 }
