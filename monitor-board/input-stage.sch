@@ -31,12 +31,13 @@ LIBS:contrib
 LIBS:valves
 LIBS:IC_raspberry
 LIBS:IHE
+LIBS:w_logic
 LIBS:monitor-board-cache
 EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 4
+Sheet 3 5
 Title "6502 Computer - Compute Board"
 Date "10 feb 2015"
 Rev "1"
@@ -243,7 +244,6 @@ Wire Wire Line
 	3000 5800 3000 5900
 Wire Wire Line
 	3000 4400 3000 4500
-NoConn ~ 2600 5150
 NoConn ~ 2600 5250
 NoConn ~ 2600 5350
 Wire Wire Line
@@ -413,4 +413,8 @@ Text GLabel 4500 2850 0    60   Input ~ 0
 A9
 Text GLabel 4750 2750 0    60   Input ~ 0
 A8
+Text GLabel 2400 5150 0    60   Input ~ 0
+RDY
+Wire Wire Line
+	2400 5150 2600 5150
 $EndSCHEMATC

@@ -31,12 +31,13 @@ LIBS:contrib
 LIBS:valves
 LIBS:IC_raspberry
 LIBS:IHE
+LIBS:w_logic
 LIBS:monitor-board-cache
 EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 4
+Sheet 4 5
 Title "6502 Computer - Compute Board"
 Date "10 feb 2015"
 Rev "1"

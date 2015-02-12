@@ -1,4 +1,4 @@
-update=Sat 07 Feb 2015 17:13:37 GMT
+update=Tue 10 Feb 2015 22:20:50 GMT
 version=1
 last_client=eeschema
 [cvpcb]
@@ -89,3 +89,4 @@ LibName29=contrib
 LibName30=valves
 LibName31=IC_raspberry
 LibName32=iheart-kicad-lib/IHE
+LibName33=lib_w_logic/w_logic

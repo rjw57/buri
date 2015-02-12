@@ -31,12 +31,13 @@ LIBS:contrib
 LIBS:valves
 LIBS:IC_raspberry
 LIBS:IHE
+LIBS:w_logic
 LIBS:monitor-board-cache
 EELAYER 24 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 4
+Sheet 1 5
 Title "6502 Computer - Compute Board"
 Date "10 feb 2015"
 Rev "1"
@@ -298,7 +299,7 @@ F 3 "" H 5450 4450 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 4550 4850 0    60   ~ 0
-SCLKOUT
+SCLK
 $Comp
 L +5V #PWR05
 U 1 1 54DA7997
@@ -367,17 +368,9 @@ F 3 "" H 1600 3950 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9300 4950 9800 4950
+	9300 4950 10400 4950
 Wire Wire Line
-	9800 4950 10200 4950
-Wire Wire Line
-	10200 4950 10400 4950
-Wire Wire Line
-	9300 4350 9800 4350
-Wire Wire Line
-	9800 4350 10200 4350
-Wire Wire Line
-	10200 4350 10400 4350
+	9300 4350 10400 4350
 Wire Wire Line
 	10400 4350 10400 4300
 Wire Wire Line
@@ -501,9 +494,7 @@ Wire Wire Line
 Wire Wire Line
 	5050 4850 4550 4850
 Wire Wire Line
-	4450 4850 4450 4950
-Wire Wire Line
-	4450 4950 4450 5250
+	4450 4850 4450 5250
 Wire Wire Line
 	4450 4950 5050 4950
 Wire Wire Line
@@ -530,13 +521,11 @@ Wire Wire Line
 	1600 4000 1600 3950
 Connection ~ 4450 4950
 Wire Wire Line
-	2200 4300 1700 4300
-NoConn ~ 1700 4300
+	1600 4300 2200 4300
 Wire Wire Line
 	2200 2800 1700 2800
 Text Label 1700 2800 0    60   ~ 0
 VCC
-NoConn ~ 6450 5050
 Text GLabel 7150 3050 2    60   3State ~ 0
 BE
 Wire Wire Line
@@ -546,4 +535,33 @@ Text GLabel 6850 2950 2    60   3State ~ 0
 R/~W
 Wire Wire Line
 	6650 2950 6850 2950
+$Sheet
+S 2200 4850 1000 600 
+U 54DA84F7
+F0 "Display" 50
+F1 "display.sch" 50
+F2 "SDIN" I L 2200 5000 60 
+F3 "SDOUT" O L 2200 5100 60 
+F4 "LOAD" I L 2200 5200 60 
+F5 "SCLK" I L 2200 5300 60 
+$EndSheet
+Wire Wire Line
+	2200 5100 1700 5100
+NoConn ~ 1700 5100
+Text Label 1700 5300 0    60   ~ 0
+SCLK
+Wire Wire Line
+	1600 5000 2200 5000
+Wire Wire Line
+	2200 5300 1700 5300
+Wire Wire Line
+	2200 5200 1700 5200
+Text Label 1700 5200 0    60   ~ 0
+DPYLD
+Wire Wire Line
+	1600 4300 1600 5000
+Wire Wire Line
+	6450 5050 6950 5050
+Text Label 6950 5050 2    60   ~ 0
+DPYLD
 $EndSCHEMATC
