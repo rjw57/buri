@@ -244,8 +244,6 @@ Wire Wire Line
 	3000 5800 3000 5900
 Wire Wire Line
 	3000 4400 3000 4500
-NoConn ~ 2600 5250
-NoConn ~ 2600 5350
 Wire Wire Line
 	8600 2750 8700 2750
 Wire Wire Line
@@ -417,4 +415,22 @@ Text GLabel 2400 5150 0    60   Input ~ 0
 RDY
 Wire Wire Line
 	2400 5150 2600 5150
+$Comp
+L GND #PWR?
+U 1 1 54DD38EC
+P 2050 5450
+F 0 "#PWR?" H 2050 5450 30  0001 C CNN
+F 1 "GND" H 2050 5380 30  0001 C CNN
+F 2 "" H 2050 5450 60  0000 C CNN
+F 3 "" H 2050 5450 60  0000 C CNN
+	1    2050 5450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2600 5350 2050 5350
+Wire Wire Line
+	2050 5250 2050 5450
+Wire Wire Line
+	2600 5250 2050 5250
+Connection ~ 2050 5350
 $EndSCHEMATC
