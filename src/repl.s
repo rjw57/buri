@@ -15,9 +15,9 @@ str_nsc:	PString "No such command"
 @prompt:
 	; Print prompt
 	lda	#'*'
-	jsr	srl_putc
+	jsr	scrn_putc
 	lda	#' '
-	jsr	srl_putc
+	jsr	scrn_putc
 
 @loop:
 	; Simple echo loop
@@ -35,7 +35,7 @@ str_nsc:	PString "No such command"
 	stx	line_len		; record new length
 
 	lda	tmp1
-	jsr	srl_putc		; echo character to console
+	jsr	scrn_putc		; echo character to console
 	jmp	@loop			; wait for next character
 @not_bs:
 
@@ -53,13 +53,13 @@ str_nsc:	PString "No such command"
 	inx				; increment length
 	stx	line_len		; record new length
 
-	jsr	srl_putc		; echo character to console
+	jsr	scrn_putc		; echo character to console
 	jmp	@loop			; wait for next character
 @parse_line:
 	lda	#ASCII_CR
-	jsr	srl_putc
+	jsr	scrn_putc
 	lda	#ASCII_NL
-	jsr	srl_putc		; advance to next line
+	jsr	scrn_putc		; advance to next line
 
 	lda	line_len		; load line length
 	beq	@parse_end		; do nothing more if zero

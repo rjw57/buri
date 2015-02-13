@@ -8,8 +8,7 @@
 .global repl
 
 .segment "RODATA"
-banner1: PString "BURI microcomputer"
-banner2: PString "(C) 2014 Rich Wareham <rich.buri@richwareham.com>"
+banner1: PString "BURI microcomputer system"
 
 .segment "CODE"
 
@@ -34,15 +33,23 @@ clear_zp:
 	bne	@loop			; if X has not wrapped, loop
 end_clear_zp:
 
-	;; Reset serial port
+	; Clear screen with '#' character. We do this as early as possible
+	; to diagnose failure to proceed in this routine.
+	lda	#'#'
+	jsr	scrn_clear
+
+	; Reset serial port
 	jsr	srl_reset
 
-	;; Finished HW bootstap
-	cli				; enable interrupts
+	; Finished HW bootstap, enable interrupts
+	cli
+
+	; Clear screen with ' ' character. Ready for screaming to the world!
+	lda	#' '
+	jsr	scrn_clear
 
 	; Scream to the world!
 	WriteLnString banner1
-	WriteLnString banner2
 
 	; Jump into the REPL
 	jmp	repl

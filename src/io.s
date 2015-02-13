@@ -96,3 +96,127 @@
 
 	rts
 .endproc
+
+; Clear screen memory. On entry, A is value to fill memory with. On exit cursor
+; position is reset to 0,0.
+.proc scrn_clear
+	; Push A onto stack
+	pha
+
+	; Load address of screen start into ZP ptr{1,2}
+	lda	#<SCREEN_START
+	sta	ptr1
+	lda	#>SCREEN_START
+	sta	ptr1+1
+
+	; A stores value to be written. X counts down the number of pages left to write.
+	pla
+	ldx	#SCREEN_N_PGS
+
+@pg_loop:
+	; Clear one page starting at ptr1. Y ranges from 0x00 to 0xFF.
+	; A is unchanged
+	ldy	#$00
+@loop:
+	sta	(ptr1), Y
+	iny
+	bne	@loop
+
+	inc	ptr1+1			; increment MSB of screen address
+	dex				; decrement page counter
+	bne	@pg_loop		; loop if work left to be done
+
+	; Reset cursor position
+	lda	#$00
+	sta	tx
+	sta	ty
+	lda	#<SCREEN_START
+	sta	taddr
+	lda	#>SCREEN_START
+	sta	taddr+1
+
+	rts				; return to caller
+.endproc
+
+; Put a character to the screen. On entry, A is the character to put. Will
+; advance text cursor to next position.
+.proc scrn_putc
+	ldx	#ASCII_NL		; is this a newline?
+	stx	tmp1
+	cmp	tmp1
+	beq	@linefeed		; yes, perform a line feed
+
+	ldx	#ASCII_CR		; is this a carriage return?
+	stx	tmp1
+	cmp	tmp1
+	beq	@carriage_return	; yes, perform a carriage return
+
+	; if we get here, A is some other character
+
+	ldy	tx			; write A at taddr + cx
+	sta	(taddr), y
+	inc	tx			; advance cursor position
+
+	lda	#SCREEN_COLS		; compare tx to SCREEN_COLS
+	cmp	tx
+	bne	@exit			; if not equal, our job is done
+	
+@linefeed:
+	; increment ty to move down
+	inc	ty
+
+	; add SCREEN_COLS to taddr
+	clc
+	lda	#SCREEN_COLS
+	adc	taddr
+	sta	taddr
+
+	; check carry flag to see if we need to increment taddr+1
+	bcc	@exit
+	inc	taddr+1
+
+@carriage_return:
+	lda	#$00			; reset tx to zero
+	sta	tx
+
+@exit:
+	rts
+.endproc
+
+; Output characters from a buffer.
+; Entry:
+;	A - number of bytes to write
+;	ptr1 - pointer to buffer
+; Exit:
+;	A, X, Y - not preserved
+.proc scrn_puts
+	tax				; save A into X
+	beq	@exit			; shortcut if A == 0
+
+	; Write output characters decrementing X until X == 0
+	lda	#$00
+	tay
+@write_loop:
+	; preserve X and Y before jumping to scrn_putc
+	txa
+	pha
+	tya
+	pha
+
+	lda	(ptr1), Y		; load output byte
+	jsr	scrn_putc		; output character
+
+	; restore X and Y
+	pla
+	tay
+	pla
+	tax
+
+	; Loop
+	iny
+	dex
+	bne	@write_loop
+
+@exit:
+	rts				; return to caller
+.endproc

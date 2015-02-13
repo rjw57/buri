@@ -12,6 +12,10 @@ tmp1:		.res 2
 tmp2:		.res 2
 tmp3:		.res 2
 
+tx:		.res 1
+ty:		.res 1
+taddr:		.res 2
+
 acia1_recv_data:	.res 1
 
 line_len:	.res 1			; # bytes in input line buffer

@@ -29,6 +29,14 @@ SRL_BUF_MASK = SRL_BUF_SZ-1		; mask for rounding value into buffer len
 .globalzp tmp2
 .globalzp tmp3
 
+; X- and Y- location of text cursor
+.globalzp tx
+.globalzp ty
+
+; Cached address in memory corresponding to *start* of
+; line containing text cursor. (i.e. SCREEN_START + ty * SCREEN_COLS)
+.globalzp taddr
+
 .globalzp line_len
 .globalzp srl_buf_len
 .globalzp srl_buf_start
