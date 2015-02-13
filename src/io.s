@@ -140,6 +140,8 @@
 
 ; Put a character to the screen. On entry, A is the character to put. Will
 ; advance text cursor to next position.
+;
+; TODO: vertical scrolling
 .proc scrn_putc
 	ldx	#ASCII_NL		; is this a newline?
 	stx	tmp1
