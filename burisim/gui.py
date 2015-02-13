@@ -51,18 +51,24 @@ class BuriApplication(object):
         self._main_frame.winfo_toplevel().title('Buri microcomputer')
 
         # Register idle-callback
-        self._main_frame.after_idle(self._tick_cb)
+        self._main_frame.after_idle(self._idle_cb)
+
+        # Register GUI update callback
+        self._main_frame.after(33, self._redraw_cb)
 
     def run(self):
         """Run main frame's event loop."""
         return self._main_frame.mainloop()
 
-    def _tick_cb(self):
+    def _idle_cb(self):
         # Run 1000 steps
         for _ in range(1000):
             self._sim.step()
+        self._main_frame.after(1, self._idle_cb)
+
+    def _redraw_cb(self):
         self._refresh_screen()
-        self._main_frame.after(1, self._tick_cb)
+        self._main_frame.after(33, self._redraw_cb)
 
     def _create_widgets(self):
         self._main_frame = tk.Frame(self._master)
