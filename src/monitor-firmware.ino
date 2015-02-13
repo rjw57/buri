@@ -29,32 +29,6 @@ const int DPY_TST_DURATION = 500; // milliseconds
 // Are we wanting the processor to be halted?
 bool halt_request;
 
-enum Words {
-    WORD_RUN, WORD_START, WORD_HALT, WORD_STOP, WORD_STEP,
-    WORD_CYCLE, WORD_INST, WORD_BURN, WORD_READ,
-};
-
-// Display strings
-byte DISPLAY_WORDS[][6] = {
-    { 0x15, 0x18, 0x12, 0x1A, 0x1A, 0x1A }, // "run   "
-    { 0x16, 0x17, 0x0A, 0x15, 0x17, 0x1A }, // "StArt "
-    { 0x10, 0x0A, 0x11, 0x17, 0x1A, 0x1A }, // "HALt  "
-    { 0x16, 0x17, 0x13, 0x14, 0x1A, 0x1A }, // "StoP  "
-    { 0x16, 0x17, 0x0E, 0x14, 0x1A, 0x1A }, // "StEP  "
-    { 0x0C, 0x19, 0x0C, 0x11, 0x0E, 0x1A }, // "CYCLE "
-    { 0x01, 0x12, 0x16, 0x17, 0x1A, 0x1A }, // "1nSt  "
-    { 0x0B, 0x18, 0x15, 0x12, 0x1A, 0x1A }, // "burn  "
-    { 0x15, 0x0E, 0x0A, 0x0D, 0x1A, 0x1A }, // "rEAd  "
-};
-const int DISPLAY_WORD_COUNT = sizeof(DISPLAY_WORDS) / sizeof(DISPLAY_WORDS[0]);
-
-void showWord(int wordIdx) {
-    byte* wordData = DISPLAY_WORDS[wordIdx];
-    for(int digit=0; digit<6; ++digit) {
-        setMX7219Reg(MX7219_DIGIT_0 + (5-digit), MX7219_FONT[wordData[digit]]);
-    }
-}
-
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
 
@@ -113,7 +87,12 @@ void loop() {
         halt_request = !halt_request;
     }
 
-    // Stop loading bus reg. and prepare for shifting
+    // Update control lines
+    digitalWrite(HALT, halt_request ? HIGH : LOW);
+
+    // Stop loading data into shift reg. From Data sheet: the LOW-to-HIGH
+    // transition of input CE should only take place while CP HIGH for
+    // predictable operation.
     digitalWrite(SCLK, HIGH);
     digitalWrite(BUS_PLBAR, HIGH);
 
@@ -124,11 +103,8 @@ void loop() {
         (static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST)) << 8) |
         static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST));
 
-    // Back to loading stata
+    // Resume loading data into shift reg.
     digitalWrite(BUS_PLBAR, LOW);
-
-    // Update control lines
-    digitalWrite(HALT, halt_request ? HIGH : LOW);
 
     // Update status bits
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
