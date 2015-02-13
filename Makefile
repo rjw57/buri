@@ -1,3 +1,8 @@
+# If CC65_DIR is set, add ${CC65_DIR}/bin to path
+ifdef CC65_DIR
+	export PATH := ${CC65_DIR}/bin:$(PATH)
+endif
+
 # Define project directory (contains this Makefile) and build directory
 # (directory from which make was run).
 proj_dir := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
