@@ -16,8 +16,15 @@ Hardware options:
     of possible serial connection URLs.
 
 """
-from __future__ import absolute_import, division, print_function
-from builtins import * # pylint: disable=wildcard-import,redefined-builtin
+# Make py2 like py3
+from __future__ import (absolute_import, division, print_function, unicode_literals)
+from builtins import (  # pylint: disable=redefined-builtin, unused-import
+    bytes, dict, int, list, object, range, str,
+    ascii, chr, hex, input, next, oct, open,
+    pow, round, super,
+    filter, map, zip
+)
+
 from past.builtins import basestring # pylint: disable=redefined-builtin
 
 from contextlib import contextmanager
@@ -30,6 +37,8 @@ from docopt import docopt
 from py65.devices.mpu6502 import MPU
 from py65.memory import ObservableMemory
 import serial
+
+from .crt import ScreenMemory
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,9 +55,15 @@ class BuriSim(object):
     ROM_RANGE = 0xC000, 0x10000
     ACIA1_RANGE = 0x8800, 0x8804
 
+    # Screen memory is at top of RAM from 0x7B00
+    SCREEN_RANGE = 0x7B00, 0x7B00 + ScreenMemory.SCREEN_SIZE_BYTES
+
     def __init__(self):
         # Behaviour flags
         self._raise_on_rom_write = True
+
+        # Create CRT
+        self.screen = ScreenMemory()
 
         # Create memory space
         self.mem = ObservableMemory(addrWidth=MPU.ADDR_WIDTH)
@@ -89,7 +104,7 @@ class BuriSim(object):
         # Copy ROM from 0xC000 to 0xFFFF. Loop if necessary.
         with self.writable_rom():
             for addr, val in zip(range(*BuriSim.ROM_RANGE), cycle(rom_bytes)):
-                self.mem[addr] = struct.unpack('B', val)[0]
+                self.mem[addr] = val
 
     def reset(self):
         """Perform a hardware reset."""
@@ -100,7 +115,7 @@ class BuriSim(object):
         self.mpu.reset()
 
         # Read reset-vector
-        self.mpu.pc = self.mpu.WordAt(MPU.ResetTo)
+        self.mpu.pc = self.mpu.WordAt(MPU.RESET)
 
     def step(self):
         """Single-step the machine."""
@@ -128,7 +143,7 @@ class BuriSim(object):
         self.mpu.opSET(MPU.INTERRUPT)
 
         # Vector to IRQ handler
-        self.mpu.pc = self.mpu.WordAt(self.mpu.IrqTo)
+        self.mpu.pc = self.mpu.WordAt(self.mpu.IRQ)
 
     @contextmanager
     def writable_rom(self):
@@ -148,6 +163,9 @@ class BuriSim(object):
             if self._raise_on_rom_write:
                 raise ReadOnlyMemoryError(address, value)
         self.mem.subscribe_to_write(range(*BuriSim.ROM_RANGE), raise_hell)
+
+        # Register screen
+        self.screen.observe_mem(self.mem, BuriSim.SCREEN_RANGE[0])
 
         # Register ACIA
         self.acia1.observe_mem(self.mem, BuriSim.ACIA1_RANGE[0])

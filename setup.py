@@ -12,10 +12,12 @@ setup(
         'future',
         'py65',
         'pyserial',
+        'Pillow',
     ],
     entry_points={
         'console_scripts': [
             'burisim = burisim:main',
+            'buritk = burisim.gui:main',
         ],
     },
 )
