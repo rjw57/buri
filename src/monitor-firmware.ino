@@ -4,6 +4,7 @@
 #include "edge_trigger.h"
 #include "mx7219.h"
 #include "pins.h"
+#include "serialstatemachine.h"
 
 // 16-bit address bus value
 unsigned int address_bus;
@@ -35,6 +36,81 @@ DebouncedSwitch select_switch(BTN_SELECT);
 EdgeTrigger mode_trigger;
 EdgeTrigger select_trigger;
 
+const int MAX_CMD_LEN = 31;
+byte cmd_buf[MAX_CMD_LEN+1];
+int cmd_len;
+
+SerialState serial_state;
+
+// Write command prompt and return reading command state.
+SerialState serialPrompt() {
+    // Reset current command
+    cmd_buf[0] = '\0';
+    cmd_len = 0;
+
+    Serial.print("> ");
+    return { .next = &readingCommandState };
+}
+
+SerialState readingCommandState(byte ch) {
+    switch(ch) {
+        // handle backspace
+        case 8:
+        case 127:
+            if(cmd_len > 0) {
+                Serial.write(8);
+                Serial.write(' ');
+                Serial.write(8);
+                cmd_len--;
+                cmd_buf[cmd_len] = '\0';
+            } else {
+                // bell
+                Serial.write(7);
+            }
+            break;
+
+        // handle enter
+        case 10:
+        case 13:
+            Serial.println("");
+            return processCommand();
+            break;
+
+        default:
+            // Only accept printable chars.
+            if(ch < 0x20) {
+                // Bell
+                Serial.write(7);
+            } else if(cmd_len < MAX_CMD_LEN) {
+                // Add character to command buffer
+                cmd_buf[cmd_len+1] = '\0';
+                cmd_buf[cmd_len] = ch;
+                cmd_len++;
+
+                // Echo character to output
+                Serial.write(ch);
+            } else {
+                // Bell
+                Serial.write(7);
+            }
+            break;
+    }
+
+    return { .next = &readingCommandState };
+}
+
+SerialState processCommand() {
+    Serial.print("cmd: ");
+    Serial.println(reinterpret_cast<char*>(cmd_buf));
+    return serialPrompt();
+}
+
+void pollSerial() {
+    while(Serial.available() > 0) {
+        serial_state = serial_state.next(Serial.read());
+    }
+}
+
 void setup() {
     // Setup all pin modes
     pinMode(MOSI, OUTPUT);
@@ -48,6 +124,10 @@ void setup() {
     pinMode(HALT, OUTPUT);
 
     pinMode(BUS_PLBAR, OUTPUT);
+
+    // Start serial port and print banner
+    Serial.begin(9600);
+    serial_state = serialPrompt();
 
     // Set up MX7219 with display test on
     setupMX7219();
@@ -75,6 +155,9 @@ void setup() {
 }
 
 void loop() {
+    // Poll serial port
+    pollSerial();
+
     // Poll switches
     mode_switch.poll();
     select_switch.poll();
