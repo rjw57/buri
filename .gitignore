@@ -1,0 +1,4 @@
+Makefile.depends
+rom.bin
+rom.bin.map
+*.o
