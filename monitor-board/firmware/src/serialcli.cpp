@@ -88,6 +88,7 @@ static void printHelp() {
     Serial.println("h[alt]      - toggle halt state");
     Serial.println("c[ycle] [n] - single cycle n times");
     Serial.println("s[tep] [n]  - single step n times");
+    Serial.println("r[eset]     - toggle ~RST line");
     Serial.println("");
     Serial.println("Specify decimal numbers with no prefix.");
     Serial.println("Specify hexadecimal numbers with $ prefix.");
@@ -183,7 +184,7 @@ static SerialState processCommand() {
     } else if(strprefixeq(cmd, "?") && (n_tokens == 1)) {
         // If help command was given, print help
         printHelp();
-    } else if(strprefixeq(cmd, "halt")) {
+    } else if(strprefixeq(cmd, "halt") && (n_tokens == 1)) {
         halt = !halt;
         Serial.print("halt ");
         Serial.println(halt ? "on" : "off");
@@ -226,6 +227,10 @@ static SerialState processCommand() {
                 controlLoop();
             }
         }
+    } else if(strprefixeq(cmd, "reset") && (n_tokens == 1)) {
+        pull_rst_low = !pull_rst_low;
+        Serial.print("~rst ");
+        Serial.println(pull_rst_low ? "low" : "high");
     } else {
         Serial.println("unknown command");
         printHelp();
