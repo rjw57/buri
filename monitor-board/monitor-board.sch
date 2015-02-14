@@ -170,10 +170,9 @@ GND
 Text Label 4300 2650 0    60   ~ 0
 GND
 NoConn ~ 4750 2350
-Text Label 4300 2450 0    60   ~ 0
+Text Label 4300 2750 0    60   ~ 0
 VCC
 NoConn ~ 4750 2250
-NoConn ~ 4750 2750
 NoConn ~ 6650 1850
 Text Label 7100 1950 2    60   ~ 0
 GND
@@ -393,7 +392,7 @@ Wire Wire Line
 Wire Wire Line
 	4750 2650 4300 2650
 Wire Wire Line
-	4750 2450 4300 2450
+	4750 2750 4300 2750
 Wire Wire Line
 	6650 1950 7100 1950
 Wire Wire Line
@@ -549,4 +548,5 @@ Wire Wire Line
 	5150 5050 5150 5150
 Text Notes 5000 4800 0    60   ~ 0
 NB: Arduino has internal pullups
+NoConn ~ 4750 2450
 $EndSCHEMATC
