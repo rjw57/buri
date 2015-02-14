@@ -28,10 +28,17 @@ static void writeControlLines() {
     digitalWrite(HALT, halt ? HIGH : LOW);
 
     if(pull_rst_low) {
-        pinMode(RSTBAR, OUTPUT);
-        digitalWrite(RSTBAR, LOW);
+        pinMode(PIN_RSTBAR, OUTPUT);
+        digitalWrite(PIN_RSTBAR, LOW);
     } else {
-        pinMode(RSTBAR, INPUT);
+        pinMode(PIN_RSTBAR, INPUT);
+    }
+
+    if(pull_be_low) {
+        pinMode(PIN_BE, OUTPUT);
+        digitalWrite(PIN_BE, LOW);
+    } else {
+        pinMode(PIN_BE, INPUT);
     }
 
     // If processor halted...

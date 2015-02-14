@@ -6,3 +6,4 @@ byte status_bits;
 bool halt;
 StepState step_state;
 bool pull_rst_low;
+bool pull_be_low;

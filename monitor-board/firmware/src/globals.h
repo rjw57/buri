@@ -45,4 +45,7 @@ extern StepState step_state;
 // Set to true to pull RST low.
 extern bool pull_rst_low;
 
+// Set to true to pull BE low.
+extern bool pull_be_low;
+
 #endif // GUARD_GLOBALS_H

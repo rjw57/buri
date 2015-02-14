@@ -17,7 +17,8 @@
 
 // The following pins are INPUT or OUTPUT depending on whether the
 // corresponding control lines are being pulled low or not.
-#define RSTBAR      A0
+#define PIN_RSTBAR  A0
+#define PIN_BE      A1
 
 
 #endif // GUARD_PINS_H__
