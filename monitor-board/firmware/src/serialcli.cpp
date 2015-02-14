@@ -166,6 +166,30 @@ bool parseLong(const char* s, long* l) {
     return (s[0] != '\0') && (*end_ptr == '\0');
 }
 
+// Parse and perform a single cycle/instruction command.
+static void performStepCommand(bool is_inst_step) {
+    long n=1; // default
+    if(cmd_tokenv[1] != NULL) {
+        const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+        if(!parseLong(arg1, &n)) {
+            Serial.print("invalid number: ");
+            Serial.println(arg1);
+        }
+    }
+
+    for(long i=0; i<n; ++i) {
+        step_state = is_inst_step ? SS_INST : SS_CYCLE;
+        while(step_state != SS_NONE) {
+            controlLoop();
+
+            if(!processorCanBeStepped()) {
+                Serial.println("aborting: processor in incorrect state for stepping");
+                step_state = SS_NONE;
+            }
+        }
+    }
+}
+
 static SerialState processCommand() {
     // Parse cmd_buf into tokens
     tokenizeCmdBuf();
@@ -196,47 +220,9 @@ static SerialState processCommand() {
         Serial.print(data_bus, HEX);
         Serial.println("");
     } else if(strprefixeq(cmd, "cycle") && (n_tokens <= 2)) {
-        long n=1; // default
-        if(n_tokens > 1) {
-            const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
-            if(!parseLong(arg1, &n)) {
-                Serial.print("invalid number: ");
-                Serial.println(arg1);
-            }
-        }
-
-        for(long i=0; i<n; ++i) {
-            step_state = SS_INST;
-            while(step_state != SS_NONE) {
-                controlLoop();
-
-                if(!processorCanBeStepped()) {
-                    Serial.println("aborting: processor in incorrect state for stepping");
-                    step_state = SS_NONE;
-                }
-            }
-        }
+        performStepCommand(false);
     } else if(strprefixeq(cmd, "step") && (n_tokens <= 2)) {
-        long n=1; // default
-        if(n_tokens > 1) {
-            const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
-            if(!parseLong(arg1, &n)) {
-                Serial.print("invalid number: ");
-                Serial.println(arg1);
-            }
-        }
-
-        for(long i=0; i<n; ++i) {
-            step_state = SS_INST;
-            while(step_state != SS_NONE) {
-                controlLoop();
-
-                if(!processorCanBeStepped()) {
-                    Serial.println("aborting: processor in incorrect state for stepping");
-                    step_state = SS_NONE;
-                }
-            }
-        }
+        performStepCommand(true);
     } else if(strprefixeq(cmd, "reset") && (n_tokens == 1)) {
         pull_rst_low = !pull_rst_low;
         Serial.print("~rst ");
