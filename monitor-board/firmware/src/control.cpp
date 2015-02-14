@@ -7,22 +7,38 @@
 
 void writeControlLines() {
     // Update control lines
-    digitalWrite(HALT, halt_request ? HIGH : LOW);
+    digitalWrite(HALT, halt ? HIGH : LOW);
 
-    // This cycle vs step logic is confusing and buggy. Re-think it.
+    // If processor halted...
+    if(!(status_bits & SB_RDY)) {
+        // Is some form of stepping required?
+        bool should_step = false;
 
-    // step only makes sense if processor halted
-    if(cycle_request || (skip_to_next_sync && !(status_bits & SB_SYNC))) {
-        // Pulse step pin
-        digitalWrite(STEP, HIGH);
-        digitalWrite(STEP, LOW);
+        switch(step_state) {
+            case SS_CYCLE:
+                // Pulsing the STEP pin suffices
+                should_step = true;
+                step_state = SS_NONE;
+                break;
+            case SS_INST:
+                // Pulse STEP but wait for the SYNC
+                should_step = true;
+                step_state = SS_INST_WAITING_FOR_SYNC;
+                break;
+            case SS_INST_WAITING_FOR_SYNC:
+                // Only step if SYNC is low
+                if(status_bits & SB_SYNC) {
+                    step_state = SS_NONE;
+                } else {
+                    should_step = true;
+                }
+                break;
+        }
 
-        // If we are skipping rather than cycling, reset skip
-        if(!cycle_request) {
-            skip_to_next_sync = false;
-        } else {
-            // Reset cycle request
-            cycle_request = false;
+        if(should_step) {
+            // Pulse step pin
+            digitalWrite(STEP, HIGH);
+            digitalWrite(STEP, LOW);
         }
     }
 }

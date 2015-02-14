@@ -67,9 +67,8 @@ void setup() {
     status_bits = 0;
 
     // Processor is in running state
-    halt_request = false;
-    cycle_request = false;
-    skip_to_next_sync = false;
+    halt = false;
+    step_state = SS_NONE;
 
     // OK, all done, just wait for display test to time out
     while(millis() - dt_shown_at < DPY_TST_DURATION) {
@@ -79,14 +78,15 @@ void setup() {
 }
 
 void loop() {
+    readBus();
+    writeControlLines();
+
     // Input
     pollSerial();
     pollSwitches();
-    readBus();
 
     // Output
     displayProcessorState();
-    writeControlLines();
 }
 
 void pollSwitches() {
@@ -100,10 +100,12 @@ void pollSwitches() {
 
     // Update flags from switch states
     if(mode_trigger.triggered()) {
-        halt_request = !halt_request;
+        halt = !halt;
     }
 
-    cycle_request = cycle_request || select_trigger.triggered();
+    if(select_trigger.triggered()) {
+        step_state = SS_CYCLE;
+    }
 
     // Clear mode/select trigger
     mode_trigger.clear();

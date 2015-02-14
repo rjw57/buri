@@ -173,9 +173,9 @@ static SerialState processCommand() {
         // If help command was given, print help
         printHelp();
     } else if(strprefixeq(cmd, "halt")) {
-        halt_request = !halt_request;
+        halt = !halt;
         Serial.print("halt ");
-        Serial.println(halt_request ? "on" : "off");
+        Serial.println(halt ? "on" : "off");
     } else if(strprefixeq(cmd, "print") && (n_tokens == 1)) {
         // print current state
         Serial.print("A: ");
@@ -183,38 +183,36 @@ static SerialState processCommand() {
         Serial.print(" D: ");
         Serial.print(data_bus, HEX);
         Serial.println("");
-    } else if(strprefixeq(cmd, "cycle") && (n_tokens == 1)) {
-        cycle_request = true;
-    } else if(strprefixeq(cmd, "cycle") && (n_tokens == 2)) {
-        long n;
-        const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
-        if(!parseLong(arg1, &n)) {
-            Serial.print("invalid number: ");
-            Serial.println(arg1);
+    } else if(strprefixeq(cmd, "cycle") && (n_tokens <= 2)) {
+        long n=1; // default
+        if(n_tokens > 1) {
+            const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+            if(!parseLong(arg1, &n)) {
+                Serial.print("invalid number: ");
+                Serial.println(arg1);
+            }
         }
 
         for(long i=0; i<n; ++i) {
-            cycle_request = true;
-            while(cycle_request) {
+            step_state = SS_CYCLE;
+            while(step_state != SS_NONE) {
                 readBus();
                 writeControlLines();
             }
         }
-    } else if(strprefixeq(cmd, "step") && (n_tokens == 1)) {
-        cycle_request = true;
-        skip_to_next_sync = true;
-    } else if(strprefixeq(cmd, "step") && (n_tokens == 2)) {
-        long n;
-        const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
-        if(!parseLong(arg1, &n)) {
-            Serial.print("invalid number: ");
-            Serial.println(arg1);
+    } else if(strprefixeq(cmd, "step") && (n_tokens <= 2)) {
+        long n=1; // default
+        if(n_tokens > 1) {
+            const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+            if(!parseLong(arg1, &n)) {
+                Serial.print("invalid number: ");
+                Serial.println(arg1);
+            }
         }
 
         for(long i=0; i<n; ++i) {
-            skip_to_next_sync = true;
-            cycle_request = true;
-            while(skip_to_next_sync) {
+            step_state = SS_INST;
+            while(step_state != SS_NONE) {
                 readBus();
                 writeControlLines();
             }
