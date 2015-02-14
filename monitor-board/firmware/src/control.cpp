@@ -13,6 +13,16 @@ void controlLoop() {
     writeControlLines();
 }
 
+bool processorRunning() {
+    byte msk = SB_RDY | SB_RSTBAR | SB_BE;
+    return (status_bits & msk) == msk;
+}
+
+bool processorCanBeStepped() {
+    byte msk = SB_RSTBAR | SB_BE;
+    return !(status_bits & SB_RDY) && ((status_bits & msk) == msk);
+}
+
 static void writeControlLines() {
     // Update control lines
     digitalWrite(HALT, halt ? HIGH : LOW);

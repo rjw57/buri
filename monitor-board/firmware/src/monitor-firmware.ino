@@ -116,8 +116,7 @@ void displayProcessorState() {
     // Set status bit LEDs
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
 
-    // Check halt state by directly observing RDY
-    if(status_bits & SB_RDY) {
+    if(processorRunning()) {
         // Processor running, show running dots
         int point = (millis() >> 7) % 6;
         for(int digit=0; digit<6; ++digit) {

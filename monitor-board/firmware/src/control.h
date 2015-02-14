@@ -9,4 +9,11 @@
 // desired state.
 void controlLoop();
 
-#endif GUARD_CONTROL_H
+// Return true iff RDY, BE and ~RST are all high.
+bool processorRunning();
+
+// Return true iff RDY is low but BE and ~RST are high. I.e., the processor can
+// be single-stepped.
+bool processorCanBeStepped();
+
+#endif // GUARD_CONTROL_H
