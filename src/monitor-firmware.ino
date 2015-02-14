@@ -111,22 +111,22 @@ void printHelp() {
 }
 
 SerialState processCommand() {
-    if(cmd_buf[0] == 'p') {
+    if((cmd_buf[0] == 'p') && (cmd_len == 1)) {
         // print current state
         Serial.print("A: ");
         Serial.print(address_bus, HEX);
         Serial.print(" D: ");
         Serial.print(data_bus, HEX);
         Serial.println("");
-    } else if(cmd_buf[0] == '?') {
+    } else if((cmd_buf[0] == '?') && (cmd_len == 1)) {
         printHelp();
-    } else if(cmd_buf[0] == 'h') {
+    } else if((cmd_buf[0] == 'h') && (cmd_len == 1)) {
         halt_request = !halt_request;
         Serial.print("halt ");
         Serial.println(halt_request ? "on" : "off");
-    } else if(cmd_buf[0] == 'c') {
+    } else if((cmd_buf[0] == 'c') && (cmd_len == 1)) {
         cycle_request = true;
-    } else if(cmd_buf[0] == 's') {
+    } else if((cmd_buf[0] == 's') && (cmd_len == 1)) {
         cycle_request = true;
         skip_to_next_sync = true;
     } else {
