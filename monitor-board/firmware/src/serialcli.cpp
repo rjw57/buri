@@ -149,7 +149,7 @@ static bool strprefixeq(const char* a, const char* b) {
     return !strcmp(a, b);
 }
 
-// Parse sas an integer and write result to l. Return true iff parsing
+// Parse s as an integer and write result to l. Return true iff parsing
 // succeeds.
 bool parseLong(const char* s, long* l) {
     char* end_ptr;
