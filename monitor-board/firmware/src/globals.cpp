@@ -5,3 +5,4 @@ byte data_bus;
 byte status_bits;
 bool halt;
 StepState step_state;
+bool pull_rst_low;

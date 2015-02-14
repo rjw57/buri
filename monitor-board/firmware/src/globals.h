@@ -42,4 +42,7 @@ enum StepState {
 // SS_INST to single instruction step. Reset to SS_NONE after step.
 extern StepState step_state;
 
+// Set to true to pull RST low.
+extern bool pull_rst_low;
+
 #endif // GUARD_GLOBALS_H

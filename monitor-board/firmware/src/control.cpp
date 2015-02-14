@@ -17,6 +17,13 @@ static void writeControlLines() {
     // Update control lines
     digitalWrite(HALT, halt ? HIGH : LOW);
 
+    if(pull_rst_low) {
+        pinMode(RSTBAR, OUTPUT);
+        digitalWrite(RSTBAR, LOW);
+    } else {
+        pinMode(RSTBAR, INPUT);
+    }
+
     // If processor halted...
     if(!(status_bits & SB_RDY)) {
         // Is some form of stepping required?

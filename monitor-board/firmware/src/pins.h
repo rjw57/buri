@@ -15,5 +15,9 @@
 #define BTN_MODE    12
 #define BTN_SELECT  11
 
+// The following pins are INPUT or OUTPUT depending on whether the
+// corresponding control lines are being pulled low or not.
+#define RSTBAR      A0
+
 
 #endif // GUARD_PINS_H__
