@@ -2,37 +2,13 @@
 
 #include "debounced_switch.h"
 #include "edge_trigger.h"
+#include "globals.h"
 #include "mx7219.h"
 #include "pins.h"
 #include "serialstatemachine.h"
 
-// 16-bit address bus value
-unsigned int address_bus;
-
-// 8-bit data bus value
-byte data_bus;
-
-// Status bits
-byte status_bits;
-
-enum StatusBitMask {
-    SB_RWBAR        = 0x01,
-    SB_IRQBAR       = 0x02,
-    SB_BE           = 0x04,
-    SB_SYNC         = 0x08,
-    SB_RSTBAR       = 0x10,
-    SB_RDY          = 0x20,
-};
-
 // How long to show display test for
 const int DPY_TST_DURATION = 500; // milliseconds
-
-// Are we wanting the processor to be halted?
-bool halt_request;
-
-// Should we cycle the processor?
-bool cycle_request;
-bool skip_to_next_sync;
 
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
