@@ -178,7 +178,6 @@ Text Label 7100 1950 2    60   ~ 0
 GND
 Text Label 7100 3050 2    60   ~ 0
 SCLK
-NoConn ~ 6650 2050
 $Sheet
 S 2200 1750 900  400 
 U 54D656E3
@@ -197,7 +196,6 @@ Text Label 1700 2000 0    60   ~ 0
 STEP
 Text Label 7100 2950 2    60   ~ 0
 ~ILOAD
-NoConn ~ 6650 2450
 Text Label 7100 3250 2    60   ~ 0
 MOSI
 Text Label 7100 3150 2    60   ~ 0
@@ -269,9 +267,8 @@ Text GLabel 10700 2050 2    60   BiDi ~ 0
 A9
 Text GLabel 10450 2150 2    60   BiDi ~ 0
 A8
-NoConn ~ 6650 2350
 $Sheet
-S 2200 3650 1000 800 
+S 2200 3650 900  900 
 U 54DA6F52
 F0 "Output Stage" 50
 F1 "output-stage.sch" 50
@@ -279,26 +276,27 @@ F2 "SDIN" I L 2200 3800 60
 F3 "SCLK" I L 2200 3900 60 
 F4 "~MR" I L 2200 4000 60 
 F5 "RCLK" I L 2200 4100 60 
-F6 "~OE" I L 2200 4200 60 
-F7 "SDOUT" O L 2200 4300 60 
+F6 "SDOUT" O L 2200 4400 60 
+F7 "~AOE" I L 2200 4200 60 
+F8 "~DOE" I L 2200 4300 60 
 $EndSheet
-Text Label 1700 5000 0    60   ~ 0
+Text Label 1700 5100 0    60   ~ 0
 MOSI
 Text Label 1700 3900 0    60   ~ 0
 SCLK
 Text Label 1700 4200 0    60   ~ 0
-~BUSOE
+~ADROE
 Text Label 1700 4100 0    60   ~ 0
 RCLK
 $Comp
 L +5V #PWR03
 U 1 1 54DA9DF0
-P 1500 3700
-F 0 "#PWR03" H 1500 3790 20  0001 C CNN
-F 1 "+5V" H 1500 3790 30  0000 C CNN
-F 2 "" H 1500 3700 60  0000 C CNN
-F 3 "" H 1500 3700 60  0000 C CNN
-	1    1500 3700
+P 1600 3950
+F 0 "#PWR03" H 1600 4040 20  0001 C CNN
+F 1 "+5V" H 1600 4040 30  0000 C CNN
+F 2 "" H 1600 3950 60  0000 C CNN
+F 3 "" H 1600 3950 60  0000 C CNN
+	1    1600 3950
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -420,17 +418,9 @@ Wire Wire Line
 Wire Wire Line
 	2200 3100 1700 3100
 Wire Wire Line
-	2200 5000 1700 5000
+	2200 5100 1700 5100
 Wire Wire Line
 	2200 3900 1700 3900
-Wire Wire Line
-	1500 4200 2200 4200
-Wire Wire Line
-	1500 4100 2200 4100
-Wire Wire Line
-	1500 4000 2200 4000
-Wire Wire Line
-	1500 3700 1500 4200
 Wire Wire Line
 	2200 2800 1700 2800
 Text Label 1700 2800 0    60   ~ 0
@@ -444,40 +434,35 @@ Text GLabel 4550 2950 0    60   3State ~ 0
 Wire Wire Line
 	4750 2950 4550 2950
 $Sheet
-S 2200 4850 1000 600 
+S 2200 4950 900  600 
 U 54DA84F7
 F0 "Display" 50
 F1 "display.sch" 50
-F2 "SDIN" I L 2200 5000 60 
-F3 "SDOUT" O L 2200 5100 60 
-F4 "LOAD" I L 2200 5200 60 
-F5 "SCLK" I L 2200 5300 60 
+F2 "SDIN" I L 2200 5100 60 
+F3 "SDOUT" O L 2200 5200 60 
+F4 "LOAD" I L 2200 5300 60 
+F5 "SCLK" I L 2200 5400 60 
 $EndSheet
 Wire Wire Line
-	2200 5100 1700 5100
-NoConn ~ 1700 5100
-Text Label 1700 5300 0    60   ~ 0
+	2200 5200 1700 5200
+NoConn ~ 1700 5200
+Text Label 1700 5400 0    60   ~ 0
 SCLK
 Wire Wire Line
-	2200 5300 1700 5300
+	2200 5400 1700 5400
 Wire Wire Line
-	2200 5200 1700 5200
-Text Label 1700 5200 0    60   ~ 0
+	2200 5300 1700 5300
+Text Label 1700 5300 0    60   ~ 0
 DPYLD
 Wire Wire Line
 	6650 2550 7100 2550
 Text Label 7100 2550 2    60   ~ 0
 DPYLD
-Wire Wire Line
-	2200 3800 1500 3800
-Connection ~ 1500 3800
-Connection ~ 1500 4000
-Connection ~ 1500 4100
 NoConn ~ 6650 3350
 NoConn ~ 6650 3450
 Wire Wire Line
-	2200 4300 1700 4300
-NoConn ~ 1700 4300
+	2200 4400 1700 4400
+NoConn ~ 1700 4400
 Text Label 7100 2250 2    60   ~ 0
 SELECT
 Text Label 7100 2150 2    60   ~ 0
@@ -549,4 +534,32 @@ Wire Wire Line
 Text Notes 5000 4800 0    60   ~ 0
 NB: Arduino has internal pullups
 NoConn ~ 4750 2450
+Wire Wire Line
+	1600 3950 1600 4000
+Wire Wire Line
+	1600 4000 2200 4000
+Text Label 1700 4300 0    60   ~ 0
+~DTAOE
+Wire Wire Line
+	2200 4300 1700 4300
+Wire Wire Line
+	1700 4200 2200 4200
+Wire Wire Line
+	2200 4100 1700 4100
+Wire Wire Line
+	2200 3800 1700 3800
+Text Label 1700 3800 0    60   ~ 0
+MOSI
+Text Label 7100 2350 2    60   ~ 0
+~ADROE
+Text Label 7100 2050 2    60   ~ 0
+RCLK
+Text Label 7100 2450 2    60   ~ 0
+~DTAOE
+Wire Wire Line
+	6650 2450 7100 2450
+Wire Wire Line
+	7100 2350 6650 2350
+Wire Wire Line
+	6650 2050 7100 2050
 $EndSCHEMATC

@@ -207,7 +207,7 @@ Text Label 2050 2650 0    60   ~ 0
 Text Label 2050 2850 0    60   ~ 0
 RCLK
 Text Label 2050 2950 0    60   ~ 0
-~OE
+~AOE
 Wire Wire Line
 	5050 2850 4650 2850
 Wire Wire Line
@@ -223,7 +223,7 @@ Text Label 4650 2650 0    60   ~ 0
 Text Label 4650 2850 0    60   ~ 0
 RCLK
 Text Label 4650 2950 0    60   ~ 0
-~OE
+~AOE
 Wire Wire Line
 	7650 2850 7250 2850
 Wire Wire Line
@@ -239,7 +239,7 @@ Text Label 7250 2650 0    60   ~ 0
 Text Label 7250 2850 0    60   ~ 0
 RCLK
 Text Label 7250 2950 0    60   ~ 0
-~OE
+~DOE
 $Comp
 L +5V #PWR039
 U 1 1 54DA78A6
@@ -333,7 +333,7 @@ Text Label 1950 1700 2    60   ~ 0
 Text Label 1950 1800 2    60   ~ 0
 RCLK
 Text Label 1950 1900 2    60   ~ 0
-~OE
+~AOE
 Text HLabel 1550 1600 0    60   Input ~ 0
 SCLK
 Text HLabel 1550 1700 0    60   Input ~ 0
@@ -341,9 +341,15 @@ Text HLabel 1550 1700 0    60   Input ~ 0
 Text HLabel 1550 1800 0    60   Input ~ 0
 RCLK
 Text HLabel 1550 1900 0    60   Input ~ 0
-~OE
+~AOE
 Wire Wire Line
 	9050 3250 9450 3250
 Text HLabel 9450 3250 2    60   Output ~ 0
 SDOUT
+Wire Wire Line
+	1950 2000 1550 2000
+Text Label 1950 2000 2    60   ~ 0
+~DOE
+Text HLabel 1550 2000 0    60   Input ~ 0
+~DOE
 $EndSCHEMATC
