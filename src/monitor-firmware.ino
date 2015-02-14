@@ -30,6 +30,9 @@ const int DPY_TST_DURATION = 500; // milliseconds
 // Are we wanting the processor to be halted?
 bool halt_request;
 
+// Should we cycle the processor?
+bool cycle_request;
+
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
 
@@ -99,9 +102,33 @@ SerialState readingCommandState(byte ch) {
     return { .next = &readingCommandState };
 }
 
+void printHelp() {
+    Serial.println("?       - show brief help message");
+    Serial.println("p       - print current address/data bus");
+    Serial.println("h       - toggle halt state");
+    Serial.println("c       - single cycle");
+}
+
 SerialState processCommand() {
-    Serial.print("cmd: ");
-    Serial.println(reinterpret_cast<char*>(cmd_buf));
+    if(cmd_buf[0] == 'p') {
+        // print current state
+        Serial.print("A: ");
+        Serial.print(address_bus, HEX);
+        Serial.print(" D: ");
+        Serial.print(data_bus, HEX);
+        Serial.println("");
+    } else if(cmd_buf[0] == '?') {
+        printHelp();
+    } else if(cmd_buf[0] == 'h') {
+        halt_request = !halt_request;
+        Serial.print("halt ");
+        Serial.println(halt_request ? "on" : "off");
+    } else if(cmd_buf[0] == 'c') {
+        cycle_request = true;
+    } else {
+        Serial.println("unknown cmd");
+        printHelp();
+    }
     return serialPrompt();
 }
 
@@ -146,6 +173,7 @@ void setup() {
 
     // Processor is in running state
     halt_request = false;
+    cycle_request = false;
 
     // OK, all done, just wait for display test to time out
     while(millis() - dt_shown_at < DPY_TST_DURATION) {
@@ -169,6 +197,8 @@ void loop() {
     if(mode_trigger.triggered()) {
         halt_request = !halt_request;
     }
+
+    cycle_request = cycle_request || select_trigger.triggered();
 
     // Update control lines
     digitalWrite(HALT, halt_request ? HIGH : LOW);
@@ -201,10 +231,13 @@ void loop() {
         }
     } else {
         // step only makes sense if processor halted
-        if(select_trigger.triggered()) {
+        if(cycle_request) {
             // Pulse step pin
             digitalWrite(STEP, HIGH);
             digitalWrite(STEP, LOW);
+
+            // Reset cycle request
+            cycle_request = false;
         }
 
         // Update address bus
