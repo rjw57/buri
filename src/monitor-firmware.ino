@@ -32,6 +32,7 @@ bool halt_request;
 
 // Should we cycle the processor?
 bool cycle_request;
+bool skip_to_next_sync;
 
 DebouncedSwitch mode_switch(BTN_MODE);
 DebouncedSwitch select_switch(BTN_SELECT);
@@ -125,6 +126,9 @@ SerialState processCommand() {
         Serial.println(halt_request ? "on" : "off");
     } else if(cmd_buf[0] == 'c') {
         cycle_request = true;
+    } else if(cmd_buf[0] == 's') {
+        cycle_request = true;
+        skip_to_next_sync = true;
     } else {
         Serial.println("unknown cmd");
         printHelp();
@@ -174,6 +178,7 @@ void setup() {
     // Processor is in running state
     halt_request = false;
     cycle_request = false;
+    skip_to_next_sync = false;
 
     // OK, all done, just wait for display test to time out
     while(millis() - dt_shown_at < DPY_TST_DURATION) {
@@ -227,17 +232,23 @@ void loop() {
         // Processor running, show running dots
         int point = (millis() >> 7) % 6;
         for(int digit=0; digit<6; ++digit) {
-            setMX7219Reg(MX7219_DIGIT_0 + digit, (point == (5-digit)) ? 0x80 : 0x00);
+            setMX7219Reg(MX7219_DIGIT_0 + digit,
+                    (point == (5-digit)) ? 0x80 : 0x00);
         }
     } else {
         // step only makes sense if processor halted
-        if(cycle_request) {
+        if(cycle_request || (skip_to_next_sync && !(status_bits & SB_SYNC))) {
             // Pulse step pin
             digitalWrite(STEP, HIGH);
             digitalWrite(STEP, LOW);
 
-            // Reset cycle request
-            cycle_request = false;
+            // If we are skipping rather than cycling, reset skip
+            if(!cycle_request) {
+                skip_to_next_sync = false;
+            } else {
+                // Reset cycle request
+                cycle_request = false;
+            }
         }
 
         // Update address bus
