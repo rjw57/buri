@@ -205,15 +205,16 @@ static SerialState processCommand() {
             }
         }
 
-        if(processorCanBeStepped()) {
-            for(long i=0; i<n; ++i) {
-                step_state = SS_CYCLE;
-                while(step_state != SS_NONE) {
-                    controlLoop();
+        for(long i=0; i<n; ++i) {
+            step_state = SS_INST;
+            while(step_state != SS_NONE) {
+                controlLoop();
+
+                if(!processorCanBeStepped()) {
+                    Serial.println("aborting: processor in incorrect state for stepping");
+                    step_state = SS_NONE;
                 }
             }
-        } else {
-            Serial.println("processor in incorrect state for stepping");
         }
     } else if(strprefixeq(cmd, "step") && (n_tokens <= 2)) {
         long n=1; // default
@@ -225,15 +226,16 @@ static SerialState processCommand() {
             }
         }
 
-        if(processorCanBeStepped()) {
-            for(long i=0; i<n; ++i) {
-                step_state = SS_INST;
-                while(step_state != SS_NONE) {
-                    controlLoop();
+        for(long i=0; i<n; ++i) {
+            step_state = SS_INST;
+            while(step_state != SS_NONE) {
+                controlLoop();
+
+                if(!processorCanBeStepped()) {
+                    Serial.println("aborting: processor in incorrect state for stepping");
+                    step_state = SS_NONE;
                 }
             }
-        } else {
-            Serial.println("processor in incorrect state for stepping");
         }
     } else if(strprefixeq(cmd, "reset") && (n_tokens == 1)) {
         pull_rst_low = !pull_rst_low;
