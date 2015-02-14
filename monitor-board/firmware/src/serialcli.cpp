@@ -89,6 +89,7 @@ static void printHelp() {
     Serial.println("c[ycle] [n] - single cycle n times");
     Serial.println("s[tep] [n]  - single step n times");
     Serial.println("r[eset]     - toggle ~RST line");
+    Serial.println("b[e]        - toggle BE line");
     Serial.println("");
     Serial.println("Specify decimal numbers with no prefix.");
     Serial.println("Specify hexadecimal numbers with $ prefix.");
@@ -227,6 +228,10 @@ static SerialState processCommand() {
         pull_rst_low = !pull_rst_low;
         Serial.print("~rst ");
         Serial.println(pull_rst_low ? "low" : "high");
+    } else if(strprefixeq(cmd, "be") && (n_tokens == 1)) {
+        pull_be_low = !pull_be_low;
+        Serial.print("be ");
+        Serial.println(pull_be_low ? "low" : "high");
     } else {
         Serial.println("unknown command");
         printHelp();
