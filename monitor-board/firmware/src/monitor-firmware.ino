@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "mx7219.h"
 #include "pins.h"
+#include "serialcli.h"
 #include "serialstatemachine.h"
 
 // How long to show display test for
@@ -16,108 +17,25 @@ DebouncedSwitch select_switch(BTN_SELECT);
 EdgeTrigger mode_trigger;
 EdgeTrigger select_trigger;
 
-const int MAX_CMD_LEN = 31;
-byte cmd_buf[MAX_CMD_LEN+1];
-int cmd_len;
+// Update status_bits, address_bus and data_bus by reading the values present
+// on the buses from the shift register.
+void readBus();
 
+// Poll the switches and update state from them.
+void pollSwitches();
+
+// Read any input from the serial device and handle it.
+void pollSerial();
+
+// Reflect processor state and address/data bus on LED display. If the
+// processor is running (RDY = H) then show the "chasing dots" effect.
+void displayProcessorState();
+
+// Update output lines to reflect desired state.
+void writeControlLines();
+
+// Initialised in setup().
 SerialState serial_state;
-
-// Write command prompt and return reading command state.
-SerialState serialPrompt() {
-    // Reset current command
-    cmd_buf[0] = '\0';
-    cmd_len = 0;
-
-    Serial.print("> ");
-    return { .next = &readingCommandState };
-}
-
-SerialState readingCommandState(byte ch) {
-    switch(ch) {
-        // handle backspace
-        case 8:
-        case 127:
-            if(cmd_len > 0) {
-                Serial.write(8);
-                Serial.write(' ');
-                Serial.write(8);
-                cmd_len--;
-                cmd_buf[cmd_len] = '\0';
-            } else {
-                // bell
-                Serial.write(7);
-            }
-            break;
-
-        // handle enter
-        case 10:
-        case 13:
-            Serial.println("");
-            return processCommand();
-            break;
-
-        default:
-            // Only accept printable chars.
-            if(ch < 0x20) {
-                // Bell
-                Serial.write(7);
-            } else if(cmd_len < MAX_CMD_LEN) {
-                // Add character to command buffer
-                cmd_buf[cmd_len+1] = '\0';
-                cmd_buf[cmd_len] = ch;
-                cmd_len++;
-
-                // Echo character to output
-                Serial.write(ch);
-            } else {
-                // Bell
-                Serial.write(7);
-            }
-            break;
-    }
-
-    return { .next = &readingCommandState };
-}
-
-void printHelp() {
-    Serial.println("?       - show brief help message");
-    Serial.println("p       - print current address/data bus");
-    Serial.println("h       - toggle halt state");
-    Serial.println("c       - single cycle");
-    Serial.println("s       - single step");
-}
-
-SerialState processCommand() {
-    if((cmd_buf[0] == 'p') && (cmd_len == 1)) {
-        // print current state
-        Serial.print("A: ");
-        Serial.print(address_bus, HEX);
-        Serial.print(" D: ");
-        Serial.print(data_bus, HEX);
-        Serial.println("");
-    } else if((cmd_buf[0] == '?') && (cmd_len == 1)) {
-        printHelp();
-    } else if((cmd_buf[0] == 'h') && (cmd_len == 1)) {
-        halt_request = !halt_request;
-        Serial.print("halt ");
-        Serial.println(halt_request ? "on" : "off");
-    } else if((cmd_buf[0] == 'c') && (cmd_len == 1)) {
-        cycle_request = true;
-    } else if((cmd_buf[0] == 's') && (cmd_len == 1)) {
-        cycle_request = true;
-        skip_to_next_sync = true;
-    } else {
-        Serial.println("unknown cmd");
-        printHelp();
-    }
-    return serialPrompt();
-}
-
-void pollSerial() {
-    while(Serial.available() > 0) {
-        serial_state = serial_state.next(Serial.read());
-    }
-}
 
 void setup() {
     // Setup all pin modes
@@ -135,7 +53,9 @@ void setup() {
 
     // Start serial port and print banner
     Serial.begin(9600);
-    serial_state = serialPrompt();
+    Serial.println("Buri microcomputer system monitor.");
+    Serial.println("https://github.com/rjw57/buri-6502-hardware\n");
+    serial_state = startSerialPrompt();
 
     // Set up MX7219 with display test on
     setupMX7219();
@@ -165,26 +85,17 @@ void setup() {
 }
 
 void loop() {
-    // Poll serial port
+    // Input
     pollSerial();
+    pollSwitches();
+    readBus();
 
-    // Poll switches
-    mode_switch.poll();
-    select_switch.poll();
+    // Output
+    displayProcessorState();
+    writeControlLines();
+}
 
-    // Update triggers
-    mode_trigger.update(mode_switch.state() == HIGH);
-    select_trigger.update(select_switch.state() == HIGH);
-
-    if(mode_trigger.triggered()) {
-        halt_request = !halt_request;
-    }
-
-    cycle_request = cycle_request || select_trigger.triggered();
-
-    // Update control lines
-    digitalWrite(HALT, halt_request ? HIGH : LOW);
-
+void readBus() {
     // Stop loading data into shift reg. From Data sheet: the LOW-to-HIGH
     // transition of input CE should only take place while CP HIGH for
     // predictable operation.
@@ -200,8 +111,31 @@ void loop() {
 
     // Resume loading data into shift reg.
     digitalWrite(BUS_PLBAR, LOW);
+}
 
-    // Update status bits
+void pollSwitches() {
+    // Poll switches
+    mode_switch.poll();
+    select_switch.poll();
+
+    // Update triggers
+    mode_trigger.update(mode_switch.state() == HIGH);
+    select_trigger.update(select_switch.state() == HIGH);
+
+    // Update flags from switch states
+    if(mode_trigger.triggered()) {
+        halt_request = !halt_request;
+    }
+
+    cycle_request = cycle_request || select_trigger.triggered();
+
+    // Clear mode/select trigger
+    mode_trigger.clear();
+    select_trigger.clear();
+}
+
+void displayProcessorState() {
+    // Set status bit LEDs
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
 
     // Check halt state by directly observing RDY
@@ -213,21 +147,6 @@ void loop() {
                     (point == (5-digit)) ? 0x80 : 0x00);
         }
     } else {
-        // step only makes sense if processor halted
-        if(cycle_request || (skip_to_next_sync && !(status_bits & SB_SYNC))) {
-            // Pulse step pin
-            digitalWrite(STEP, HIGH);
-            digitalWrite(STEP, LOW);
-
-            // If we are skipping rather than cycling, reset skip
-            if(!cycle_request) {
-                skip_to_next_sync = false;
-            } else {
-                // Reset cycle request
-                cycle_request = false;
-            }
-        }
-
         // Update address bus
         setMX7219Reg(MX7219_DIGIT_0 + 0, MX7219_FONT[address_bus & 0xF]);
         setMX7219Reg(MX7219_DIGIT_0 + 1, MX7219_FONT[(address_bus>>4) & 0xF]);
@@ -238,8 +157,31 @@ void loop() {
         setMX7219Reg(MX7219_DIGIT_0 + 4, MX7219_FONT[data_bus & 0xF]);
         setMX7219Reg(MX7219_DIGIT_0 + 5, MX7219_FONT[(data_bus>>4) & 0xF]);
     }
-
-    // Clear mode/select trigger
-    mode_trigger.clear();
-    select_trigger.clear();
 }
+
+void pollSerial() {
+    while(Serial.available() > 0) {
+        serial_state = serial_state.next(Serial.read());
+    }
+}
+
+void writeControlLines() {
+    // Update control lines
+    digitalWrite(HALT, halt_request ? HIGH : LOW);
+
+    // step only makes sense if processor halted
+    if(cycle_request || (skip_to_next_sync && !(status_bits & SB_SYNC))) {
+        // Pulse step pin
+        digitalWrite(STEP, HIGH);
+        digitalWrite(STEP, LOW);
+
+        // If we are skipping rather than cycling, reset skip
+        if(!cycle_request) {
+            skip_to_next_sync = false;
+        } else {
+            // Reset cycle request
+            cycle_request = false;
+        }
+    }
+}
+

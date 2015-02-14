@@ -2,6 +2,8 @@
 #ifndef GUARD_SERIAL_STATE_MACHINE__H
 #define GUARD_SERIAL_STATE_MACHINE__H
 
+#include <Arduino.h> // for "byte"
+
 // A state machine state contains a function pointer, next, which takes an
 // incoming character and returns the next states.
 struct SerialState {
