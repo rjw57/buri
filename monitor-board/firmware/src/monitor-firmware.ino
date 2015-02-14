@@ -40,16 +40,7 @@ void setup() {
     pinMode(BTN_MODE, INPUT_PULLUP);
     pinMode(BTN_SELECT, INPUT_PULLUP);
 
-    pinMode(STEP, OUTPUT);
-    pinMode(HALT, OUTPUT);
-
-    pinMode(BUS_PLBAR, OUTPUT);
-
-    // Start serial port and print banner
-    Serial.begin(9600);
-    Serial.println("Buri microcomputer system monitor.");
-    Serial.println("https://github.com/rjw57/buri-6502-hardware\n");
-    serial_state = startSerialPrompt();
+    controlSetup();
 
     // Set up MX7219 with display test on
     setupMX7219();
@@ -57,18 +48,11 @@ void setup() {
     setMX7219Reg(MX7219_DPLY_TEST, 0x01);   // Enable display test
     unsigned long dt_shown_at = millis();   // Record display test time
 
-    // Set bus shift registers to load
-    digitalWrite(BUS_PLBAR, LOW);
-
-    // Initial address/data bus values
-    address_bus = data_bus = 0;
-
-    // Initially all status bits are off
-    status_bits = 0;
-
-    // Processor is in running state
-    halt = false;
-    step_state = SS_NONE;
+    // Start serial port and print banner
+    Serial.begin(9600);
+    Serial.println("Buri microcomputer system monitor.");
+    Serial.println("https://github.com/rjw57/buri-6502-hardware\n");
+    serial_state = startSerialPrompt();
 
     // OK, all done, just wait for display test to time out
     while(millis() - dt_shown_at < DPY_TST_DURATION) {

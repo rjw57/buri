@@ -4,6 +4,9 @@
 #ifndef GUARD_CONTROL_H
 #define GUARD_CONTROL_H
 
+// Set up pin modes and global state for control loop
+void controlSetup();
+
 // Update status_bits, address_bus and data_bus by reading the values present
 // on the buses from the shift register. Then, update output lines to reflect
 // desired state.

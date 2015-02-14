@@ -8,6 +8,25 @@
 static void writeControlLines();
 static void readBus();
 
+void controlSetup() {
+    pinMode(PIN_STEP, OUTPUT);
+    pinMode(PIN_HALT, OUTPUT);
+    pinMode(PIN_ILOADBAR, OUTPUT);
+
+    // Initial address/data bus values
+    address_bus = data_bus = 0;
+
+    // Initially all status bits are off
+    status_bits = 0;
+
+    // Processor is in running state
+    halt = false;
+    step_state = SS_NONE;
+
+    // Set bus shift registers to load
+    digitalWrite(PIN_ILOADBAR, LOW);
+}
+
 void controlLoop() {
     readBus();
     writeControlLines();
@@ -25,7 +44,7 @@ bool processorCanBeStepped() {
 
 static void writeControlLines() {
     // Update control lines
-    digitalWrite(HALT, halt ? HIGH : LOW);
+    digitalWrite(PIN_HALT, halt ? HIGH : LOW);
 
     if(pull_rst_low) {
         pinMode(PIN_RSTBAR, OUTPUT);
@@ -69,8 +88,8 @@ static void writeControlLines() {
 
         if(should_step) {
             // Pulse step pin
-            digitalWrite(STEP, HIGH);
-            digitalWrite(STEP, LOW);
+            digitalWrite(PIN_STEP, HIGH);
+            digitalWrite(PIN_STEP, LOW);
         }
     }
 }
@@ -80,7 +99,7 @@ static void readBus() {
     // transition of input CE should only take place while CP HIGH for
     // predictable operation.
     digitalWrite(SCLK, HIGH);
-    digitalWrite(BUS_PLBAR, HIGH);
+    digitalWrite(PIN_ILOADBAR, HIGH);
 
     // Read from bus shift reg
     status_bits = shiftIn(MISO, SCLK, MSBFIRST);
@@ -90,5 +109,5 @@ static void readBus() {
         static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST));
 
     // Resume loading data into shift reg.
-    digitalWrite(BUS_PLBAR, LOW);
+    digitalWrite(PIN_ILOADBAR, LOW);
 }
