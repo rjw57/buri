@@ -88,6 +88,9 @@ static void printHelp() {
     Serial.println("h[alt]      - toggle halt state");
     Serial.println("c[ycle] [n] - single cycle n times");
     Serial.println("s[tep] [n]  - single step n times");
+    Serial.println("");
+    Serial.println("Specify decimal numbers with no prefix.");
+    Serial.println("Specify hexadecimal numbers with $ prefix.");
 }
 
 // MODIFY cmd_buf tokenizing it into space-separated tokens skipping leading
@@ -150,7 +153,15 @@ static bool strprefixeq(const char* a, const char* b) {
 // succeeds.
 bool parseLong(const char* s, long* l) {
     char* end_ptr;
-    *l = strtol(s, &end_ptr, 10);
+    int base = 10;
+
+    // Are we parsing a hex number?
+    if(s[0] == '$') {
+        base = 16;
+        ++s;
+    }
+
+    *l = strtol(s, &end_ptr, base);
     return (s[0] != '\0') && (*end_ptr == '\0');
 }
 
