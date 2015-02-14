@@ -196,8 +196,7 @@ static SerialState processCommand() {
         for(long i=0; i<n; ++i) {
             step_state = SS_CYCLE;
             while(step_state != SS_NONE) {
-                readBus();
-                writeControlLines();
+                controlLoop();
             }
         }
     } else if(strprefixeq(cmd, "step") && (n_tokens <= 2)) {
@@ -213,8 +212,7 @@ static SerialState processCommand() {
         for(long i=0; i<n; ++i) {
             step_state = SS_INST;
             while(step_state != SS_NONE) {
-                readBus();
-                writeControlLines();
+                controlLoop();
             }
         }
     } else {

@@ -78,12 +78,12 @@ void setup() {
 }
 
 void loop() {
-    readBus();
-    writeControlLines();
-
     // Input
     pollSerial();
     pollSwitches();
+
+    // Process input
+    controlLoop();
 
     // Output
     displayProcessorState();

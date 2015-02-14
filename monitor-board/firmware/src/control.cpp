@@ -5,7 +5,15 @@
 #include "globals.h"
 #include "pins.h"
 
-void writeControlLines() {
+static void writeControlLines();
+static void readBus();
+
+void controlLoop() {
+    readBus();
+    writeControlLines();
+}
+
+static void writeControlLines() {
     // Update control lines
     digitalWrite(HALT, halt ? HIGH : LOW);
 
@@ -43,7 +51,7 @@ void writeControlLines() {
     }
 }
 
-void readBus() {
+static void readBus() {
     // Stop loading data into shift reg. From Data sheet: the LOW-to-HIGH
     // transition of input CE should only take place while CP HIGH for
     // predictable operation.

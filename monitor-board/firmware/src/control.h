@@ -5,11 +5,8 @@
 #define GUARD_CONTROL_H
 
 // Update status_bits, address_bus and data_bus by reading the values present
-// on the buses from the shift register.
-void readBus();
-
-// Update output lines to reflect desired state. For single-cycle and
-// single-step, readBus must be called periodically.
-void writeControlLines();
+// on the buses from the shift register. Then, update output lines to reflect
+// desired state.
+void controlLoop();
 
 #endif GUARD_CONTROL_H
