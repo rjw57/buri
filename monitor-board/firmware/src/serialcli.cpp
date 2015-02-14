@@ -1,10 +1,15 @@
 #include "serialcli.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+#include "control.h"
 #include "globals.h"
 #include "serialstatemachine.h"
 
-const int MAX_CMD_LEN = 31;
+const int MAX_CMD_LEN = 31, MAX_TOKENS = 5;
 byte cmd_buf[MAX_CMD_LEN+1];
+byte* cmd_tokenv[MAX_TOKENS+1];
 int cmd_len;
 
 // States
@@ -61,9 +66,9 @@ static SerialState readingCommandState(byte ch) {
                 Serial.write(7);
             } else if(cmd_len < MAX_CMD_LEN) {
                 // Add character to command buffer
-                cmd_buf[cmd_len+1] = '\0';
                 cmd_buf[cmd_len] = ch;
                 cmd_len++;
+                cmd_buf[cmd_len] = '\0';
 
                 // Echo character to output
                 Serial.write(ch);
@@ -78,35 +83,146 @@ static SerialState readingCommandState(byte ch) {
 }
 
 static void printHelp() {
-    Serial.println("?       - show brief help message");
-    Serial.println("p       - print current address/data bus");
-    Serial.println("h       - toggle halt state");
-    Serial.println("c       - single cycle");
-    Serial.println("s       - single step");
+    Serial.println("?           - show brief help message");
+    Serial.println("p[rint]     - print current address/data bus");
+    Serial.println("h[alt]      - toggle halt state");
+    Serial.println("c[ycle] [n] - single cycle n times");
+    Serial.println("s[tep] [n]  - single step n times");
+}
+
+// MODIFY cmd_buf tokenizing it into space-separated tokens skipping leading
+// and trailing spaces. (Spaces are replaced with '\0'.) Update cmd_tokenv as
+// pointers into cmd_buf for each token will NULL marking the end of the list.
+static void tokenizeCmdBuf() {
+    int next_tokenv_idx = 0;
+    int ch_idx = 0;
+
+    // Reset token vector
+    cmd_tokenv[0] = NULL;
+
+    while((next_tokenv_idx < MAX_TOKENS) && (ch_idx < cmd_len)) {
+        // Skip to next non-space char
+        for(; (ch_idx < cmd_len) && (cmd_buf[ch_idx] != '\0') &&
+              (cmd_buf[ch_idx] == ' '); ++ch_idx) { }
+
+        // Have we reached end of string without finding token?
+        if((ch_idx == cmd_len) || (cmd_buf[ch_idx] == '\0')) {
+            // yes, exit
+            break;
+        }
+
+        // Record location of token and advance next_tokenv_idx
+        cmd_tokenv[next_tokenv_idx] = &(cmd_buf[ch_idx]);
+        ++next_tokenv_idx;
+
+        // Start by assuming we won't find a token next time around
+        cmd_tokenv[next_tokenv_idx] = NULL;
+
+        // Advance to first space character or end of buffer
+        for(;(ch_idx < cmd_len) && (cmd_buf[ch_idx] != '\0') &&
+             (cmd_buf[ch_idx] != ' ')
+            ;++ch_idx)
+        { }
+
+        // Write '\0' and advance ch_idx
+        if(ch_idx < cmd_len) {
+            cmd_buf[ch_idx] = '\0';
+        }
+        ++ch_idx;
+    }
+
+    // Reset command buffer length
+    cmd_len = 0;
+
+    // Ensure cmd_tokenv is terminated with a NULL come what may.
+    cmd_tokenv[MAX_TOKENS] = NULL;
+}
+
+// return true if a == b or a == b[0]
+static bool strprefixeq(const char* a, const char* b) {
+    if((a[0] != '\0') && (a[0] == b[0]) && (a[1] == '\0')) {
+        return true;
+    }
+    return !strcmp(a, b);
+}
+
+// Parse sas an integer and write result to l. Return true iff parsing
+// succeeds.
+bool parseLong(const char* s, long* l) {
+    char* end_ptr;
+    *l = strtol(s, &end_ptr, 10);
+    return (s[0] != '\0') && (*end_ptr == '\0');
 }
 
 static SerialState processCommand() {
-    if((cmd_buf[0] == 'p') && (cmd_len == 1)) {
+    // Parse cmd_buf into tokens
+    tokenizeCmdBuf();
+
+    // Count tokens
+    int n_tokens = 0;
+    for(; (cmd_tokenv[n_tokens] != NULL) && (n_tokens < MAX_TOKENS)
+        ; ++n_tokens) {}
+
+    // Pull out command name
+    const char *cmd = reinterpret_cast<const char*>(cmd_tokenv[0]);
+
+    if(n_tokens == 0) {
+        // If no command was given, print help
+        printHelp();
+    } else if(strprefixeq(cmd, "?") && (n_tokens == 1)) {
+        // If help command was given, print help
+        printHelp();
+    } else if(strprefixeq(cmd, "halt")) {
+        halt_request = !halt_request;
+        Serial.print("halt ");
+        Serial.println(halt_request ? "on" : "off");
+    } else if(strprefixeq(cmd, "print") && (n_tokens == 1)) {
         // print current state
         Serial.print("A: ");
         Serial.print(address_bus, HEX);
         Serial.print(" D: ");
         Serial.print(data_bus, HEX);
         Serial.println("");
-    } else if((cmd_buf[0] == '?') && (cmd_len == 1)) {
-        printHelp();
-    } else if((cmd_buf[0] == 'h') && (cmd_len == 1)) {
-        halt_request = !halt_request;
-        Serial.print("halt ");
-        Serial.println(halt_request ? "on" : "off");
-    } else if((cmd_buf[0] == 'c') && (cmd_len == 1)) {
+    } else if(strprefixeq(cmd, "cycle") && (n_tokens == 1)) {
         cycle_request = true;
-    } else if((cmd_buf[0] == 's') && (cmd_len == 1)) {
+    } else if(strprefixeq(cmd, "cycle") && (n_tokens == 2)) {
+        long n;
+        const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+        if(!parseLong(arg1, &n)) {
+            Serial.print("invalid number: ");
+            Serial.println(arg1);
+        }
+
+        for(long i=0; i<n; ++i) {
+            cycle_request = true;
+            while(cycle_request) {
+                readBus();
+                writeControlLines();
+            }
+        }
+    } else if(strprefixeq(cmd, "step") && (n_tokens == 1)) {
         cycle_request = true;
         skip_to_next_sync = true;
+    } else if(strprefixeq(cmd, "step") && (n_tokens == 2)) {
+        long n;
+        const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+        if(!parseLong(arg1, &n)) {
+            Serial.print("invalid number: ");
+            Serial.println(arg1);
+        }
+
+        for(long i=0; i<n; ++i) {
+            skip_to_next_sync = true;
+            cycle_request = true;
+            while(skip_to_next_sync) {
+                readBus();
+                writeControlLines();
+            }
+        }
     } else {
-        Serial.println("unknown cmd");
+        Serial.println("unknown command");
         printHelp();
     }
+
     return startSerialPrompt();
 }

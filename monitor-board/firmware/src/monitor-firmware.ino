@@ -1,6 +1,7 @@
 // Firmware for monitor board
 
 #include "debounced_switch.h"
+#include "control.h"
 #include "edge_trigger.h"
 #include "globals.h"
 #include "mx7219.h"
@@ -17,10 +18,6 @@ DebouncedSwitch select_switch(BTN_SELECT);
 EdgeTrigger mode_trigger;
 EdgeTrigger select_trigger;
 
-// Update status_bits, address_bus and data_bus by reading the values present
-// on the buses from the shift register.
-void readBus();
-
 // Poll the switches and update state from them.
 void pollSwitches();
 
@@ -30,9 +27,6 @@ void pollSerial();
 // Reflect processor state and address/data bus on LED display. If the
 // processor is running (RDY = H) then show the "chasing dots" effect.
 void displayProcessorState();
-
-// Update output lines to reflect desired state.
-void writeControlLines();
 
 // Initialised in setup().
 SerialState serial_state;
@@ -95,24 +89,6 @@ void loop() {
     writeControlLines();
 }
 
-void readBus() {
-    // Stop loading data into shift reg. From Data sheet: the LOW-to-HIGH
-    // transition of input CE should only take place while CP HIGH for
-    // predictable operation.
-    digitalWrite(SCLK, HIGH);
-    digitalWrite(BUS_PLBAR, HIGH);
-
-    // Read from bus shift reg
-    status_bits = shiftIn(MISO, SCLK, MSBFIRST);
-    data_bus = shiftIn(MISO, SCLK, MSBFIRST);
-    address_bus =
-        (static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST)) << 8) |
-        static_cast<unsigned int>(shiftIn(MISO, SCLK, MSBFIRST));
-
-    // Resume loading data into shift reg.
-    digitalWrite(BUS_PLBAR, LOW);
-}
-
 void pollSwitches() {
     // Poll switches
     mode_switch.poll();
@@ -162,26 +138,6 @@ void displayProcessorState() {
 void pollSerial() {
     while(Serial.available() > 0) {
         serial_state = serial_state.next(Serial.read());
-    }
-}
-
-void writeControlLines() {
-    // Update control lines
-    digitalWrite(HALT, halt_request ? HIGH : LOW);
-
-    // step only makes sense if processor halted
-    if(cycle_request || (skip_to_next_sync && !(status_bits & SB_SYNC))) {
-        // Pulse step pin
-        digitalWrite(STEP, HIGH);
-        digitalWrite(STEP, LOW);
-
-        // If we are skipping rather than cycling, reset skip
-        if(!cycle_request) {
-            skip_to_next_sync = false;
-        } else {
-            // Reset cycle request
-            cycle_request = false;
-        }
     }
 }
 
