@@ -108,6 +108,7 @@ void printHelp() {
     Serial.println("p       - print current address/data bus");
     Serial.println("h       - toggle halt state");
     Serial.println("c       - single cycle");
+    Serial.println("s       - single step");
 }
 
 SerialState processCommand() {
