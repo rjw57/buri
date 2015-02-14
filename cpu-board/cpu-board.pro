@@ -88,5 +88,5 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=65xx/65xx
-LibName32=compute-module-v1
+LibName32=cpu-board
 LibName33=IC_raspberry
