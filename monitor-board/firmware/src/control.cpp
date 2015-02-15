@@ -13,6 +13,23 @@ void controlSetup() {
     pinMode(PIN_HALT, OUTPUT);
     pinMode(PIN_ILOADBAR, OUTPUT);
 
+    pinMode(PIN_RCLK, OUTPUT);
+
+    // We write and *then* set the mode in order to first enable the internal
+    // pullup and then set the pin as an output thereby avoiding pulling the
+    // pin *down* on startup. The second digitalWrite() is to guard ourselves
+    // since nothing in the Arduino documentation says anything about the state
+    // of the pins after resetting pinMode().
+    digitalWrite(PIN_DTAOEBAR, HIGH);
+    pinMode(PIN_DTAOEBAR, OUTPUT);
+    digitalWrite(PIN_DTAOEBAR, HIGH);
+    digitalWrite(PIN_ADROEBAR, HIGH);
+    pinMode(PIN_ADROEBAR, OUTPUT);
+    digitalWrite(PIN_ADROEBAR, HIGH);
+
+    // Don't load internal shift reg to outputs in output stage.
+    digitalWrite(PIN_RCLK, LOW);
+
     // Initial address/data bus values
     address_bus = data_bus = 0;
 
@@ -58,6 +75,21 @@ static void writeControlLines() {
         digitalWrite(PIN_BE, LOW);
     } else {
         pinMode(PIN_BE, INPUT);
+    }
+
+    // Set appropriate values reflecting assertion of address/data buses.
+    digitalWrite(PIN_DTAOEBAR, assert_data ? LOW : HIGH);
+    digitalWrite(PIN_ADROEBAR, assert_address ? LOW : HIGH);
+
+    // If we're asserting address or data bus, shift values into register.
+    if(assert_address || assert_data) {
+        shiftOut(MOSI, SCLK, MSBFIRST, out_data_bus);
+        shiftOut(MOSI, SCLK, MSBFIRST, (out_address_bus >> 8) & 0xFF);
+        shiftOut(MOSI, SCLK, MSBFIRST, out_address_bus & 0xFF);
+
+        // load new value into shift-reg output
+        digitalWrite(PIN_RCLK, HIGH);
+        digitalWrite(PIN_RCLK, LOW);
     }
 
     // If processor halted...

@@ -23,7 +23,7 @@
 // The following pins are used to control the output stage for asserting values
 // on the bus.
 #define PIN_DTAOEBAR    9
-#define PIN_ARDOEBAR    10
+#define PIN_ADROEBAR    10
 #define PIN_RCLK        13
 
 

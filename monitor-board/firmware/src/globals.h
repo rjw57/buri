@@ -15,6 +15,16 @@ extern unsigned int address_bus;
 // 8-bit data bus value
 extern byte data_bus;
 
+// 16-bit address and 8-bit data values to assert on bus if output is enabled.
+extern unsigned int out_address_bus;
+extern byte out_data_bus;
+
+// If true, assert out_address_bus on address bus.
+extern bool assert_address;
+
+// If true, assert out_data_bus on data bus.
+extern bool assert_data;
+
 // See status_bits.
 enum StatusBitMask {
     SB_RWBAR        = 0x01,
