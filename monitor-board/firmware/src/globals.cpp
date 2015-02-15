@@ -7,6 +7,7 @@ bool halt;
 StepState step_state;
 bool pull_rst_low;
 bool pull_be_low;
+bool pull_rwbar_low;
 unsigned int out_address_bus;
 byte out_data_bus;
 bool assert_address;

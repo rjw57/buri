@@ -28,8 +28,15 @@ void controlSetup() {
     pinMode(PIN_ADROEBAR, OUTPUT);
     digitalWrite(PIN_ADROEBAR, HIGH);
 
+    pinMode(PIN_RSTBAR, INPUT);
+    pinMode(PIN_BE, INPUT);
+    pinMode(PIN_RWBAR, INPUT_PULLUP);
+
     // Don't load internal shift reg to outputs in output stage.
     digitalWrite(PIN_RCLK, LOW);
+
+    // Don't pull any pins low to begin with.
+    pull_rst_low = pull_rwbar_low = pull_be_low = false;
 
     // Initial address/data bus values
     address_bus = data_bus = 0;
@@ -71,11 +78,22 @@ static void writeControlLines() {
         pinMode(PIN_RSTBAR, INPUT);
     }
 
-    if(pull_be_low) {
+    // BE is pulled low when we're asserting an address to make sure that we
+    // don't assert an address at the same time as the processor.
+    if(pull_be_low || assert_address) {
         pinMode(PIN_BE, OUTPUT);
         digitalWrite(PIN_BE, LOW);
     } else {
         pinMode(PIN_BE, INPUT);
+    }
+
+    // R/W~ is not always pulled low when we're asserting the data bus. We
+    // might be responding to a read request.
+    if(pull_rwbar_low) {
+        pinMode(PIN_RWBAR, OUTPUT);
+        digitalWrite(PIN_RWBAR, LOW);
+    } else {
+        pinMode(PIN_RWBAR, INPUT_PULLUP);
     }
 
     // Set appropriate values reflecting assertion of address/data buses.

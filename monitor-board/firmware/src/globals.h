@@ -58,4 +58,7 @@ extern bool pull_rst_low;
 // Set to true to pull BE low.
 extern bool pull_be_low;
 
+// Set to true to pull R/W~ low.
+extern bool pull_rwbar_low;
+
 #endif // GUARD_GLOBALS_H

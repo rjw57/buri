@@ -19,6 +19,7 @@
 // corresponding control lines are being pulled low or not.
 #define PIN_RSTBAR      A0
 #define PIN_BE          A1
+#define PIN_RWBAR       A2
 
 // The following pins are used to control the output stage for asserting values
 // on the bus.

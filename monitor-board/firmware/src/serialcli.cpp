@@ -88,7 +88,7 @@ static void printHelp() {
     Serial.println("h[alt]      - toggle halt state");
     Serial.println("c[ycle] [n] - single cycle n times");
     Serial.println("s[tep] [n]  - single step n times");
-    Serial.println("r[eset]     - toggle ~RST line");
+    Serial.println("reset       - toggle ~RST line");
     Serial.println("b[e]        - toggle BE line");
     Serial.println("");
     Serial.println("Specify decimal numbers with no prefix.");
@@ -191,6 +191,142 @@ static void performStepCommand(bool is_inst_step) {
     }
 }
 
+// Handle "addr (off | <address>)" command for asserting address bus.
+void performAssertAddress() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    if(strcmp(arg1, "off")) {
+        // parse address value
+        long v=0;
+        if(!parseLong(arg1, &v)) {
+            Serial.print("invalid address: ");
+            Serial.println(arg1);
+        }
+        assert_address = true;
+        out_address_bus = v;
+    } else {
+        // addr off - stop asserting
+        assert_address = false;
+    }
+}
+
+// Handle "data (off | <value>)" command for asserting data bus.
+void performAssertData() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    if(strcmp(arg1, "off")) {
+        // parse address value
+        long v=0;
+        if(!parseLong(arg1, &v)) {
+            Serial.print("invalid data: ");
+            Serial.println(arg1);
+        }
+        assert_data = true;
+        out_data_bus = v;
+    } else {
+        // data off - stop asserting
+        assert_data = false;
+    }
+}
+
+// perform the "write <addr> <val>" command
+void performWrite() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    const char* arg2 = reinterpret_cast<const char*>(cmd_tokenv[2]);
+    long v;
+
+    // Old state
+    bool old_pull_be_low = pull_be_low;
+    bool old_pull_rwbar_low = pull_rwbar_low;
+    bool old_aa = assert_address, old_ad = assert_data;
+    unsigned int old_a = out_address_bus;
+    byte old_d = out_data_bus;
+
+    if(!parseLong(arg1, &v)) {
+        Serial.print("invalid address: ");
+        Serial.println(arg1);
+        return;
+    }
+    out_address_bus = v;
+
+    if(!parseLong(arg2, &v)) {
+        Serial.print("invalid data: ");
+        Serial.println(arg1);
+        return;
+    }
+    out_data_bus = v;
+
+    // Drop BE
+    pull_be_low = true;
+    controlLoop();
+
+    // Assert address
+    assert_address = true;
+    controlLoop();
+
+    // Drop R/W~
+    pull_rwbar_low = true;
+    controlLoop();
+
+    // Assert data
+    assert_data = true;
+    controlLoop();
+
+    // Raise R/W~
+    pull_rwbar_low = false;
+    controlLoop();
+
+    // Restore state
+    pull_be_low = old_pull_be_low;
+    pull_rwbar_low = old_pull_rwbar_low;
+    assert_address = old_aa;
+    assert_data = old_ad;
+    out_address_bus = old_a;
+    out_data_bus = old_d;
+}
+
+// perform the "read <addr>" command
+void performRead() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    long v;
+
+    // Old state
+    bool old_pull_be_low = pull_be_low;
+    bool old_pull_rwbar_low = pull_rwbar_low;
+    bool old_aa = assert_address, old_ad = assert_data;
+    unsigned int old_a = out_address_bus;
+    byte old_d = out_data_bus;
+
+    if(!parseLong(arg1, &v)) {
+        Serial.print("invalid address: ");
+        Serial.println(arg1);
+        return;
+    }
+    out_address_bus = v;
+
+    // Drop BE
+    pull_be_low = true;
+    controlLoop();
+
+    // Assert address
+    assert_address = true;
+    controlLoop();
+
+    // Record data bus after one control loop
+    controlLoop();
+    byte d = data_bus;
+
+    // Restore state
+    pull_be_low = old_pull_be_low;
+    pull_rwbar_low = old_pull_rwbar_low;
+    assert_address = old_aa;
+    assert_data = old_ad;
+    out_address_bus = old_a;
+    out_data_bus = old_d;
+
+    Serial.print("D: ");
+    Serial.print(d, HEX);
+    Serial.println("");
+}
+
 static SerialState processCommand() {
     // Parse cmd_buf into tokens
     tokenizeCmdBuf();
@@ -224,7 +360,7 @@ static SerialState processCommand() {
         performStepCommand(false);
     } else if(strprefixeq(cmd, "step") && (n_tokens <= 2)) {
         performStepCommand(true);
-    } else if(strprefixeq(cmd, "reset") && (n_tokens == 1)) {
+    } else if(!strcmp(cmd, "reset") && (n_tokens == 1)) {
         pull_rst_low = !pull_rst_low;
         Serial.print("~rst ");
         Serial.println(pull_rst_low ? "low" : "high");
@@ -232,6 +368,21 @@ static SerialState processCommand() {
         pull_be_low = !pull_be_low;
         Serial.print("be ");
         Serial.println(pull_be_low ? "low" : "high");
+    } else if(strprefixeq(cmd, "rw") && (n_tokens == 1)) {
+        // undocumented rw command
+        pull_rwbar_low = !pull_rwbar_low;
+        Serial.print("rwbar ");
+        Serial.println(pull_rwbar_low ? "low" : "high");
+    } else if(!strcmp(cmd, "addr") && (n_tokens == 2)) {
+        // undocumented "addr" command for testing
+        performAssertAddress();
+    } else if(!strcmp(cmd, "data") && (n_tokens == 2)) {
+        // undocumented "data" command for testing
+        performAssertData();
+    } else if(strprefixeq(cmd, "write") && (n_tokens == 3)) {
+        performWrite();
+    } else if(strprefixeq(cmd, "read") && (n_tokens == 2)) {
+        performRead();
     } else {
         Serial.println("unknown command");
         printHelp();
