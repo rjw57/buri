@@ -18,18 +18,18 @@ DebouncedSwitch select_switch(BTN_SELECT);
 EdgeTrigger mode_trigger;
 EdgeTrigger select_trigger;
 
+// Initialised in setup().
+SerialState serial_state;
+
 // Poll the switches and update state from them.
-void pollSwitches();
+static void pollSwitches();
 
 // Read any input from the serial device and handle it.
-void pollSerial();
+static void pollSerial();
 
 // Reflect processor state and address/data bus on LED display. If the
 // processor is running (RDY = H) then show the "chasing dots" effect.
-void displayProcessorState();
-
-// Initialised in setup().
-SerialState serial_state;
+static void displayProcessorState();
 
 void setup() {
     // Setup all pin modes
@@ -69,11 +69,11 @@ void loop() {
     // Process input
     controlLoop();
 
-    // Output
+    // Show output
     displayProcessorState();
 }
 
-void pollSwitches() {
+static void pollSwitches() {
     // Poll switches
     mode_switch.poll();
     select_switch.poll();
@@ -96,11 +96,11 @@ void pollSwitches() {
     select_trigger.clear();
 }
 
-void displayProcessorState() {
+static void displayProcessorState() {
     // Set status bit LEDs
     setMX7219Reg(MX7219_DIGIT_0 + 6, status_bits);
 
-    if(processorRunning()) {
+    if(processorRunning() || (step_state != SS_NONE)) {
         // Processor running, show running dots
         int point = (millis() >> 7) % 6;
         for(int digit=0; digit<6; ++digit) {
@@ -120,9 +120,8 @@ void displayProcessorState() {
     }
 }
 
-void pollSerial() {
+static void pollSerial() {
     while(Serial.available() > 0) {
         serial_state = serial_state.next(Serial.read());
     }
 }
-

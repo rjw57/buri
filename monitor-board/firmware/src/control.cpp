@@ -4,6 +4,7 @@
 
 #include "globals.h"
 #include "pins.h"
+#include "mx7219.h"
 
 static void writeControlLines();
 static void readBus();
