@@ -9,6 +9,10 @@
 static void writeControlLines();
 static void readBus();
 
+// Write addr and data to output shift registers. Make sure to write to
+// PIN_DTAOEBAR and/or PIN_ADROEBAR to determine which outputs are asserted.
+static void writeBus(unsigned int addr, byte data);
+
 void controlSetup() {
     pinMode(PIN_STEP, OUTPUT);
     pinMode(PIN_HALT, OUTPUT);
@@ -102,13 +106,7 @@ static void writeControlLines() {
 
     // If we're asserting address or data bus, shift values into register.
     if(assert_address || assert_data) {
-        shiftOut(MOSI, SCLK, MSBFIRST, out_data_bus);
-        shiftOut(MOSI, SCLK, MSBFIRST, (out_address_bus >> 8) & 0xFF);
-        shiftOut(MOSI, SCLK, MSBFIRST, out_address_bus & 0xFF);
-
-        // load new value into shift-reg output
-        digitalWrite(PIN_RCLK, HIGH);
-        digitalWrite(PIN_RCLK, LOW);
+        writeBus(out_address_bus, out_data_bus);
     }
 
     // If processor halted...
@@ -145,6 +143,16 @@ static void writeControlLines() {
     }
 }
 
+static void writeBus(unsigned int addr, byte data) {
+    shiftOut(MOSI, SCLK, MSBFIRST, data);
+    shiftOut(MOSI, SCLK, MSBFIRST, (addr >> 8) & 0xFF);
+    shiftOut(MOSI, SCLK, MSBFIRST, addr & 0xFF);
+
+    // load new value into shift-reg output
+    digitalWrite(PIN_RCLK, HIGH);
+    digitalWrite(PIN_RCLK, LOW);
+}
+
 static void readBus() {
     // Stop loading data into shift reg. From Data sheet: the LOW-to-HIGH
     // transition of input CE should only take place while CP HIGH for
@@ -161,4 +169,66 @@ static void readBus() {
 
     // Resume loading data into shift reg.
     digitalWrite(PIN_ILOADBAR, LOW);
+}
+
+byte readMem(unsigned int addr) {
+    // Take BE low and halt processor
+    pinMode(PIN_BE, OUTPUT);
+    digitalWrite(PIN_HALT, HIGH);
+    digitalWrite(PIN_BE, LOW);
+
+    // Make sure we're reading
+    pinMode(PIN_RWBAR, OUTPUT);
+    digitalWrite(PIN_RWBAR, HIGH);
+
+    // Assert address
+    writeBus(addr, 0);
+    digitalWrite(PIN_ADROEBAR, LOW);
+
+    // Wait one millisecond to make sure output is on bus
+    delay(1);
+
+    // Read data and address bus
+    readBus();
+
+    // Record value
+    byte rv = data_bus;
+
+    // Run an iteration of controlLoop() to reset the control lines...
+    controlLoop();
+
+    return rv;
+}
+
+void writeMem(unsigned int addr, byte value) {
+    // Take BE low and halt processor
+    pinMode(PIN_BE, OUTPUT);
+    digitalWrite(PIN_HALT, HIGH);
+    digitalWrite(PIN_BE, LOW);
+
+    // Assert address
+    writeBus(addr, value);
+    digitalWrite(PIN_ADROEBAR, LOW);
+
+    // Wait to make sure far end has heard us
+    delay(1);
+
+    // Drop R/W~
+    pinMode(PIN_RWBAR, OUTPUT);
+    digitalWrite(PIN_RWBAR, LOW);
+
+    // Assert data
+    digitalWrite(PIN_DTAOEBAR, LOW);
+
+    // Wait for a bit
+    delay(1);
+
+    // Raise R/~W
+    digitalWrite(PIN_RWBAR, HIGH);
+
+    // Stop asserting data
+    digitalWrite(PIN_DTAOEBAR, HIGH);
+
+    // Run an iteration of controlLoop() to reset the control lines...
+    controlLoop();
 }

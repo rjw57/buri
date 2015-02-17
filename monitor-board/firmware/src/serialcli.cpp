@@ -231,56 +231,21 @@ void performAssertData() {
 void performWrite() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     const char* arg2 = reinterpret_cast<const char*>(cmd_tokenv[2]);
-    long v;
+    long a, d;
 
-    // Old state
-    bool old_pull_be_low = pull_be_low;
-    bool old_pull_rwbar_low = pull_rwbar_low;
-    bool old_aa = assert_address, old_ad = assert_data;
-    unsigned int old_a = out_address_bus;
-    byte old_d = out_data_bus;
-
-    if(!parseLong(arg1, &v)) {
+    if(!parseLong(arg1, &a)) {
         Serial.print("invalid address: ");
         Serial.println(arg1);
         return;
     }
-    out_address_bus = v;
 
-    if(!parseLong(arg2, &v)) {
+    if(!parseLong(arg2, &d)) {
         Serial.print("invalid data: ");
         Serial.println(arg1);
         return;
     }
-    out_data_bus = v;
 
-    // Drop BE
-    pull_be_low = true;
-    controlLoop();
-
-    // Assert address
-    assert_address = true;
-    controlLoop();
-
-    // Drop R/W~
-    pull_rwbar_low = true;
-    controlLoop();
-
-    // Assert data
-    assert_data = true;
-    controlLoop();
-
-    // Raise R/W~
-    pull_rwbar_low = false;
-    controlLoop();
-
-    // Restore state
-    pull_be_low = old_pull_be_low;
-    pull_rwbar_low = old_pull_rwbar_low;
-    assert_address = old_aa;
-    assert_data = old_ad;
-    out_address_bus = old_a;
-    out_data_bus = old_d;
+    writeMem(a, d);
 }
 
 // perform the "read <addr>" command
@@ -288,39 +253,13 @@ void performRead() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     long v;
 
-    // Old state
-    bool old_pull_be_low = pull_be_low;
-    bool old_pull_rwbar_low = pull_rwbar_low;
-    bool old_aa = assert_address, old_ad = assert_data;
-    unsigned int old_a = out_address_bus;
-    byte old_d = out_data_bus;
-
     if(!parseLong(arg1, &v)) {
         Serial.print("invalid address: ");
         Serial.println(arg1);
         return;
     }
-    out_address_bus = v;
 
-    // Drop BE
-    pull_be_low = true;
-    controlLoop();
-
-    // Assert address
-    assert_address = true;
-    controlLoop();
-
-    // Record data bus after one control loop
-    controlLoop();
-    byte d = data_bus;
-
-    // Restore state
-    pull_be_low = old_pull_be_low;
-    pull_rwbar_low = old_pull_rwbar_low;
-    assert_address = old_aa;
-    assert_data = old_ad;
-    out_address_bus = old_a;
-    out_data_bus = old_d;
+    byte d = readMem(v);
 
     Serial.print("D: ");
     Serial.print(d, HEX);
