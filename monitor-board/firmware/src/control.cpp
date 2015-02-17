@@ -210,9 +210,6 @@ void writeMem(unsigned int addr, byte value) {
     writeBus(addr, value);
     digitalWrite(PIN_ADROEBAR, LOW);
 
-    // Wait to make sure far end has heard us
-    delay(1);
-
     // Drop R/W~
     pinMode(PIN_RWBAR, OUTPUT);
     digitalWrite(PIN_RWBAR, LOW);
