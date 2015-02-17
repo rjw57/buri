@@ -173,13 +173,9 @@ static void readBus() {
 
 byte readMem(unsigned int addr) {
     // Take BE low and halt processor
-    pinMode(PIN_BE, OUTPUT);
     digitalWrite(PIN_HALT, HIGH);
+    pinMode(PIN_BE, OUTPUT);
     digitalWrite(PIN_BE, LOW);
-
-    // Make sure we're reading
-    pinMode(PIN_RWBAR, OUTPUT);
-    digitalWrite(PIN_RWBAR, HIGH);
 
     // Assert address
     writeBus(addr, 0);
@@ -194,16 +190,19 @@ byte readMem(unsigned int addr) {
     // Record value
     byte rv = data_bus;
 
-    // Run an iteration of controlLoop() to reset the control lines...
-    controlLoop();
+    // Stop asserting
+    digitalWrite(PIN_ADROEBAR, HIGH);
+
+    // Let the next iteration of controlLoop() reset the control lines...
+    pinMode(PIN_BE, INPUT);
 
     return rv;
 }
 
 void writeMem(unsigned int addr, byte value) {
-    // Take BE low and halt processor
-    pinMode(PIN_BE, OUTPUT);
+    // Take BE low
     digitalWrite(PIN_HALT, HIGH);
+    pinMode(PIN_BE, OUTPUT);
     digitalWrite(PIN_BE, LOW);
 
     // Assert address
@@ -223,9 +222,10 @@ void writeMem(unsigned int addr, byte value) {
     // Raise R/~W
     digitalWrite(PIN_RWBAR, HIGH);
 
-    // Stop asserting data
+    // Stop asserting
     digitalWrite(PIN_DTAOEBAR, HIGH);
+    digitalWrite(PIN_ADROEBAR, HIGH);
 
-    // Run an iteration of controlLoop() to reset the control lines...
-    controlLoop();
+    // Let the next iteration of controlLoop() reset the control lines...
+    pinMode(PIN_BE, INPUT);
 }

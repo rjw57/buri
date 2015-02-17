@@ -34,6 +34,17 @@ SerialState startSerialPrompt() {
 
 // INTERNAL
 
+const char hexDigits[] = "0123456789ABCDEF";
+static void printByteHex(byte v) {
+    Serial.print(hexDigits[(v>>4) & 0xF]);
+    Serial.print(hexDigits[v & 0xF]);
+}
+
+static void printWordHex(unsigned int v) {
+    printByteHex((v>>8) & 0xFF);
+    printByteHex(v & 0xFF);
+}
+
 // State machine
 static SerialState readingCommandState(byte ch) {
     switch(ch) {
@@ -153,7 +164,7 @@ static bool strprefixeq(const char* a, const char* b) {
 
 // Parse s as an integer and write result to l. Return true iff parsing
 // succeeds.
-bool parseLong(const char* s, long* l) {
+static bool parseLong(const char* s, long* l) {
     char* end_ptr;
     int base = 10;
 
@@ -192,7 +203,7 @@ static void performStepCommand(bool is_inst_step) {
 }
 
 // Handle "addr (off | <address>)" command for asserting address bus.
-void performAssertAddress() {
+static void performAssertAddress() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     if(strcmp(arg1, "off")) {
         // parse address value
@@ -210,7 +221,7 @@ void performAssertAddress() {
 }
 
 // Handle "data (off | <value>)" command for asserting data bus.
-void performAssertData() {
+static void performAssertData() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     if(strcmp(arg1, "off")) {
         // parse address value
@@ -228,7 +239,7 @@ void performAssertData() {
 }
 
 // perform the "write <addr> <val>" command
-void performWrite() {
+static void performWrite() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     const char* arg2 = reinterpret_cast<const char*>(cmd_tokenv[2]);
     long a, d;
@@ -249,7 +260,7 @@ void performWrite() {
 }
 
 // perform the "read <addr>" command
-void performRead() {
+static void performRead() {
     const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
     long v;
 
@@ -264,6 +275,38 @@ void performRead() {
     Serial.print("D: ");
     Serial.print(d, HEX);
     Serial.println("");
+}
+
+static void performDump() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    const char* arg2 = reinterpret_cast<const char*>(cmd_tokenv[2]);
+    long addr, n;
+
+    if(!parseLong(arg1, &addr)) {
+        Serial.print("invalid address: ");
+        Serial.println(arg1);
+        return;
+    }
+
+    if(!parseLong(arg2, &n)) {
+        Serial.print("invalid count: ");
+        Serial.println(arg2);
+        return;
+    }
+
+    for(long i=0; i<n; ++i) {
+        if((i & 0xF) == 0x0) {
+            printWordHex(addr + i);
+            Serial.print(" : ");
+        }
+
+        printByteHex(readMem(addr + i));
+        Serial.print(' ');
+
+        if((i & 0xF) == 0xF) {
+            Serial.println("");
+        }
+    }
 }
 
 static SerialState processCommand() {
@@ -307,7 +350,7 @@ static SerialState processCommand() {
         pull_be_low = !pull_be_low;
         Serial.print("be ");
         Serial.println(pull_be_low ? "low" : "high");
-    } else if(strprefixeq(cmd, "rw") && (n_tokens == 1)) {
+    } else if(!strcmp(cmd, "rw") && (n_tokens == 1)) {
         // undocumented rw command
         pull_rwbar_low = !pull_rwbar_low;
         Serial.print("rwbar ");
@@ -322,6 +365,8 @@ static SerialState processCommand() {
         performWrite();
     } else if(strprefixeq(cmd, "read") && (n_tokens == 2)) {
         performRead();
+    } else if(strprefixeq(cmd, "dump") && (n_tokens == 3)) {
+        performDump();
     } else {
         Serial.println("unknown command");
         printHelp();
