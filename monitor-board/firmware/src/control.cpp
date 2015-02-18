@@ -100,14 +100,14 @@ static void writeControlLines() {
         pinMode(PIN_RWBAR, INPUT_PULLUP);
     }
 
-    // Set appropriate values reflecting assertion of address/data buses.
-    digitalWrite(PIN_DTAOEBAR, assert_data ? LOW : HIGH);
-    digitalWrite(PIN_ADROEBAR, assert_address ? LOW : HIGH);
-
     // If we're asserting address or data bus, shift values into register.
     if(assert_address || assert_data) {
         writeBus(out_address_bus, out_data_bus);
     }
+
+    // Set appropriate values reflecting assertion of address/data buses.
+    digitalWrite(PIN_DTAOEBAR, assert_data ? LOW : HIGH);
+    digitalWrite(PIN_ADROEBAR, assert_address ? LOW : HIGH);
 
     // If processor halted...
     if(!(status_bits & SB_RDY)) {
@@ -171,17 +171,49 @@ static void readBus() {
     digitalWrite(PIN_ILOADBAR, LOW);
 }
 
-byte readMem(unsigned int addr) {
+void startMem() {
     // Take BE low and halt processor
     digitalWrite(PIN_HALT, HIGH);
+    delay(1);
+
     pinMode(PIN_BE, OUTPUT);
     digitalWrite(PIN_BE, LOW);
+    pinMode(PIN_RWBAR, OUTPUT);
+    digitalWrite(PIN_RWBAR, HIGH);
 
     // Assert address
-    writeBus(addr, 0);
     digitalWrite(PIN_ADROEBAR, LOW);
+}
 
-    // Wait one millisecond to make sure output is on bus
+void stopMem() {
+    // Stop asserting
+    digitalWrite(PIN_ADROEBAR, assert_address ? LOW : HIGH);
+    digitalWrite(PIN_DTAOEBAR, assert_data ? LOW : HIGH);
+
+    if(pull_rwbar_low) {
+        pinMode(PIN_RWBAR, OUTPUT);
+        digitalWrite(PIN_RWBAR, LOW);
+    } else {
+        pinMode(PIN_RWBAR, INPUT_PULLUP);
+    }
+
+    if(pull_be_low) {
+        pinMode(PIN_BE, OUTPUT);
+        digitalWrite(PIN_BE, LOW);
+    } else {
+        pinMode(PIN_BE, INPUT_PULLUP);
+    }
+
+    digitalWrite(PIN_HALT, halt ? HIGH : LOW);
+
+    // Let the next iteration of controlLoop() reset the control lines...
+}
+
+byte readMem(unsigned int addr) {
+    // Assert address
+    writeBus(addr, 0);
+
+    // Wait for it to be answered
     delay(1);
 
     // Read data and address bus
@@ -190,42 +222,31 @@ byte readMem(unsigned int addr) {
     // Record value
     byte rv = data_bus;
 
-    // Stop asserting
-    digitalWrite(PIN_ADROEBAR, HIGH);
-
-    // Let the next iteration of controlLoop() reset the control lines...
-    pinMode(PIN_BE, INPUT);
-
     return rv;
 }
 
 void writeMem(unsigned int addr, byte value) {
-    // Take BE low
-    digitalWrite(PIN_HALT, HIGH);
-    pinMode(PIN_BE, OUTPUT);
-    digitalWrite(PIN_BE, LOW);
-
     // Assert address
     writeBus(addr, value);
-    digitalWrite(PIN_ADROEBAR, LOW);
 
-    // Drop R/W~
-    pinMode(PIN_RWBAR, OUTPUT);
+    // wait for this to take effect
+    delay(5);
+
+    // Drop R/W~ (latches address)
     digitalWrite(PIN_RWBAR, LOW);
 
     // Assert data
     digitalWrite(PIN_DTAOEBAR, LOW);
 
-    // Wait for a bit
-    delay(1);
+    // wait for this to take effect
+    delay(5);
 
-    // Raise R/~W
+    // Raise R/~W (latches data)
     digitalWrite(PIN_RWBAR, HIGH);
 
-    // Stop asserting
-    digitalWrite(PIN_DTAOEBAR, HIGH);
-    digitalWrite(PIN_ADROEBAR, HIGH);
+    // wait for this to take effect
+    delay(5);
 
-    // Let the next iteration of controlLoop() reset the control lines...
-    pinMode(PIN_BE, INPUT);
+    // Stop asserting data
+    digitalWrite(PIN_DTAOEBAR, HIGH);
 }

@@ -21,6 +21,10 @@ bool processorRunning();
 // be single-stepped.
 bool processorCanBeStepped();
 
+// Wrap calls to {read,write}Mem in this
+void startMem();
+void stopMem();
+
 // Read a byte from memory
 byte readMem(unsigned int addr);
 

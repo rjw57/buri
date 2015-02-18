@@ -7,10 +7,13 @@
 #include "globals.h"
 #include "serialstatemachine.h"
 
-const int MAX_CMD_LEN = 31, MAX_TOKENS = 5;
+const int MAX_CMD_LEN = 127, MAX_TOKENS = 5;
 byte cmd_buf[MAX_CMD_LEN+1];
 byte* cmd_tokenv[MAX_TOKENS+1];
 int cmd_len;
+
+// Address to write next upload line to
+unsigned int upload_addr;
 
 // States
 static SerialState readingCommandState(byte ch);
@@ -45,18 +48,19 @@ static void printWordHex(unsigned int v) {
     printByteHex(v & 0xFF);
 }
 
-// State machine
-static SerialState readingCommandState(byte ch) {
+// Handle input from serial and update input_len/inpit_buf appropriately.
+// Return true if command has been entered.
+static bool lineEditor(byte ch, byte* input_buf, int &input_len) {
     switch(ch) {
         // handle backspace
         case 8:
         case 127:
-            if(cmd_len > 0) {
+            if(input_len > 0) {
                 Serial.write(8);
                 Serial.write(' ');
                 Serial.write(8);
-                cmd_len--;
-                cmd_buf[cmd_len] = '\0';
+                input_len--;
+                input_buf[input_len] = '\0';
             } else {
                 // bell
                 Serial.write(7);
@@ -67,7 +71,7 @@ static SerialState readingCommandState(byte ch) {
         case 10:
         case 13:
             Serial.println("");
-            return processCommand();
+            return true;
             break;
 
         default:
@@ -75,11 +79,11 @@ static SerialState readingCommandState(byte ch) {
             if(ch < 0x20) {
                 // Bell
                 Serial.write(7);
-            } else if(cmd_len < MAX_CMD_LEN) {
+            } else if(input_len < MAX_CMD_LEN) {
                 // Add character to command buffer
-                cmd_buf[cmd_len] = ch;
-                cmd_len++;
-                cmd_buf[cmd_len] = '\0';
+                input_buf[input_len] = ch;
+                input_len++;
+                input_buf[input_len] = '\0';
 
                 // Echo character to output
                 Serial.write(ch);
@@ -90,7 +94,69 @@ static SerialState readingCommandState(byte ch) {
             break;
     }
 
+    return false;
+}
+
+// State machine
+static SerialState readingCommandState(byte ch) {
+    if(lineEditor(ch, cmd_buf, cmd_len)) {
+        return processCommand();
+    }
+
     return { .next = &readingCommandState };
+}
+
+static void processUploadLine() {
+    // Iterate through cmd_buf parsing any hex chars
+    bool high_nibble=true;
+    byte current_byte=0;
+    startMem();
+    for(int n=0; (n < cmd_len) && (cmd_buf[n] != '\0'); ++n) {
+        byte nibble=0, c=cmd_buf[n];
+
+        if((c >= '0') && (c <= '9')) {
+            nibble = c - '0';
+        } else if((c >= 'A') && (c <= 'F')) {
+            nibble = (c - 'A') + 10;
+        } else if((c >= 'a') && (c <= 'f')) {
+            nibble = (c - 'a') + 10;
+        } else {
+            // skip
+            continue;
+        }
+
+        if(high_nibble) {
+            current_byte |= (nibble << 4);
+        } else {
+            current_byte |= nibble;
+            writeMem(upload_addr, current_byte);
+            current_byte = 0;
+            ++upload_addr;
+        }
+
+        high_nibble = !high_nibble;
+    }
+    stopMem();
+}
+
+static SerialState readingUploadState(byte ch) {
+    if(lineEditor(ch, cmd_buf, cmd_len)) {
+        if(cmd_len == 0) {
+            // empty
+            cmd_len = 0; cmd_buf[0] = '\0';
+            return startSerialPrompt();
+        }
+
+        // Process upload line
+        processUploadLine();
+
+        // Start next prompt
+        printWordHex(upload_addr);
+        Serial.print(" : ");
+        cmd_len = 0; cmd_buf[0] = '\0';
+    }
+
+    return { .next = &readingUploadState };
 }
 
 static void printHelp() {
@@ -252,11 +318,13 @@ static void performWrite() {
 
     if(!parseLong(arg2, &d)) {
         Serial.print("invalid data: ");
-        Serial.println(arg1);
+        Serial.println(arg2);
         return;
     }
 
+    startMem();
     writeMem(a, d);
+    stopMem();
 }
 
 // perform the "read <addr>" command
@@ -270,7 +338,9 @@ static void performRead() {
         return;
     }
 
+    startMem();
     byte d = readMem(v);
+    stopMem();
 
     Serial.print("D: ");
     Serial.print(d, HEX);
@@ -294,19 +364,57 @@ static void performDump() {
         return;
     }
 
+    startMem();
+    byte line[16];
     for(long i=0; i<n; ++i) {
         if((i & 0xF) == 0x0) {
             printWordHex(addr + i);
             Serial.print(" : ");
         }
 
-        printByteHex(readMem(addr + i));
+        line[i&0xF] = readMem(addr + i);
+        printByteHex(line[i&0xF]);
         Serial.print(' ');
 
+        if((i & 0xF) == 0x7) {
+            Serial.print(" ");
+        }
+
         if((i & 0xF) == 0xF) {
-            Serial.println("");
+            Serial.print(" |");
+            for(int j=0; j<16; ++j) {
+                byte c = line[j];
+                if((c >= ' ') && (c <= '~')) {
+                    Serial.print(static_cast<char>(c));
+                } else {
+                    Serial.print('.');
+                }
+            }
+            Serial.println("|");
         }
     }
+    stopMem();
+
+    if((n & 0xF) != 0) {
+        Serial.println("");
+    }
+}
+
+static SerialState startUploadPrompt() {
+    const char* arg1 = reinterpret_cast<const char*>(cmd_tokenv[1]);
+    long addr;
+
+    if(!parseLong(arg1, &addr)) {
+        Serial.print("invalid address: ");
+        Serial.println(arg1);
+        return startSerialPrompt();
+    }
+    upload_addr = addr;
+
+    printWordHex(upload_addr);
+    Serial.print(" : ");
+    cmd_len = 0; cmd_buf[0] = '\0';
+    return { .next = &readingUploadState };
 }
 
 static SerialState processCommand() {
@@ -367,6 +475,8 @@ static SerialState processCommand() {
         performRead();
     } else if(strprefixeq(cmd, "dump") && (n_tokens == 3)) {
         performDump();
+    } else if(strprefixeq(cmd, "upload") && (n_tokens == 2)) {
+        return startUploadPrompt();
     } else {
         Serial.println("unknown command");
         printHelp();
