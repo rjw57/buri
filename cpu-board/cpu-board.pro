@@ -1,6 +1,6 @@
-update=Sat 07 Feb 2015 16:01:47 GMT
+update=Sun 22 Feb 2015 17:08:39 GMT
 version=1
-last_client=eeschema
+last_client=kicad
 [cvpcb]
 version=1
 NetIExt=net
@@ -43,8 +43,6 @@ LibName13=led
 LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
-[general]
-version=1
 [eeschema]
 version=1
 PageLayoutDescrFile=
@@ -90,3 +88,5 @@ LibName30=valves
 LibName31=65xx/65xx
 LibName32=cpu-board
 LibName33=IC_raspberry
+[general]
+version=1
