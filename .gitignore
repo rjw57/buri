@@ -1,3 +1,5 @@
 *.bak
 *.bck
 *-cache.lib
+*-bak
+cpu-board/cpu-board.dsn
