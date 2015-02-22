@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sun 22 Feb 2015 17:09:37 GMT
+Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sun 22 Feb 2015 21:14:03 GMT
 
 BeginCmp
 TimeStamp = /54777000;
@@ -249,7 +249,7 @@ BeginCmp
 TimeStamp = /54EA4CC6;
 Reference = U9;
 ValeurCmp = 7805;
-IdModule  = Discret:TO220_VERT;
+IdModule  = Discret:LM78XXV;
 EndCmp
 
 EndListe
