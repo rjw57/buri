@@ -42,6 +42,9 @@ CL65FLAGS += -t none
 # Append linker config configuration to cl65 command line
 CL65FLAGS += -C "$(LINK_CONFIG)"
 
+# Append include file location to cl65 command line
+CL65FLAGS += --asm-include-dir inc
+
 # ROM output
 rom_output:=rom.bin
 clean_files+=$(rom_output)
@@ -81,3 +84,4 @@ $(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.s $(inc_srcs) $(LINK_CONFIG)
 
 # Include generated dependencies
 -include $(depends_mkfile)
+# DO NOT DELETE
