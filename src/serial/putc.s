@@ -1,9 +1,9 @@
 .include "hardware.inc"
 
-; srl_putc - send a character along the serial connection
+; putc - send a character along the serial connection
 ;
 ; A - the ASCII code of the character to send
-.proc srl_putc
+.proc putc
 	pha				; save A on stack
 	
 	lda	#ACIA_ST_TDRE		; load TDRE mask into A
