@@ -3,85 +3,62 @@ ifdef CC65_DIR
 	export PATH := ${CC65_DIR}/bin:$(PATH)
 endif
 
-# Define project directory (contains this Makefile) and build directory
-# (directory from which make was run).
-proj_dir := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-build_dir := $(abspath $(shell pwd))
+# Directories
+ASMINC_DIR:=asminc
+SRC_DIR:=src
 
-# Source directory within the project contains the source code itself
-src_dir := src
+# Find the cl65 tool if not specified
+CL65?=$(shell PATH="$(PATH)" which cl65)
+ifeq ($(CL65),)
+$(error The cl65 tool was not found. Try setting the CC65_DIR variable.)
+endif
 
-# Source files which make up this project. Use wildcard to avoid having to add
-# files explicitly.
-ROM_SRCS := \
-	$(patsubst $(proj_dir)/%,%,$(wildcard $(proj_dir)/$(src_dir)/*.[cs])) \
-	$(patsubst $(proj_dir)/%,%,$(wildcard $(proj_dir)/$(src_dir)/*.inc))
+# Source files which make up this project
+ROM_SRCS+=$(wildcard $(ASMINC_DIR)/*.inc)
+ROM_SRCS+=$(wildcard $(SRC_DIR)/*.[cs])
+
+# Convert sources into list of object files
+OBJECTS+=$(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
+OBJECTS+=$(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
+CLEAN_FILES+=$(OBJECTS)
 
 # Config file for linker
-LINK_CONFIG := $(proj_dir)/rom.cfg
+LINK_CONFIG := rom.cfg
 
-# cl65 command-line flags
-CL65FLAGS += -O
+## cl65 command-line flags
 
-# Location of binaries used by this makefile
-CL65       := cl65
-MAKEDEPEND := makedepend
-
-# All source files for this project
-all_srcs := $(addprefix $(proj_dir)/,$(ROM_SRCS))
-c_srcs := $(filter %.c,$(all_srcs))
-object_files += $(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
-asm_srcs := $(filter %.s,$(all_srcs))
-object_files += $(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
-clean_files += $(object_files)
-inc_srcs := $(filter %.inc,$(all_srcs))
+# Use optimisation
+CL65_FLAGS+=-O
 
 # We are using the "none" target
-CL65FLAGS += -t none
+CL65_FLAGS+=-t none
 
 # Append linker config configuration to cl65 command line
-CL65FLAGS += -C "$(LINK_CONFIG)"
+CL65_FLAGS+=-C "$(LINK_CONFIG)"
 
 # Append include file location to cl65 command line
-CL65FLAGS += --asm-include-dir inc
+CL65_FLAGS+=--asm-include-dir asminc
 
 # ROM output
-rom_output:=rom.bin
-clean_files+=$(rom_output)
+ROM_BIN:=rom.bin
+CLEAN_FILES+=$(ROM_BIN)
 
 # Generate a map file
-CL65FLAGS += --mapfile "$(rom_output).map"
-clean_files+="$(rom_output).map"
+CL65_FLAGS+= --mapfile "$(ROM_BIN).map"
+CLEAN_FILES+="$(ROM_BIN).map"
 
-all: $(rom_output)
 .PHONY: all
+all: $(ROM_BIN)
 
-# Calculate dependencies for C files
-depends_mkfile:=Makefile.depends
-clean_files+=$(depends_mkfile) $(depends_mkfile).bak
-$(depends_mkfile): $(c_srcs)
-	touch $(depends_mkfile)
-	$(MAKEDEPEND) -f "$@" -- $(c_srcs)
-
-depends: $(depends_mkfile)
-.PHONY: depends
-
-clean:
-	rm -f $(clean_files)
 .PHONY: clean
+clean:
+	rm -f $(CLEAN_FILES)
 
-$(rom_output): $(object_files) $(LINK_CONFIG)
-	$(CL65) $(CL65FLAGS) -o "$@" $(object_files)
+$(ROM_BIN): $(OBJECTS) $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) -o "$@" $(OBJECTS)
 
-$(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.c $(depends_mkfile) $(LINK_CONFIG)
-	mkdir -p $(src_dir)
-	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
 
-$(src_dir)/%.o: $(proj_dir)/$(src_dir)/%.s $(inc_srcs) $(LINK_CONFIG)
-	mkdir -p $(src_dir)
-	$(CL65) $(CL65FLAGS) -c -o "$@" "$<"
-
-
-# Include generated dependencies
--include $(depends_mkfile)
-# DO NOT DELETE
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.s $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
