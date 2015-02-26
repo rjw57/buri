@@ -3,6 +3,7 @@
 ; putc - send a character along the serial connection
 ;
 ; A - the ASCII code of the character to send
+.global putc
 .proc putc
 	pha				; save A on stack
 	

@@ -5,6 +5,7 @@
 ; on exit:
 ;
 ; A - the ASCII code of the character read
+.global getc
 .proc getc
 	lda	#ACIA_ST_RDRF		; load RDRF mask into A
 
