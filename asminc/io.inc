@@ -8,16 +8,6 @@ SCREEN_ROWS	= 26
 SCREEN_N_BYTES	= SCREEN_COLS * SCREEN_ROWS 	; size of *visible* screen
 SCREEN_N_PGS	= (SCREEN_N_BYTES + $FE) >> 8	; rounded *up* size of screen in pages
 
-;; Well-known I/O devices
-ACIA1 		= $8800
-ACIA1_DATA 	= ACIA1
-ACIA1_STATUS 	= ACIA1 + 1
-ACIA1_CMD 	= ACIA1 + 2
-ACIA1_CTRL 	= ACIA1 + 3
-
-;; Constants
-ACIA_ST_TDRE = %00010000	; status: transmit data register empty
-ACIA_ST_RDRF = %00001000	; status: read data register full
 
 ; Serial device
 .global srl_reset

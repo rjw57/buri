@@ -3,6 +3,7 @@
 ;
 .include "globals.inc"
 .include "io.inc"
+.include "hardware.inc"
 
 ;;
 ;; Character I/O.
@@ -33,18 +34,6 @@
 	rts
 .endproc
 
-; Output single character
-; Entry:
-;	A - byte to output
-; Exit:
-;	A, X - not preserved
-;	Y - preserved
-.proc srl_putc
-	tax				; save A in X
-	WaitTxFree			; wait for transmit data register to be empty
-	stx	ACIA1_DATA		; write to tx data reg
-	rts				; return
-.endproc
 
 ; Output characters from a buffer.
 ; Entry:

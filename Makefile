@@ -15,17 +15,26 @@ endif
 
 # Source files which make up this project
 ROM_SRCS+=$(wildcard $(ASMINC_DIR)/*.inc)
-ROM_SRCS+=$(wildcard $(SRC_DIR)/*.[cs])
+ROM_SRCS+=\
+	$(wildcard $(SRC_DIR)/serial/*.[cs])	\
+	$(wildcard $(SRC_DIR)/*.[cs])
 
 # Convert sources into list of object files
 OBJECTS+=$(patsubst %.c,%.o,$(filter %.c,$(ROM_SRCS)))
 OBJECTS+=$(patsubst %.s,%.o,$(filter %.s,$(ROM_SRCS)))
 CLEAN_FILES+=$(OBJECTS)
 
+# List of various include-type files
+INC_FILES=$(filter %.inc,$(ROM_SRCS))
+HDR_FILES=$(filter %.h,$(ROM_SRCS))
+
 # Config file for linker
 LINK_CONFIG := rom.cfg
 
 ## cl65 command-line flags
+
+# USe the more modern 65C02
+CL65_FLAGS+=--cpu 65C02
 
 # Use optimisation
 CL65_FLAGS+=-O
@@ -57,8 +66,8 @@ clean:
 $(ROM_BIN): $(OBJECTS) $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -o "$@" $(OBJECTS)
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(LINK_CONFIG)
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(HDR_FILES) $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.s $(LINK_CONFIG)
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.s $(INC_FILES) $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
