@@ -33,7 +33,7 @@ LINK_CONFIG := rom.cfg
 
 ## cl65 command-line flags
 
-# USe the more modern 65C02
+# Use the more modern 65C02
 CL65_FLAGS+=--cpu 65C02
 
 # Use optimisation
