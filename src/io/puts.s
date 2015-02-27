@@ -1,4 +1,5 @@
 .include "globals.inc"
+.include "macros.inc"
 
 .import putc
 
@@ -10,8 +11,7 @@
 ; Corrupts ptr1
 .global puts
 .proc puts
-	pha			; save A and X
-	phx
+	push_ax			; save A, X
 
 	sta ptr1
 	stx ptr1+1
@@ -28,7 +28,6 @@
 	bra @loop		; and loop
 
 @exit:
-	plx			; restore A and X
-	pla
+	pop_ax			; restore A and X
 	rts			; return to caller
 .endproc

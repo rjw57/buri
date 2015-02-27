@@ -1,12 +1,12 @@
 .include "ascii.inc"
+.include "macros.inc"
 
 .import puts
 
 ; cls - clear the terminal screen
 .global cls
 .proc cls
-	lda #<cls_str		; load string address
-	ldx #>cls_str
+	ldaxi cls_str		; load string address
 	jmp puts		; jump straight to puts letting
 				; its rts return
 .endproc
@@ -17,4 +17,4 @@ cls_str:
 	.byte "[2J"
 	.byte ASCII_ESC
 	.byte "[H"
-	.byte ASCII_NUL
+	.byte 0

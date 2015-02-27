@@ -1,5 +1,6 @@
 .include "ascii.inc"
 .include "globals.inc"
+.include "macros.inc"
 
 .import getc
 .import putc
@@ -13,8 +14,7 @@
 ; 	line_len - number of bytes in line_buffer
 .global readln
 .proc readln
-	pha			; save A, X
-	phx
+	push_ax			; save A, X
 
 	stz line_len		; reset line buffer length
 
@@ -70,7 +70,6 @@
 	lda #ASCII_CR		; write CR to output
 	jsr putc
 @exit:
-	plx			; restore A, X
-	pla
+	pop_ax			; restore A, X
 	rts			; return to caller
 .endproc

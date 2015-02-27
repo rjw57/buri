@@ -15,4 +15,4 @@
 reset_str:
 	.byte ASCII_ESC
 	.byte 'c'
-	.byte ASCII_NUL
+	.byte 0

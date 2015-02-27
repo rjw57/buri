@@ -6,6 +6,7 @@
 .include "ascii.inc"
 .include "globals.inc"
 .include "hardware.inc"
+.include "macros.inc"
 
 .import initio
 .import putc
@@ -23,8 +24,7 @@
 	jsr initscr		; reset terminal
 
 	jsr cls			; clear screen
-	lda #<banner_str	; write banner
-	ldx #>banner_str
+	ldaxi banner_str	; write banner
 	jsr puts
 	lda #ASCII_CR		; write new line
 	jsr putc
@@ -32,9 +32,8 @@
 	jsr putc
 
 @prompt_loop:
-	lda #<prompt_str	; write command prompt
-	ldx #>prompt_str
-	jsr puts
+	lda '*'			; write command prompt
+	jsr putc
 
 	; Read a line of input
 	jsr readln
@@ -65,8 +64,4 @@
 
 .segment "RODATA"
 banner_str:
-	.byte "Buri microcomputer"
-	.byte 0
-prompt_str:
-	.byte "* "
-	.byte 0
+	cstring "Buri microcomputer"
