@@ -155,7 +155,8 @@ class BuriApplication(object):
         self._screen_photo_im = ImageTk.PhotoImage('RGB', self._sim.screen.SCREEN_SIZE_PX)
         self._refresh_screen()
         screen.create_image(1, 1, image=self._screen_photo_im, anchor=tk.N+tk.W)
-        screen.grid(row=1, column=0)
+        # HACK do not add screen for the moment
+        # screen.grid(row=1, column=0)
 
         # Create serial console text widget
         term = VT100Frame(self._main_frame, callback=self._serial_mock.inject)
