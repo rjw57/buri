@@ -21,12 +21,14 @@ from builtins import (  # pylint: disable=redefined-builtin, unused-import
     filter, map, zip
 )
 
+from collections import deque
 import logging
 import os
 import sys
 import threading
 
 from burisim import BuriSim, MachineError
+from burisim._tkvt100 import VT100Frame
 
 from docopt import docopt
 import tkinter as tk
@@ -39,11 +41,39 @@ __doc__ = __doc__.format( # pylint: disable=redefined-builtin
 
 log = logging.getLogger(__name__)
 
+class _SerialMock(object):
+    def __init__(self, data_cb=None):
+        self.BAUDRATES = [9600,19200]
+        self.data_cb = data_cb
+        self._buffer = deque()
+
+    def inject(self, char):
+        self._buffer.append(char)
+
+    def write(self, data):
+        if self.data_cb is not None:
+            self.data_cb(data.decode('ascii'))
+
+    def setDTR(self, level=True):
+        pass
+
+    def inWaiting(self):
+        return len(self._buffer) > 0
+
+    def read(self, size=1):
+        rv = []
+        while len(rv) < size:
+            rv.append(self._buffer.popleft())
+        return (''.join(rv)).encode('ascii')
+
 # pylint: disable=too-many-instance-attributes, too-few-public-methods
 class BuriApplication(object):
     def __init__(self, sim, master=None, rom_image=None):
         self._sim = sim
         self._rom_image_fn = rom_image
+
+        self._serial_mock = _SerialMock()
+        self._sim.acia1.connect_to_serial(self._serial_mock)
 
         # Self-test screen memory
         for idx in range(self._sim.screen.SCREEN_SIZE_BYTES):
@@ -88,15 +118,21 @@ class BuriApplication(object):
             self._sim_thread_is_running.clear()
 
     def _sim_thread_loop(self):
+        from time import sleep
         while not self._sim_thread_exit.is_set():
-            if not self._sim_thread_is_running.wait(0.1):
-                continue
             try:
                 with self._sim_lock:
-                    self._sim.step()
+                    for _ in range(1000):
+                        self._sim.step()
             except MachineError as e:
                 log.error('Machine error: %s', e)
                 self._halt.set(1)
+
+            if not self._sim_thread_is_running.wait(1):
+                continue
+
+            # HACK: reduce GIL pressure
+            sleep(0.01)
 
     def _redraw_cb(self):
         self._refresh_screen()
@@ -107,7 +143,7 @@ class BuriApplication(object):
     def _create_widgets(self):
         # Create and place tool bar
         self._tool_bar = self._create_tool_bar()
-        self._tool_bar.grid(row=0, sticky=tk.E + tk.W)
+        self._tool_bar.grid(row=0, columnspan=2, sticky=tk.E + tk.W)
 
         # Create and place screen image canvas
         screen = tk.Canvas(
@@ -119,7 +155,13 @@ class BuriApplication(object):
         self._screen_photo_im = ImageTk.PhotoImage('RGB', self._sim.screen.SCREEN_SIZE_PX)
         self._refresh_screen()
         screen.create_image(1, 1, image=self._screen_photo_im, anchor=tk.N+tk.W)
-        screen.grid(row=1)
+        screen.grid(row=1, column=0)
+
+        # Create serial console text widget
+        term = VT100Frame(self._main_frame, callback=self._serial_mock.inject)
+        term.focus_set()
+        term.grid(row=1, column=1, sticky=tk.E + tk.W + tk.N + tk.S)
+        self._serial_mock.data_cb = term.write
 
         # Lay out main frame
         self._main_frame.grid()

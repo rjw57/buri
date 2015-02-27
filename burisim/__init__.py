@@ -27,6 +27,7 @@ from builtins import (  # pylint: disable=redefined-builtin, unused-import
 
 from past.builtins import basestring # pylint: disable=redefined-builtin
 
+from collections import deque
 from contextlib import contextmanager
 from itertools import cycle
 import logging
@@ -57,7 +58,7 @@ class ReadOnlyMemoryError(MachineError):
 class BuriSim(object):
     ROM_SIZE = 0x2000 # 8K
     ROM_RANGE = 0x10000 - ROM_SIZE, 0x10000
-    ACIA1_RANGE = 0x8800, 0x8804
+    ACIA1_RANGE = 0xDFF0, 0xDFF4
 
     # Screen memory is at top of RAM from 0x7B00
     SCREEN_RANGE = 0x7B00, 0x7B00 + ScreenMemory.SCREEN_SIZE_BYTES
@@ -208,6 +209,9 @@ class ACIA(object):
         self._control_reg = 0
         self._command_reg = 0
 
+        # read buffer
+        self._in_buffer = deque()
+
         # Hardware-reset
         self.hw_reset()
 
@@ -219,16 +223,17 @@ class ACIA(object):
         """Call regularly to check for incoming data."""
         # Early out if no serial port attached or no data waiting
         sp = self.serial_port
-        if sp is None or sp.inWaiting() == 0:
+        if sp is None:
             return
 
+        while sp.inWaiting() != 0:
+            self._in_buffer.append(struct.unpack('B', sp.read(1))[0])
+
         # There is some data, transfer next data if receive data reg is empty
-        if self._status_reg & ACIA._ST_RDRF == 0:
-            self._recv_data = struct.unpack('B', sp.read(1))[0]
+        if len(self._in_buffer) > 0 and self._status_reg & ACIA._ST_RDRF == 0:
+            self._recv_data = self._in_buffer.popleft()
             self._status_reg |= ACIA._ST_RDRF
             self._trigger_irq()
-        else:
-            _LOGGER.warn('ACIA: dropping received data')
 
     def observe_mem(self, mem, start):
         """Add appropriate read/write observers to memory starting at a given
@@ -304,7 +309,9 @@ class ACIA(object):
 
     def _trigger_irq(self):
         """Trigger an interrupt."""
-        self._status_reg |= 0b10010000
+        if self._control_reg & 0b1100 == 0b0100:
+            self._status_reg |= 0b10010000
+        # FIXME: trigger on processor?
 
     def _prog_reset(self):
         """Perform a programmed reset."""
