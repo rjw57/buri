@@ -7,7 +7,7 @@ Usage:
 
 Options:
     -h, --help          Show a brief usage summary.
-    -v, --verbose       Increase verbosity.
+    -q, --quiet         Decrease verbosity.
 
 Hardware options:
     --serial URL        Connect ACIA1 to this serial port. [default: loop://]
@@ -34,7 +34,7 @@ import struct
 import sys
 
 from docopt import docopt
-from py65.devices.mpu6502 import MPU
+from py65.devices.mpu65c02 import MPU
 from py65.memory import ObservableMemory
 import serial
 
@@ -42,7 +42,10 @@ from .crt import ScreenMemory
 
 _LOGGER = logging.getLogger(__name__)
 
-class ReadOnlyMemoryError(RuntimeError):
+class MachineError(Exception):
+    pass
+
+class ReadOnlyMemoryError(MachineError):
     """Raised when code had attempter to write to read-only memory."""
     def __init__(self, address, value):
         self.address = address
@@ -384,7 +387,7 @@ class ACIA(object):
 def main():
     opts = docopt(__doc__)
     logging.basicConfig(
-        level=logging.INFO if opts['--verbose'] else logging.WARN,
+        level=logging.WARN if opts['--quiet'] else logging.INFO,
         stream=sys.stderr, format='%(name)s: %(message)s'
     )
 
