@@ -122,16 +122,15 @@ class BuriApplication(object):
         while not self._sim_thread_exit.is_set():
             try:
                 with self._sim_lock:
-                    for _ in range(1000):
+                    for _ in range(100):
                         self._sim.step()
             except MachineError as e:
                 log.error('Machine error: %s', e)
                 self._halt.set(1)
 
-            if not self._sim_thread_is_running.wait(1):
-                continue
+            self._sim_thread_is_running.wait(1)
 
-            # HACK: reduce GIL pressure
+            # HACK: relieve GIL pressure
             sleep(0.01)
 
     def _redraw_cb(self):
