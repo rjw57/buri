@@ -3,30 +3,24 @@
 ;
 .import init
 
-;; Reset vector. If the ROM has an "entry point", this is it.
+; Called on processor reset. Bootstraps stack pointer, clears zero page and
+; jumps to init.
 .export reset
 .proc reset
-	; Processor bootstrap
+	; Bootstrap processor
 	sei				; disable interrupts
 	cld				; use binary mode arithmetic
-
-	; Initialise stack pointer
-	ldx	#$FF
+	ldx	#$FF			; initialise stack pointer
 	txs
 
 	; Clear zero page
-clear_zp:
 	lda 	#$00			; value to fill ZP with
 	ldx 	#$00			; where to start writing
 @loop:
 	sta	$00,X			; write A to ZP location X
 	inx				; increment X (wraps at $FF)
 	bne	@loop			; if X has not wrapped, loop
-end_clear_zp:
 
-	; Enable interripts
-	cli
-
-	; Jump to initial entry point
-	jmp	init
+	cli				; re-enable interrupts
+	jmp	init			; jump to entry point
 .endproc
