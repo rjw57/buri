@@ -23,4 +23,8 @@ GUI emulator respectively. Both are somewhat immature.
 
 The core of the 6502 emulator is [py65](https://github.com/mnaberez/py65/).
 
-The VT100 widget for tkinter is based on work by Paul Swartz.
+The VT100 widget for tkinter is based on [Twisted
+Conch](https://github.com/racker/python-twisted-conch) and specifically work by
+Paul Swartz and Jean-Paul Calderone. See the
+[license](https://github.com/racker/python-twisted-conch/blob/master/LICENSE)
+there for more information.
