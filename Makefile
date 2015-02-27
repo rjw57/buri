@@ -5,6 +5,7 @@ endif
 
 # Directories
 ASMINC_DIR:=asminc
+HDR_DIR:=include
 SRC_DIR:=src
 
 # Find the cl65 tool if not specified
@@ -15,8 +16,11 @@ endif
 
 # Source files which make up this project
 ROM_SRCS+=$(wildcard $(ASMINC_DIR)/*.inc)
+ROM_SRCS+=$(wildcard $(HDR_DIR)/*.h)
 ROM_SRCS+=\
 	$(wildcard $(SRC_DIR)/serial/*.[cs])	\
+	$(wildcard $(SRC_DIR)/vt100/*.[cs])	\
+	$(wildcard $(SRC_DIR)/io/*.[cs])	\
 	$(wildcard $(SRC_DIR)/*.[cs])
 
 # Convert sources into list of object files
@@ -45,8 +49,8 @@ CL65_FLAGS+=-t none
 # Append linker config configuration to cl65 command line
 CL65_FLAGS+=-C "$(LINK_CONFIG)"
 
-# Append include file location to cl65 command line
-CL65_FLAGS+=--asm-include-dir asminc
+# Append include file locations to cl65 command line
+CL65_FLAGS+=--asm-include-dir $(ASMINC_DIR) -I $(HDR_DIR)
 
 # ROM output
 ROM_BIN:=rom.bin

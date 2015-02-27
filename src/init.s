@@ -3,27 +3,70 @@
 ; When this is called, zero page has been cleared and the processor has been
 ; bootstrapped.
 
+.include "ascii.inc"
+.include "globals.inc"
 .include "hardware.inc"
 
+.import initio
 .import putc
 .import getc
+.import puts
+.import readln
+
+.import initscr
+.import cls
 
 ; This function is never returned from.
 .export init
 .proc init
-	; Initialise the serial port
-	lda %00011111		; 8-bit, 1 stop, 19200 baud
-	sta ACIA1_CTRL
-	lda %00001011		; No parity, enable hw, no interrupts
-	sta ACIA1_CMD
+	jsr initio		; reset I/O device
+	jsr initscr		; reset terminal
 
-	; Loop reading a character from serial port and echo it back
-@echo_loop:
-	jsr getc		; Read....
-	jsr putc		; Write...
-	bra @echo_loop		; loop
+	jsr cls			; clear screen
+	lda #<banner_str	; write banner
+	ldx #>banner_str
+	jsr puts
+	lda #ASCII_CR		; write new line
+	jsr putc
+	lda #ASCII_LF
+	jsr putc
+
+@prompt_loop:
+	lda #<prompt_str	; write command prompt
+	ldx #>prompt_str
+	jsr puts
+
+	; Read a line of input
+	jsr readln
+
+	; Write it back out
+	ldx #0
+	cpx line_len
+	beq @no_input
+@write_loop:
+	lda line_buffer, X
+	jsr putc
+	inx
+	cpx line_len
+	bne @write_loop
+
+	lda #ASCII_CR		; write new line
+	jsr putc
+	lda #ASCII_LF
+	jsr putc
+@no_input:
+
+	bra @prompt_loop	; loop
 
 ; Sit in a tight loop for the rest of time.
 @halt_loop:
 	bra @halt_loop
 .endproc
+
+.segment "RODATA"
+banner_str:
+	.byte "Buri microcomputer"
+	.byte 0
+prompt_str:
+	.byte "* "
+	.byte 0
