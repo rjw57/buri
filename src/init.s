@@ -32,7 +32,7 @@
 	jsr putc
 
 @prompt_loop:
-	lda '*'			; write command prompt
+	lda #'*'		; write command prompt
 	jsr putc
 
 	; Read a line of input
@@ -54,7 +54,6 @@
 	lda #ASCII_LF
 	jsr putc
 @no_input:
-
 	bra @prompt_loop	; loop
 
 ; Sit in a tight loop for the rest of time.
