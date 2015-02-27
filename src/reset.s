@@ -24,6 +24,9 @@ clear_zp:
 	bne	@loop			; if X has not wrapped, loop
 end_clear_zp:
 
+	; Enable interripts
+	cli
+
 	; Jump to initial entry point
 	jmp	init
 .endproc
