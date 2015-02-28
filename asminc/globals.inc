@@ -9,8 +9,11 @@ LINE_BUFFER_SIZE = $80
 
 ;; ZERO PAGE
 
-; Temporary pointers
+; Temporary pointers - preserved over function call
 .globalzp ptr1
+
+; Temporary variables - preserved over function call
+.globalzp tmp1
 
 ; Number of bytes in input biffer
 .globalzp line_len

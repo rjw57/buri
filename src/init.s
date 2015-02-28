@@ -36,23 +36,25 @@
 	jsr putc
 
 	; Read a line of input
+	lda #<line_buffer
+	sta ptr1
+	lda #>line_buffer
+	sta ptr1+1
+	lda #>line_buffer
+	lda #LINE_BUFFER_SIZE
 	jsr readln
 
-	; Write it back out
-	ldx #0
-	cpx line_len
-	beq @no_input
-@write_loop:
-	lda line_buffer, X
-	jsr putc
-	inx
-	cpx line_len
-	bne @write_loop
+	lda line_buffer		; line zero-length? (i.e. first byte is nul)
+	beq @prompt_loop	; yes, loop back to prompt
 
-	lda #ASCII_CR		; write new line
+	ldaxi line_buffer	; no, write it back out
+	jsr puts
+
+	lda #ASCII_CR		; write LF/CF
 	jsr putc
 	lda #ASCII_LF
 	jsr putc
+
 @no_input:
 	bra @prompt_loop	; loop
 

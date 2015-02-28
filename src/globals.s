@@ -2,6 +2,7 @@
 
 .segment "OSZP": zeropage
 ptr1:		.res 2
+tmp1:		.res 1
 
 line_len:	.res 1
 
