@@ -63,26 +63,28 @@
 ; Stack manipulation. Macro-ised to avoid silly mistakes w.r.t. ordering of
 ; push and pulls.
 
-; Save/restore A, X on entry/exit
-.macro push_ax
-	pha
-	phx
-.endmacro
-.macro pop_ax
-	plx
-	pla
-.endmacro
-
-; Save/restore A, X, Y on entry/exit
-.macro push_axy
-	pha
+; Save/restore X, Y on entry/exit
+.macro save_xy
 	phx
 	phy
 .endmacro
-.macro pop_axy
+.macro restore_xy
 	ply
 	plx
-	pla
+.endmacro
+
+; Save/restore 16-bit value at Addr. CORRUPTS Y
+.macro save_word Addr
+	ldy Addr
+	phy
+	ldy Addr+1
+	phy
+.endmacro
+.macro restore_word Addr
+	ply
+	sty Addr+1
+	ply
+	sty Addr
 .endmacro
 
 ; ===========================================================================

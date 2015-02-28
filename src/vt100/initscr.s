@@ -1,14 +1,19 @@
 .include "ascii.inc"
+.include "macros.inc"
 
 .import puts
 
 ; initscr - reset the terminal to its default state
 .global initscr
 .proc initscr
+	pha
+	save_xy
 	lda #<reset_str		; load string address
 	ldx #>reset_str
-	jmp puts		; jump straight to puts letting
-				; its rts return
+	jsr puts
+	restore_xy
+	pla
+	rts
 .endproc
 
 .segment "RODATA"

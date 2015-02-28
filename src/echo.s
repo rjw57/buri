@@ -16,6 +16,9 @@
 ; 	arg{1,2,3} - offsets into line_buffer of arguments 1, 2 and 3
 ;
 entry:
+	pha
+	save_xy
+
 	lda #'1'
 	jsr putc
 	lda #':'
@@ -43,6 +46,8 @@ entry:
 	adc arg3		; add offset (low byte)
 	jsr putln
 
+	restore_xy
+	pla
 	rts
 
 ; record command in command table

@@ -86,7 +86,8 @@
 ; three tokens.
 ;
 .proc splitcli
-	push_axy		; save state
+	pha
+	save_xy
 
 	ldx #0
 
@@ -99,6 +100,7 @@
 	jsr findnext		; find arg 3
 	sty arg3
 
-	pop_axy			; restore state and return
+	restore_xy
+	pla
 	rts
 .endproc

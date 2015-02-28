@@ -15,7 +15,8 @@
 ;	ptr1 - pointer to input line with terminating null
 .global readln
 .proc readln
-	push_axy		; save A, X, Y
+	save_xy
+
 	ldx tmp1		; save tmp1
 	phx
 
@@ -84,6 +85,7 @@
 
 	plx			; restore tmp1
 	stx tmp1
-	pop_axy			; restore A, X, Y
+
+	restore_xy
 	rts			; return to caller
 .endproc
