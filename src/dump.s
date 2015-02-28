@@ -9,14 +9,16 @@
 .import putc
 .import puthex
 .import putln
+.import putnewline
+.import puts
 
 ; record command in command table
 registercmd "dump", entry
 
-; dump <addr> <len>
+; dump <addr> [<len>]
 ;
 ; Dumps to screen <len> bytes from memory starting at <addr>. Both <len> and
-; <addr> are hexadecimal.
+; <addr> are hexadecimal. If <len> is omitted use $100 (one page).
 ;
 ; on entry:
 ; 	arg{1,2,3} - offsets into line_buffer of arguments 1, 2 and 3
@@ -47,9 +49,12 @@ entry:
 
 	lda #0				; check arg2 != 0
 	cmp ptr2
-	bne @arg2_valid
+	bne @args_parsed
 	cmp ptr2+1
-	bne @arg2_valid
+	bne @args_parsed
+	lda #$01			; set ptr2 = $100
+	sta ptr2+1
+	bra @args_parsed
 
 @bad_arg:
 	txa				; char denoting arg
@@ -61,7 +66,7 @@ entry:
 	jsr putln
 	bra @exit
 
-@arg2_valid:
+@args_parsed:
 
 	; At this point we've verified the arguments, ptr3 holds the address to
 	; read from and ptr2 holds the number of bytes to read.
@@ -73,48 +78,54 @@ entry:
 	adc ptr3+1
 	sta ptr2+1
 
+	ldx #0				; X = # bytes dumped modulo 16
 @dump_loop:
 	; Dump until ptr2 == ptr3
-
 	lda ptr2
 	cmp ptr3
-	bne @no_exit
+	bne @ptr2_not_ptr3
 	lda ptr2+1
 	cmp ptr3+1
 	beq @exit_loop
-@no_exit:
+@ptr2_not_ptr3:
+	cpx #0				; beginning of line?
+	bne @write_byte			; no, just write byte
+
+	; otherwise, write current address
 	lda ptr3+1
 	jsr puthex
 	lda ptr3
 	jsr puthex
-	lda #':'
+	lda #' '
+	jsr putc
+	lda #' '			; write space
 	jsr putc
 
-	lda (ptr3)
+@write_byte:
+	lda (ptr3)			; write byte @ ptr3
 	jsr puthex
-
-	lda #' '
+	lda #' '			; write space
 	jsr putc
 
 	; Increment ptr3
 	lda #1
 	add_word ptr3
+
+	; Formatting
+	inx
+	cpx #8				; written 8th byte?
+	bne @chk2
+	lda #' '
+	jsr putc			; yes, write extra space
 	bra @dump_loop
+@chk2:
+	cpx #16				; written 16th byte?
+	bne @dump_loop
+	ldx #0				; reset X
+	jsr putnewline			; write newline
+	bra @dump_loop			; loop
+
 @exit_loop:
-
-	lda ptr3+1
-	jsr puthex
-	lda ptr3
-	jsr puthex
-
-	lda #':'
-	jsr putc
-
-	lda ptr2+1
-	jsr puthex
-	lda ptr2
-	jsr puthex
-	bra @exit
 @exit:
 	restore_word ptr3
 	restore_word ptr2
