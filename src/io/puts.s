@@ -1,15 +1,14 @@
-.include "globals.inc"
 .include "macros.inc"
 
+.export puts
+
+.importzp ptr1
 .import putc
 
 ; puts - write C-style string to output
 ;
 ; A - low byte of string address
 ; X - high byte of string address
-;
-; Corrupts ptr1
-.global puts
 .proc puts
 	push_ax			; save A, X
 

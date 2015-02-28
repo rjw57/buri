@@ -9,11 +9,14 @@ LINE_BUFFER_SIZE = $80
 
 ;; ZERO PAGE
 
-; Temporary pointers - preserved over function call
+; Temporary pointers - not guaranteed to be preserved over function call
 .globalzp ptr1
+.globalzp ptr2
 
-; Temporary variables - preserved over function call
+; Temporary variables - not guaranteed to be preserved over function call
 .globalzp tmp1
+.globalzp tmp2
+.globalzp tmp3
 
 ;; OS PRIVATE PAGE
 

@@ -41,3 +41,4 @@ SCREEN_N_PGS	= (SCREEN_N_BYTES + $FE) >> 8	; rounded *up* size of screen in page
 	jsr		scrn_putc	; output
 .endmacro
 
+; vi:ft=asm
