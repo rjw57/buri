@@ -35,13 +35,11 @@
 	cmp (ptr1)			; was byte '\0'?
 	beq @success			; success
 
-	clc
 	lda #1
-	adc_word ptr1			; increment ptr1
+	add_word ptr1			; increment ptr1
 
-	clc
 	lda #1
-	adc_word ptr2			; increment ptr2
+	add_word ptr2			; increment ptr2
 
 	bra @cmp_loop
 @success:

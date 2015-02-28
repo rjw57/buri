@@ -55,11 +55,9 @@
 	ldax_abs nsc_str	; no, print error
 	jsr putln
 	bra @prompt_loop	; branch
+
 @found_command:
 	jsr run_command		; run it
-
-
-@no_input:
 	bra @prompt_loop	; loop
 
 ; Sit in a tight loop for the rest of time.
@@ -67,8 +65,7 @@
 	bra @halt_loop
 .endproc
 
-; INTERNAL proc. Simply jump to address stored in ptr1. Need to make it a
-; subroutine so that one can use JSR.
+; INTERNAL proc. Jump to address stored in ptr1.
 .proc run_command
 	jmp (ptr1)		; jump to command entry point (which will rts)
 .endproc

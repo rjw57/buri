@@ -24,8 +24,7 @@ entry:
 	lda #':'
 	jsr putc
 	ldax_abs line_buffer
-	clc
-	adc arg1		; add offset (low byte)
+	add arg1		; add offset (low byte)
 	jsr putln
 
 	lda #'2'
@@ -33,8 +32,7 @@ entry:
 	lda #':'
 	jsr putc
 	ldax_abs line_buffer
-	clc
-	adc arg2		; add offset (low byte)
+	add arg2		; add offset (low byte)
 	jsr putln
 
 	lda #'3'
@@ -42,8 +40,7 @@ entry:
 	lda #':'
 	jsr putc
 	ldax_abs line_buffer
-	clc
-	adc arg3		; add offset (low byte)
+	add arg3		; add offset (low byte)
 	jsr putln
 
 	restore_xy

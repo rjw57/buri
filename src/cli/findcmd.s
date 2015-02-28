@@ -31,8 +31,7 @@
 
 	ldw ptr2, line_buffer		; ptr2 = start of command name
 	lda cmdname
-	clc
-	adc_word ptr2
+	add_word ptr2
 
 	ldw ptr3, __CMDTBL_LOAD__	; ptr3 = start of command table
 @search_loop:
@@ -46,8 +45,7 @@
 	copy_word ptr1, ptr3		; *ptr1 <- *ptr3
 
 	lda #3				; increment ptr1 to start of name
-	clc
-	adc_word ptr1
+	add_word ptr1
 
 	jsr streq			; string @ ptr1 == string @ ptr2?
 	cmp #0
@@ -67,8 +65,7 @@
 
 @no_match:
 	lda (ptr3)			; load length of entry from ptr3
-	clc
-	adc_word ptr3			; add length to ptr3
+	add_word ptr3			; add length to ptr3
 	bra @search_loop
 @failed:
 	lda #0

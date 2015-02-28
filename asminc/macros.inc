@@ -35,6 +35,18 @@
 ; ===========================================================================
 ; Arithmetic
 
+; Add without carry. Like adc but clear carry bit first
+.macro add Arg
+	clc
+	adc Arg
+.endmacro
+
+; Subtrct without carry. Like sbc but set carry bit first
+.macro sub Arg
+	sec
+	sbc Arg
+.endmacro
+
 ; Add the byte in A to the 16-byte value at Addr with carry. Preserves A using
 ; stack.
 .macro adc_word Addr
@@ -45,6 +57,12 @@
 	adc Addr+1
 	sta Addr+1
 	pla
+.endmacro
+
+; Like adc_word but clears carry bit first.
+.macro add_word Addr
+	clc
+	adc_word Addr
 .endmacro
 
 ; ===========================================================================
@@ -71,6 +89,16 @@
 .macro restore_xy
 	ply
 	plx
+.endmacro
+
+; Save/restore 8-bit value at Addr. CORRUPTS Y
+.macro save_byte Addr
+	ldy Addr
+	phy
+.endmacro
+.macro restore_byte Addr
+	ply
+	sty Addr
 .endmacro
 
 ; Save/restore 16-bit value at Addr. CORRUPTS Y
