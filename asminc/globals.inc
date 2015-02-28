@@ -15,9 +15,6 @@ LINE_BUFFER_SIZE = $80
 ; Temporary variables - preserved over function call
 .globalzp tmp1
 
-; Number of bytes in input biffer
-.globalzp line_len
-
 ;; OS PRIVATE PAGE
 
 ; Command input buffer
