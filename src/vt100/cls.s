@@ -6,7 +6,7 @@
 ; cls - clear the terminal screen
 .global cls
 .proc cls
-	ldaxi cls_str		; load string address
+	ldax_abs cls_str	; load string address
 	jmp puts		; jump straight to puts letting
 				; its rts return
 .endproc

@@ -10,7 +10,11 @@
 ; A - low byte of string address
 ; X - high byte of string address
 .proc puts
-	push_ax			; save A, X
+	push_axy		; save A, X, Y
+	ldy ptr1
+	phy
+	ldy ptr1+1
+	phy
 
 	sta ptr1
 	stx ptr1+1
@@ -27,6 +31,10 @@
 	bra @loop		; and loop
 
 @exit:
-	pop_ax			; restore A and X
+	ply
+	sty ptr1+1
+	ply
+	sty ptr1
+	pop_axy			; restore A, X and Y
 	rts			; return to caller
 .endproc

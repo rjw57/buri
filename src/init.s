@@ -11,8 +11,11 @@
 .import initio
 .import putc
 .import getc
-.import puts
+.import putln
 .import readln
+
+.import splitcli
+.import findcmd
 
 .import initscr
 .import cls
@@ -24,18 +27,14 @@
 	jsr initscr		; reset terminal
 
 	jsr cls			; clear screen
-	ldaxi banner_str	; write banner
-	jsr puts
-	lda #ASCII_CR		; write new line
-	jsr putc
-	lda #ASCII_LF
-	jsr putc
+	ldax_abs banner_str	; write banner
+	jsr putln
 
 @prompt_loop:
 	lda #'*'		; write command prompt
 	jsr putc
 
-	; Read a line of input
+	; Read a line of input into line_buffer
 	lda #<line_buffer
 	sta ptr1
 	lda #>line_buffer
@@ -47,13 +46,18 @@
 	lda line_buffer		; line zero-length? (i.e. first byte is nul)
 	beq @prompt_loop	; yes, loop back to prompt
 
-	ldaxi line_buffer	; no, write it back out
-	jsr puts
+	jsr splitcli		; split line
 
-	lda #ASCII_CR		; write LF/CF
-	jsr putc
-	lda #ASCII_LF
-	jsr putc
+	jsr findcmd		; find command
+	cmp #0			; found?
+	bne @found_command	; yes
+@no_command:
+	ldax_abs nsc_str	; no, print error
+	jsr putln
+	bra @prompt_loop	; branch
+@found_command:
+	jsr run_command		; run it
+
 
 @no_input:
 	bra @prompt_loop	; loop
@@ -63,6 +67,14 @@
 	bra @halt_loop
 .endproc
 
+; INTERNAL proc. Simply jump to address stored in ptr1. Need to make it a
+; subroutine so that one can use JSR.
+.proc run_command
+	jmp (ptr1)		; jump to command entry point (which will rts)
+.endproc
+
 .segment "RODATA"
 banner_str:
 	cstring "Buri microcomputer"
+nsc_str:
+	cstring "No such command"
