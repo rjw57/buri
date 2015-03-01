@@ -36,7 +36,7 @@ entry:
 
 	ldx #1				; record this is arg1 in X
 	jsr parsehex			; parse ptr1 -> ptr2
-	bcs @bad_arg
+	bcs bad_arg
 	copy_word ptr3, ptr2		; ptr3 <- ptr2
 
 	ldw ptr1, line_buffer		; *ptr1 = second argument
@@ -45,18 +45,18 @@ entry:
 
 	ldx #2				; record this is arg2 in X
 	jsr parsehex			; parse ptr1 -> ptr2
-	bcs @bad_arg
+	bcs bad_arg
 
 	lda #0				; check arg2 != 0
 	cmp ptr2
-	bne @args_parsed
+	bne args_parsed
 	cmp ptr2+1
-	bne @args_parsed
+	bne args_parsed
 	lda #$01			; set ptr2 = $100
 	sta ptr2+1
-	bra @args_parsed
+	bra args_parsed
 
-@bad_arg:
+bad_arg:
 	txa				; char denoting arg
 	add #'0'
 	jsr putc
@@ -64,9 +64,9 @@ entry:
 	jsr putc
 	ldw ptr1, bad_arg_str
 	jsr putln
-	bra @exit
+	bra exit
 
-@args_parsed:
+args_parsed:
 
 	; At this point we've verified the arguments, ptr3 holds the address to
 	; read from and ptr2 holds the number of bytes to read.
@@ -79,17 +79,17 @@ entry:
 	sta ptr2+1
 
 	ldx #0				; X = # bytes dumped modulo 16
-@dump_loop:
+dump_loop:
 	; Dump until ptr2 == ptr3
 	lda ptr2
 	cmp ptr3
-	bne @ptr2_not_ptr3
+	bne ptr2_not_ptr3
 	lda ptr2+1
 	cmp ptr3+1
-	beq @exit_loop
-@ptr2_not_ptr3:
+	beq exit_loop
+ptr2_not_ptr3:
 	cpx #0				; beginning of line?
-	bne @write_byte			; no, just write byte
+	bne write_byte			; no, just write byte
 
 	; otherwise, write current address
 	lda ptr3+1
@@ -101,32 +101,31 @@ entry:
 	lda #' '			; write space
 	jsr putc
 
-@write_byte:
-	lda (ptr3)			; write byte @ ptr3
+write_byte:
+	lda (ptr3)			; write byte  ptr3
 	jsr puthex
 	lda #' '			; write space
 	jsr putc
 
 	; Increment ptr3
-	lda #1
-	add_word ptr3
+	inc_word ptr3
 
 	; Formatting
 	inx
 	cpx #8				; written 8th byte?
-	bne @chk2
+	bne chk2
 	lda #' '
 	jsr putc			; yes, write extra space
-	bra @dump_loop
-@chk2:
+	bra dump_loop
+chk2:
 	cpx #16				; written 16th byte?
-	bne @dump_loop
+	bne dump_loop
 	ldx #0				; reset X
 	jsr putnewline			; write newline
-	bra @dump_loop			; loop
+	bra dump_loop			; loop
 
-@exit_loop:
-@exit:
+exit_loop:
+exit:
 	restore_word ptr3
 	restore_word ptr2
 	restore_word ptr1
