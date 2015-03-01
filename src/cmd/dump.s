@@ -120,6 +120,9 @@ chk2:
 	bra dump_loop			; loop
 
 exit_loop:
+	cpx #0				; did we end on a newline?
+	beq exit
+	jsr putnewline			; no, add one
 exit:
 	restore_word ptr3
 	restore_word ptr2
