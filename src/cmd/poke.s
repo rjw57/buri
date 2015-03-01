@@ -1,5 +1,4 @@
 .include "macros.inc"
-.include "strings.inc"
 
 .importzp ptr1, ptr2
 .importzp arg1, arg2
@@ -8,6 +7,7 @@
 .import parsehex16
 .import putc
 .import putln
+.import bad_arg_err_
 
 ; record command in command table
 registercmd "poke", poke
@@ -43,13 +43,7 @@ registercmd "poke", poke
 	bra args_parsed
 
 bad_arg:
-	txa				; char denoting arg
-	add #'0'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldw ptr1, bad_arg_str
-	jsr putln
+	jsr bad_arg_err_
 	bra exit
 
 args_parsed:

@@ -11,6 +11,7 @@
 .import putln
 .import putnewline
 .import puts
+.import bad_arg_err_
 
 ; record command in command table
 registercmd "dump", entry
@@ -57,13 +58,7 @@ entry:
 	bra args_parsed
 
 bad_arg:
-	txa				; char denoting arg
-	add #'0'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldw ptr1, bad_arg_str
-	jsr putln
+	jsr bad_arg_err_
 	bra exit
 
 args_parsed:

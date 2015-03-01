@@ -1,14 +1,11 @@
 .include "macros.inc"
-.include "strings.inc"
 
 .importzp ptr1, ptr2
 .importzp arg1, arg2
 .import line_buffer
 .import parsehex16
-.import putc
-.import puthex
-.import putln
-.import putnewline
+.import puthex, putnewline
+.import bad_arg_err_
 
 ; record command in command table
 registercmd "peek", peek
@@ -31,17 +28,8 @@ registercmd "peek", peek
 
 	ldx #1				; record this is arg1 in X
 	jsr parsehex16			; parse ptr1 -> ptr2
-	bcs bad_arg
-	bra args_parsed
-
-bad_arg:
-	txa				; char denoting arg
-	add #'0'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldw ptr1, bad_arg_str
-	jsr putln
+	bcc args_parsed
+	jsr bad_arg_err_
 	bra exit
 
 args_parsed:
@@ -49,6 +37,7 @@ args_parsed:
 	lda (ptr2)			; peek value
 	jsr puthex
 	jsr putnewline
+
 exit:
 	restore_word ptr2
 	restore_word ptr1
