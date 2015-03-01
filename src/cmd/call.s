@@ -33,7 +33,11 @@ registercmd "call", call
 
 args_parsed:
 	; ptr2 - location
+	pha
+	save_xy
 	jsr call_impl_
+	restore_xy
+	pla
 
 exit:
 	restore_word ptr2
