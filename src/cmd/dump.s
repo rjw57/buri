@@ -5,7 +5,7 @@
 .importzp arg1, arg2
 .import line_buffer
 
-.import parsehex
+.import parsehex16
 .import putc
 .import puthex
 .import putln
@@ -35,7 +35,7 @@ entry:
 	add_word ptr1
 
 	ldx #1				; record this is arg1 in X
-	jsr parsehex			; parse ptr1 -> ptr2
+	jsr parsehex16			; parse ptr1 -> ptr2
 	bcs bad_arg
 	copy_word ptr3, ptr2		; ptr3 <- ptr2
 
@@ -44,7 +44,7 @@ entry:
 	add_word ptr1
 
 	ldx #2				; record this is arg2 in X
-	jsr parsehex			; parse ptr1 -> ptr2
+	jsr parsehex16			; parse ptr1 -> ptr2
 	bcs bad_arg
 
 	lda #0				; check arg2 != 0

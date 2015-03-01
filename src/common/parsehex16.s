@@ -1,11 +1,11 @@
 .include "macros.inc"
 
-.export parsehex
+.export parsehex16
 
 .importzp ptr1, ptr2
 .import parsehexnibble
 
-; parsehex - parse a C-style string into a 16-bit value
+; parsehex16 - parse a C-style string into a 16-bit value
 ;
 ; on entry:
 ; 	ptr1 - pointer to input string
@@ -13,7 +13,7 @@
 ; 	ptr1 - preserved
 ; 	ptr2 - 16-bit value
 ; 	carry flag - set iff there was an error
-.proc parsehex
+.proc parsehex16
 	pha
 	save_xy
 	save_word ptr1
