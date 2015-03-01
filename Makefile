@@ -19,6 +19,7 @@ ROM_SRCS+=$(wildcard $(ASMINC_DIR)/*.inc)
 ROM_SRCS+=$(wildcard $(HDR_DIR)/*.h)
 ROM_SRCS+=\
 	$(wildcard $(SRC_DIR)/common/*.[cs])	\
+	$(wildcard $(SRC_DIR)/cmd/*.[cs])	\
 	$(wildcard $(SRC_DIR)/serial/*.[cs])	\
 	$(wildcard $(SRC_DIR)/vt100/*.[cs])	\
 	$(wildcard $(SRC_DIR)/cli/*.[cs])	\
