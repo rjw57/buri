@@ -1,8 +1,7 @@
 .include "macros.inc"
 
-.importzp arg1
-.importzp arg2
-.importzp arg3
+.importzp ptr1
+.importzp arg1, arg2, arg3
 
 .import putln
 .import putc
@@ -15,37 +14,44 @@
 ; on entry:
 ; 	arg{1,2,3} - offsets into line_buffer of arguments 1, 2 and 3
 ;
-entry:
+.proc entry
 	pha
-	save_xy
+	save_word ptr1
 
-	lda #'1'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldax_abs line_buffer
-	add arg1		; add offset (low byte)
-	jsr putln
+	lda arg1
+	ldx #'1'
+	jsr show_arg
 
-	lda #'2'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldax_abs line_buffer
-	add arg2		; add offset (low byte)
-	jsr putln
+	lda arg2
+	ldx #'2'
+	jsr show_arg
 
-	lda #'3'
-	jsr putc
-	lda #':'
-	jsr putc
-	ldax_abs line_buffer
-	add arg3		; add offset (low byte)
-	jsr putln
+	lda arg3
+	ldx #'3'
+	jsr show_arg
 
-	restore_xy
+	restore_word ptr1
 	pla
 	rts
+.endproc
+
+; INTERNAL proc - write arg value.
+;
+; on entry:
+; 	A - offset of arg in line_buffer
+; 	X - argument number in ASCII (1, 2 or 3)
+.proc show_arg
+	pha
+	txa
+	jsr putc
+	lda #':'
+	jsr putc
+	ldw ptr1, line_buffer
+	pla
+	add_word ptr1
+	jsr putln
+	rts
+.endproc
 
 ; record command in command table
 registercmd "echo", entry

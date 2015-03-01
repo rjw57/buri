@@ -65,6 +65,15 @@
 	adc_word Addr
 .endmacro
 
+; Increment the 16-bit value at Addr
+.macro inc_word Addr
+	.local SkipHighInc
+	inc Addr			; increment low byte
+	bne SkipHighInc			; if non zero, don't increment high byte
+	inc Addr+1			; increment high byte
+SkipHighInc:
+.endmacro
+
 ; ===========================================================================
 ; Store a C-style string
 .macro cstring Str

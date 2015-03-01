@@ -1,16 +1,17 @@
 .include "ascii.inc"
 .include "macros.inc"
 
+.importzp ptr1
 .import puts
 
 ; cls - clear the terminal screen
 .global cls
 .proc cls
 	pha
-	save_xy
-	ldax_abs cls_str	; load string address
+	save_word ptr1
+	ldw ptr1, cls_str	; load string address
 	jsr puts
-	restore_xy
+	restore_word ptr1
 	pla
 	rts
 .endproc

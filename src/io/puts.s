@@ -7,29 +7,25 @@
 
 ; puts - write C-style string to output
 ;
-; A - low byte of string address
-; X - high byte of string address
+; on entry:
+; 	ptr1 - address of string
+; on exit:
+; 	ptr1 - preserved
 .proc puts
 	pha
-	save_xy
 	save_word ptr1
 
-	sta ptr1
-	stx ptr1+1
-@loop:
+loop:
 	lda (ptr1)		; load char
-	beq @exit		; if 0, exit
+	beq exit		; if 0, exit
 
 	jsr putc		; write char
 	
-	inc ptr1		; increment ptr1
-	bne @loop		; loop if ptr1 low byte not zero
-	inc ptr1+1		; else, increment high byte
-	bra @loop		; and loop
+	inc_word ptr1		; increment ptr1
+	bra loop		; and loop
 
-@exit:
+exit:
 	restore_word ptr1
-	restore_xy
 	pla
 	rts			; return to caller
 .endproc

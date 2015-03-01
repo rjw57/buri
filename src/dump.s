@@ -62,7 +62,7 @@ entry:
 	jsr putc
 	lda #':'
 	jsr putc
-	ldax_abs bad_arg_str
+	ldw ptr1, bad_arg_str
 	jsr putln
 	bra @exit
 

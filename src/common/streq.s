@@ -26,28 +26,25 @@
 	ldx ptr2+1
 	phx
 
-@cmp_loop:
+cmp_loop:
 	lda (ptr1)			; byte from A
 	eor (ptr2)			; EOR-ed with B
-	bne @fail			; bytes differ
+	bne fail			; bytes differ
 
 	lda #0
 	cmp (ptr1)			; was byte '\0'?
-	beq @success			; success
+	beq success			; success
 
-	lda #1
-	add_word ptr1			; increment ptr1
+	inc_word ptr1
+	inc_word ptr2
 
-	lda #1
-	add_word ptr2			; increment ptr2
-
-	bra @cmp_loop
-@success:
+	bra cmp_loop
+success:
 	lda #1				; otherwise, match
-	bra @exit
-@fail:
+	bra exit
+fail:
 	lda #0				; strings differ
-@exit:
+exit:
 	; restore ptr1. ptr2
 	plx
 	stx ptr2+1

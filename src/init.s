@@ -27,7 +27,7 @@
 	jsr initscr		; reset terminal
 
 	jsr cls			; clear screen
-	ldax_abs banner_str	; write banner
+	ldw ptr1, banner_str	; write banner
 	jsr putln
 
 @prompt_loop:
@@ -52,7 +52,7 @@
 	cmp #0			; found?
 	bne @found_command	; yes
 @no_command:
-	ldax_abs nsc_str	; no, print error
+	ldw ptr1, nsc_str	; no, print error
 	jsr putln
 	bra @prompt_loop	; branch
 

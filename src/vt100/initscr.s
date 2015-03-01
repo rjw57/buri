@@ -1,17 +1,17 @@
 .include "ascii.inc"
 .include "macros.inc"
 
+.importzp ptr1
 .import puts
 
 ; initscr - reset the terminal to its default state
 .global initscr
 .proc initscr
 	pha
-	save_xy
-	lda #<reset_str		; load string address
-	ldx #>reset_str
+	save_word ptr1
+	ldw ptr1, reset_str
 	jsr puts
-	restore_xy
+	restore_word ptr1
 	pla
 	rts
 .endproc
