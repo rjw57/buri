@@ -53,6 +53,9 @@ args_parsed:
 	ldw ptr1, prompt_str
 	jsr putln
 
+	; Perform an initial wait
+	jsr waitinput_
+
 	; Phase 1 - send NAK until we have some response
 
 	ldx #0				; X = number of NAKs sent
@@ -179,7 +182,7 @@ exit:
 	bne @loop
 
 	iny				; increment Y
-	cpy #$05			; enough?
+	cpy #$03			; enough?
 	bne @loop
 
 	sec				; timed out
@@ -189,6 +192,6 @@ exit:
 
 .segment "RODATA"
 prompt_str:
-	cstring "Start sending via XMODEM"
+	cstring "Receiving via XMODEM..."
 timeout_str:
 	cstring "Timed out"
