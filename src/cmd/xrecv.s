@@ -11,7 +11,7 @@
 
 .import putln, haveinput, getc, putc
 
-NAK_TIMEOUT = $04			; number of initial NAKs before timeout
+NAK_TIMEOUT = $84			; number of initial NAKs before timeout
 
 ; record command in command table
 registercmd "xrecv", xrecv
@@ -25,8 +25,8 @@ registercmd "xrecv", xrecv
 ; 	arg{1,2,3} - offsets into line_buffer of arguments 1, 2 and 3
 ;
 ; during receive:
-; 	ptr2 - address to write to
-; 	ptr2 - total bytes written
+; 	ptr2 - start address to write to
+; 	ptr3 - current address to write to
 ; 	tmp1 - running checksum
 ; 	tmp2 - expected packet number
 .proc xrecv
@@ -75,8 +75,7 @@ timedout:
 haveinitialpacket:
 	lda #1
 	sta tmp2			; initial packet number
-	stz ptr3			; ptr3 <- 0
-	stz ptr3+1
+	copy_word ptr3, ptr2		; ptr3 <- ptr2
 
 recvpacket:
 	jsr getc			; should be SOH or EOT
@@ -88,8 +87,7 @@ recvpacket:
 
 	jsr getc			; packet number
 	cmp tmp2			; should be tmp2
-	bne abort			; nope(!)
-
+	bne abort
 packt_num_ok:
 	jsr getc			; 1s compliment of number (ignored)
 
@@ -97,7 +95,7 @@ packt_num_ok:
 	ldy #0				; read 128 bytes
 @loop:
 	jsr getc
-	sta (ptr2), Y
+	sta (ptr3), Y
 	add tmp1			; update checksum
 	sta tmp1
 	iny
@@ -115,7 +113,6 @@ packt_num_ok:
 chksum_ok:
 	inc tmp2			; increment expected packet
 	lda #128
-	add_word ptr2			; increment ptr2 by 128 bytes
 	add_word ptr3			; increment ptr3 by 128 bytes
 
 	lda #ASCII_ACK			; acknowledge
@@ -168,6 +165,7 @@ exit:
 ; Corrupts A, Y and ptr1
 .proc waitinput_
 	ldw ptr1, 0
+	ldy #0
 @loop:
 	jsr haveinput			; do we have any input?
 	bcc exit			; yes!
@@ -178,6 +176,10 @@ exit:
 	bne @loop
 	lda #$00
 	cmp ptr1+1
+	bne @loop
+
+	iny				; increment Y
+	cmp #$05			; enough?
 	bne @loop
 
 	sec				; timed out
