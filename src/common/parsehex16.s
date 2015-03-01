@@ -44,9 +44,7 @@ loop:
 	ora ptr2			; A = ptr2 | A
 	sta ptr2			; write A back to ptr 2
 
-	lda #1				; increment ptr1
-	clc
-	adc_word ptr1
+	inc_word ptr1			; increment ptr1
 
 	bra loop			; next iteration
 success:
