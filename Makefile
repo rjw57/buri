@@ -11,7 +11,7 @@ endif
 
 LINK_CONFIG := buri.cfg
 
-EXE_FILES=helloworld.obj
+EXE_FILES=helloworld.obj blink.obj
 CLEAN_FILES+=$(EXE_FILES)
 CLEAN_FILES+=$(EXE_FILES:.obj=.o)
 
