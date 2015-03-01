@@ -7,10 +7,10 @@ putc = __ROM_START__
 
 ; Program entry routine
 ;
-; The ENTRY segment is the very first segment in the object. It is the location
-; jumped to. Jump straight to our main routine.
+; The STARTUP segment is the very first segment in the object. It is the
+; location jumped to. Jump straight to our main routine.
 .pushseg
-.segment "ENTRY"
+.segment "STARTUP"
 	jmp main
 .popseg
 

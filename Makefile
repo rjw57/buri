@@ -11,9 +11,17 @@ endif
 
 LINK_CONFIG := buri.cfg
 
-EXE_FILES=helloworld.obj blink.obj
+ASM_SOURCES:=$(wildcard *.s)
+C_SOURCES:=$(wildcard *.c)
+
+ASM_OBJECTS:=$(ASM_SOURCES:.s=.o)
+C_OBJECTS:=$(C_SOURCES:.c=.o)
+CLEAN_FILES+=$(ASM_OBJECTS) $(C_OBJECTS)
+
+ASM_BINS:=$(ASM_SOURCES:.s=.bin)
+C_BINS:=$(C_SOURCES:.c=.bin)
+EXE_FILES=$(ASM_BINS) $(C_BINS)
 CLEAN_FILES+=$(EXE_FILES)
-CLEAN_FILES+=$(EXE_FILES:.obj=.o)
 
 ## cl65 command-line flags
 
@@ -23,8 +31,8 @@ CL65_FLAGS+=--cpu 65C02
 # Use optimisation
 CL65_FLAGS+=-O
 
-# We are using the "none" target
-CL65_FLAGS+=-t none
+# We are using the "buri" target
+CL65_FLAGS+=-t buri
 
 # Append linker config configuration to cl65 command line
 CL65_FLAGS+=-C "$(LINK_CONFIG)"
@@ -36,8 +44,11 @@ all: $(EXE_FILES)
 clean:
 	rm -f $(CLEAN_FILES)
 
-%.obj: %.o $(LINK_CONFIG)
+%.bin: %.o $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -o "$@" "$<"
 
-%.o: %.s $(LINK_CONFIG)
+$(ASM_OBJECTS):%.o: %.s $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
+
+$(C_OBJECTS):%.o: %.c $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
