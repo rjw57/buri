@@ -374,11 +374,15 @@ class ACIA(object):
         # Set word length
         sp.bytesize = ACIA._WL_TABLE[wl]
 
-        # Data terminal ready
-        sp.setDTR(dtr == 1)
+        try:
+            # Data terminal ready
+            sp.setDTR(dtr == 1)
 
-        # Set parity
-        sp.parity = ACIA._PMC_TABLE[pmc]
+            # Set parity
+            sp.parity = ACIA._PMC_TABLE[pmc]
+        except OSError:
+            # soft fail...
+            pass
 
         # Set stop bits
         if sbn == 0:
