@@ -64,7 +64,7 @@ nak_loop:
 	jsr putc
 
 	jsr waitinput_			; wait for response
-	bcc haveinitialpacket
+	bcs haveinitialpacket
 
 	inx				; no response, increment NAK count
 	cpx #NAK_TIMEOUT		; compare count to maximum
@@ -164,29 +164,36 @@ exit:
 	rts
 .endproc
 
-; INTERNAL proc. Wait for input to be available. Set carry flag if timed out.
-; Corrupts A, Y and ptr1
+; INTERNAL proc. Wait for input to be available. Set carry flag if input present.
 .proc waitinput_
-	ldw ptr1, 0
+	pha
+	save_xy
+
+	lda #0
+aloop:
 	ldy #0
-@loop:
+yloop:
+	ldx #0
+xloop:
 	jsr haveinput			; do we have any input?
-	bcc exit			; yes!
+	bcs exit			; yes!
 
-	inc_word ptr1			; wait by incrementing ptr1 until == $0000
-	lda #$00
-	cmp ptr1
-	bne @loop
-	lda #$00
-	cmp ptr1+1
-	bne @loop
+	inx				; loop X
+	cpx #0
+	bne xloop
 
-	iny				; increment Y
-	cpy #$03			; enough?
-	bne @loop
+	iny				; loop Y
+	cpy #0
+	bne yloop
 
-	sec				; timed out
+	inc
+	cmp #4				; loop A
+	bne aloop
+
+	clc				; timed out
 exit:
+	restore_xy
+	pla
 	rts
 .endproc
 

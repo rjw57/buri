@@ -2,17 +2,20 @@
 
 .export haveinput
 
-; haveinput - clear carry flag if input available, set otherwise
+; haveinput - test if input is available for reading
+;
+; on exit:
+; 	carry - set if input present, clear otherwise
 .proc haveinput
 	pha
 	lda	#ACIA_ST_RDRF		; load RDRF mask into A
 	bit	ACIA1_STATUS		; is the rx register full?
 	beq	no_input		; no, no input
-	clc
+	sec
 	pla
 	rts				; return
 no_input:
-	sec
+	clc
 	pla
 	rts				; return
 .endproc
