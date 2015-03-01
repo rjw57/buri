@@ -1,6 +1,6 @@
 ; OS jump table:
 ;
-; The OS exports entry points at the beginning of ROM. In this cas we only
+; The OS exports entry points at the beginning of ROM. In this case we only
 ; care about the first one, the "put character" entry.
 .import __ROM_START__
 putc = __ROM_START__
