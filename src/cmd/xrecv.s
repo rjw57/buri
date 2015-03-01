@@ -179,7 +179,7 @@ exit:
 	bne @loop
 
 	iny				; increment Y
-	cmp #$05			; enough?
+	cpy #$05			; enough?
 	bne @loop
 
 	sec				; timed out
