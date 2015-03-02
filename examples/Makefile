@@ -31,8 +31,11 @@ CL65_FLAGS+=--cpu 65C02
 # Use optimisation
 CL65_FLAGS+=-O
 
-# We are using the "buri" target
-CL65_FLAGS+=-t buri
+# We are using the "none" target for asm
+CL65_ASM_FLAGS+=-t none
+
+# We are using the "buri" target for C
+CL65_C_FLAGS+=-t buri
 
 # Append linker config configuration to cl65 command line
 CL65_FLAGS+=-C "$(LINK_CONFIG)"
@@ -48,7 +51,7 @@ clean:
 	$(CL65) $(CL65_FLAGS) -o "$@" "$<"
 
 $(ASM_OBJECTS):%.o: %.s $(LINK_CONFIG)
-	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
+	$(CL65) $(CL65_FLAGS) $(CL65_ASM_FLAGS) -c -o "$@" "$<"
 
 $(C_OBJECTS):%.o: %.c $(LINK_CONFIG)
-	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
+	$(CL65) $(CL65_FLAGS) $(CL65_C_FLAGS) -c -o "$@" "$<"
