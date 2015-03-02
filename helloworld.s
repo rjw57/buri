@@ -14,13 +14,13 @@
 ; stack and return control to the OS.
 .proc main
 	ldx #0				; X will be our string index
-@loop:
+loop:
 	lda hello_world, X		; Get character at index X
 	cmp #0				; Is it zero?
 	beq exit			; Yes, exit program
 	jsr putc			; Otherwise, output character
 	inx				; Increment char. index
-	bra @loop			; Loop to next character
+	bra loop			; Loop to next character
 exit:
 	rts				; Exit from program
 .endproc
