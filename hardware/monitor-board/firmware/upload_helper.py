@@ -10,6 +10,7 @@ Writes hex representation of file 16 bytes per line pausing between lines.
 
 from __future__ import print_function
 
+import codecs
 import sys
 import time
 
@@ -22,7 +23,7 @@ def main():
                 break
             n += len(bs)
 
-            print(bs.encode('hex'))
+            print(codecs.encode(bs, 'hex').decode())
             sys.stdout.flush()
             while sys.stdin.read(1) != ':':
                 # spin
