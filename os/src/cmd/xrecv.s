@@ -21,6 +21,15 @@ registercmd "xrecv", xrecv
 ; Receieves a file over XMODEM writing it to <addr>. See the XMODEM.TXT file
 ; for details on the protocol.
 ;
+; [1] What with buffering being what it is and human delays in selecting the
+; file at the sending size, we may have sent several NAKs which are "in flight"
+; (i.e. buffered up) just before the sender actually starts sending. In this
+; case the sender sees a flurry of NAKs at the beginning and tries to
+; repeatedly re-send the firt packet. We are tolerant of this by hacking a
+; special case whereby sending the first packet again resets the transer. This
+; is ugly but means we can be a little looser in the timing of our initial
+; NAKs.
+;
 ; on entry:
 ; 	arg{1,2,3} - offsets into line_buffer of arguments 1, 2 and 3
 ;
@@ -90,7 +99,13 @@ recvpacket:
 
 	jsr getc			; packet number
 	cmp tmp2			; should be tmp2
-	bne abort
+	beq packt_num_ok
+
+	cmp #1				; packet 1? (See note [1])
+	bne abort			; nope, something else
+	sta tmp2			; yes, reset transfer to initial packet
+	copy_word ptr3, ptr2		; ptr3 <- ptr2
+	
 packt_num_ok:
 	jsr getc			; 1s compliment of number (ignored)
 
@@ -139,9 +154,12 @@ got_eot:
 	; Called if we've got an EOT. May be end of stream
 	lda #ASCII_NAK			; send NAK
 	jsr putc
-	jsr getc			; should be another EOT
-	cmp #ASCII_EOT
-	bne abort
+
+	; HACK: for the moment comment this out since XMODEM implementations
+	; seem to differ about what happens here
+;	jsr getc			; should be another EOT
+;	cmp #ASCII_EOT
+;	bne abort
 	lda #ASCII_ACK			; send ACK
 	jsr putc
 	lda ptr3+1			; write <n written> OK
@@ -169,8 +187,6 @@ exit:
 	pha
 	save_xy
 
-	lda #0
-aloop:
 	ldy #0
 yloop:
 	ldx #0
@@ -185,10 +201,6 @@ xloop:
 	iny				; loop Y
 	cpy #0
 	bne yloop
-
-	inc
-	cmp #4				; loop A
-	bne aloop
 
 	clc				; timed out
 exit:
