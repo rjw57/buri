@@ -157,7 +157,7 @@ got_eot:
 
 	; HACK: for the moment comment this out since XMODEM implementations
 	; seem to differ about what happens here
-;	jsr getc			; should be another EOT
+	jsr getc			; should be another EOT
 ;	cmp #ASCII_EOT
 ;	bne abort
 	lda #ASCII_ACK			; send ACK
