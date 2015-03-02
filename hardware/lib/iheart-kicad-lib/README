@@ -1,0 +1,262 @@
+I Heart Engineering KiCAD Library
+http://www.iheartengineering.com
+
+================================================================
+Part Libraries
+----------------------------------------------------------------
+
+Arduino Mega Shield
+  Arduino Mega Shield with pinout
+
+Arduino UNO Shield
+  Arduino UNO Shield with pinout
+
+ATMEGA16U4
+  44-pin QFN/TQFP
+  IC MCU 8BIT 16KB FLASH 44TQFP
+  Part # ATMEGA16U4-AUR
+  http://www.atmel.com/Images/doc7766.pdf
+
+ATMEGA328P
+  MCU AVR 32K FLASH 20MHZ 32TQFP
+  ATMEGA328P-AN
+  www.atmel.com/Images/doc8271.pdf
+
+CONN_23x2
+  Connector 23 x 2 
+
+CONN_3POS_2.5MM_V
+  Molex SPOX Header 3 Pos 2.5mm Pitch
+  Part # 22-03-5035
+  http://www.molex.com/pdm_docs/sd/022035035_sd.pdf
+
+Diode Switching
+  DIODE ARRAY 50V 200MA SOT23
+  Part # BAV74LT1G
+  http://www.onsemi.com/pub_link/Collateral/BAV74LT1-D.PDF
+
+DPDT
+  DPDT switch
+
+Inverter-1ch
+  IC SGL SCHMT-TRIG INVERT SC70-5
+  Part # SN74LVC1G14DCKR
+  http://www.ti.com/lit/ds/symlink/sn74lvc1g14.pdf
+
+Inverter-2ch
+
+L3G4002D
+  MEMS motion sensor ultra-stable three-axis digital output gyroscope
+  Part # L3G4002D
+  http://dlnmh9ip6v2uc.cloudfront.net/datasheets/Sensors/Gyros/3-Axis/CD00265057.pdf
+
+LED_DRIVER_SC74
+  IC LED DRIVER LINEAR SC74
+  Part # BCR 321U E6327INCT-ND
+  https://www.infineon.com/dgdl/bcr320u_bcr321u.pdf?folderId=db3a30431f848401011fcbf2ab4c04c4&fileId=db3a304324fc7f9a0125204353c942f9
+
+LM7805 / LM7812
+  Voltage Regulators 78**
+
+LMD18201
+  IC MOTOR DRIVER PAR TO220-11
+  Part # LMD18201T/NOPB
+  http://www.ti.com/lit/ds/symlink/lmd18201.pdf
+
+LSM303DLHC
+  ACCELEROMETER/MAGNETOMETER LGA14
+  Part # LSM303DLHCTR
+  http://www.st.com/web/en/resource/technical/document/datasheet/DM00027543.pdf
+
+MIC29151-12WU / MIC29151-5.0WU
+  Micrel 1.5A High-Current Low-Dropout Regulators
+  Part # MIC29151-*
+  http://www.micrel.com/_PDF/mic29150.pdf
+
+PLCC6_RGB_LED
+  LED RED/GREEN/BLUE PLCC6 SMD
+  Part # CLP6C-FKB-CM1Q1H1BB7R3R3
+  http://www.cree.com/~/media/Files/Cree/LED%20Components%20and%20Modules/HB/Data%20Sheets/CLP6CFKB(933).pdf
+
+Relay
+  RELAY GENERAL PURPOSE SPST 3A 5V
+  TE Connectivity
+  Part # PCN-105D3MHZ,000
+  http://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1461491&DocType=Customer+Drawing&DocLang=English
+
+SJMP
+  Solder Jumper
+
+SW_TACT
+  C&K PTS 645 6mm Tactile Switch
+  Part # PTS645SK50 LFS / PTS645SK50SMTRLFS
+  http://www.ck-components.com/14409/pts645_8sept11.pdf/
+
+TLC5940 / TLC5940-PWP
+  TLC5940-IC LED DVR PWM CONTROL 28DIP / 28HTSSOP
+  Texas Instruments
+  Part # TLC59401PWPR
+  http://www.ti.com/lit/ds/symlink/tlc59401.pdf
+
+TLP2531
+  PHOTOCOUPLER DUAL 6N136 8-DIP
+  Toshiba
+  Part # TLP2531(F)
+  http://www.semicon.toshiba.co.jp/info/docget.jsp?type=datasheet&lang=en&pid=TLP2530
+
+Translator_6-Channel
+  IC 6BIT NON-INV TRANSLTR 16TSSOP
+  Texas Instruments
+  Part # TXB0106PWR
+  http://www.ti.com/lit/ds/symlink/txb0106.pdf
+
+TXB0102
+  IC VOLT-LVL TRANSL BI-DIR 8-US8
+  Texas Instruments
+  Part # TXB0102DCUR
+  http://www.ti.com/lit/ds/symlink/txb0102.pdf
+
+XTAL_RESONATOR
+  Murata CERALOCK Ceramic Crystal Resonator
+  Part # CSTCE*V*
+  http://www.murata.com/products/catalog/pdf/p17e.pdf#page=8
+
+================================================================
+Footprint Modules
+----------------------------------------------------------------
+
+1pin_NPTH_Mechanical / 1pin_NPTH_Mechanical_M3_Screw
+  Mounting hole for M3 screws
+
+CBGA48-ADXRS652 / CBGA48-ADXRS652_v2
+  CBGA48 and CBGA48_v2 fit for ADXRS652
+
+con-usb-mini-female
+  CONN RECEPT MINI USB2.0 5POS
+  Hirose Electric Co Ltd
+  Part # UX60-MB-5ST
+  http://www.hirose.co.jp/cataloge_hp/e24000019.pdf
+
+CONN PWR Jack 2.0x6.3 MM SMD
+
+CONN 2 POS RA SMD / CONN 2 POS RA TH
+  CONN HEADER 2POS R/A W/NAIL SMD / TH
+  Molex Inc.
+  Part # 0436500212
+  http://www.molex.com/pdm_docs/sd/436500212_sd.pdf  
+
+CONN_3POS_2.5MM_V
+  Molex SPOX Header 3 Pos 2.5mm Pitch
+  Part # 22-03-5035
+  http://www.molex.com/pdm_docs/sd/022035035_sd.pdf
+
+CSTCE____V__
+  Murata CERALOCK Ceramic Crystal Resonator
+  Part # CSTCE*V*
+  http://www.murata.com/products/catalog/pdf/p17e.pdf#page=8
+
+Deans PWR CONN
+  Deans Power Connector Vertical Through Hole
+
+Heather Mini-Fit RA 2x1
+  HEADER, MINI-FIT, R/A, DUAL ROW, 2WAY
+  MOLEX
+  Part # 39-30-0020
+  http://www.molex.com/pdm_docs/sd/039300020_sd.pdf
+
+HOLE_#6
+  Mounting hole for #6 screw
+
+LED SMD 0805 / LED-0805
+  SMD 0805 LED module
+
+LED-5MM TH-SMD / LED-5MM TH-SMD_v2
+  SMD 0805 LED module with through hole pads for 5mm LED
+
+LGA 3x5x1 14L
+
+LGA 4x4x1.1mm 16L
+
+Mini_din7
+  CONN RECEPT 7POS 26AWG MTA100
+  TE CONNECTIVITY
+  Part # 3-640442-7
+
+PANA_CAP_C
+  Panasonic Size C Polarized Radial Can Surface Mount Capacitor 
+  Part # EEE-HB1E100AR
+  http://industrial.panasonic.com/www-data/pdf/ABA0000/ABA0000CE117.pdf
+
+PDSO8
+
+Pin array *x*
+  columns x rows pin array .100" pitch
+
+PJ-102A
+  CONN JACK POWER 2.1MM PCB
+  CUI Inc
+  Part # PJ-102A
+  http://www.cui.com/Product/Resource/DigiKeyPDF/PJ-102A.pdf
+
+PLCC6
+
+Relay
+  RELAY GENERAL PURPOSE SPST 3A 5V
+  TE Connectivity
+  Part # PCN-105D3MHZ,000
+  http://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=1461491&DocType=Customer+Drawing&DocLang=English  
+
+SC74
+
+SM0805_NonPol
+  Non polarized 0805 SMD module
+
+SMD Microfit2pin / RA / V
+  Microfit 2pin / right angle / vertical surface mount connector
+  CONN HEADER 2POS R/A W/NAIL SMD / CONN HEADER 2POS VERT SMD TIN
+  Part # 0436500212 / 43045-0218
+  http://www.molex.com/pdm_docs/sd/436500212_sd.pdf / http://www.molex.com/pdm_docs/sd/430450218_sd.pdf
+
+SMD_CAP_5M
+  Panasonic - ECG
+  Part # EEE-HB1E100AR
+
+Solder_Jumper
+
+SOT363
+
+SW_M6_COMBO Surface mount and through hole combo footprint
+SW_M6_EMC Through hole with EMC protection pin
+SW_M6_PTH Through hole
+SW_M6_SMD Surface mount
+  C&K PTS 645 6mm Tactile Switch
+  Part # PTS645SK50 LFS / PTS645SK50SMTRLFS
+  http://www.ck-components.com/14409/pts645_8sept11.pdf/
+
+SW_Slide_6x2mm
+  SWITCH SLIDE SPDT 30V.2A PC MNT
+  E-Switch
+  Part # EG1218
+  http://spec.e-switch.com/P-J/P040040c.pdf
+
+Term Block 8pin Snap Connector
+  TERM BLOCK 8POS SIDE ENT 2.54MM
+  TE Connectivity
+  282834-8
+  http://documents.tycoelectronics.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=282834&DocType=CD&DocLang=EN
+
+TO263-2 / TO-263-5
+  Common voltage regulator footprint
+
+TQFP32_08
+
+USB micro B female / USB micro-female
+  CONN RCPT REV MICRO USB TYPE B
+  FCI
+  Part # 10103592-0001LF
+  http://portal.fciconnect.com/Comergent//fci/drawing/10103592.pdf
+
+XTAL_Resonator
+  Murata CERALOCK Ceramic Crystal Resonator
+  Part # CSTCE*V*
+  http://www.murata.com/products/catalog/pdf/p17e.pdf#page=8

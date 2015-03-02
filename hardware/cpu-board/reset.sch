@@ -1,0 +1,194 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:65xx
+LIBS:cpu-board
+LIBS:IC_raspberry
+LIBS:cpu-board-cache
+EELAYER 24 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 3 3
+Title "6502 Computer - Compute Board"
+Date "3 feb 2015"
+Rev "1"
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L 74LS132 U4
+U 3 1 54D63BBC
+P 3350 2150
+F 0 "U4" H 3350 2250 60  0000 C CNN
+F 1 "74HC132" H 3350 2050 60  0000 C CNN
+F 2 "~" H 3350 2150 60  0000 C CNN
+F 3 "~" H 3350 2150 60  0000 C CNN
+	3    3350 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR048
+U 1 1 54D63BBD
+P 3150 1350
+F 0 "#PWR048" H 3150 1440 20  0001 C CNN
+F 1 "+5V" H 3150 1440 30  0000 C CNN
+F 2 "" H 3150 1350 60  0000 C CNN
+F 3 "" H 3150 1350 60  0000 C CNN
+	1    3150 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR049
+U 1 1 54D63BBE
+P 3150 3050
+F 0 "#PWR049" H 3150 3050 30  0001 C CNN
+F 1 "GND" H 3150 2980 30  0001 C CNN
+F 2 "" H 3150 3050 60  0000 C CNN
+F 3 "" H 3150 3050 60  0000 C CNN
+	1    3150 3050
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R7
+U 1 1 54D63BBF
+P 2400 2250
+F 0 "R7" V 2480 2250 40  0000 C CNN
+F 1 "10K" V 2407 2251 40  0000 C CNN
+F 2 "~" V 2330 2250 30  0000 C CNN
+F 3 "~" H 2400 2250 30  0000 C CNN
+	1    2400 2250
+	0    1    1    0   
+$EndComp
+$Comp
+L R R6
+U 1 1 54D63BC0
+P 1700 2250
+F 0 "R6" V 1780 2250 40  0000 C CNN
+F 1 "10K" V 1707 2251 40  0000 C CNN
+F 2 "~" V 1630 2250 30  0000 C CNN
+F 3 "~" H 1700 2250 30  0000 C CNN
+	1    1700 2250
+	0    1    1    0   
+$EndComp
+$Comp
+L SW_PUSH SW1
+U 1 1 54D63BC1
+P 1350 1850
+F 0 "SW1" H 1500 1960 50  0000 C CNN
+F 1 "RESET" H 1350 1770 50  0000 C CNN
+F 2 "~" H 1350 1850 60  0000 C CNN
+F 3 "~" H 1350 1850 60  0000 C CNN
+	1    1350 1850
+	0    -1   -1   0   
+$EndComp
+$Comp
+L CP1 C8
+U 1 1 54D63BC2
+P 2050 1850
+F 0 "C8" H 2100 1950 50  0000 L CNN
+F 1 "4.7uF" H 2100 1750 50  0000 L CNN
+F 2 "~" H 2050 1850 60  0000 C CNN
+F 3 "~" H 2050 1850 60  0000 C CNN
+	1    2050 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L DIODE D1
+U 1 1 54D63BC3
+P 2050 2600
+F 0 "D1" H 2050 2700 40  0000 C CNN
+F 1 "1N4148" H 2050 2500 40  0000 C CNN
+F 2 "~" H 2050 2600 60  0000 C CNN
+F 3 "~" H 2050 2600 60  0000 C CNN
+	1    2050 2600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R R5
+U 1 1 54D63BC4
+P 1350 2600
+F 0 "R5" V 1430 2600 40  0000 C CNN
+F 1 "47K" V 1357 2601 40  0000 C CNN
+F 2 "~" V 1280 2600 30  0000 C CNN
+F 3 "~" H 1350 2600 30  0000 C CNN
+	1    1350 2600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3150 2350 3150 3050
+Wire Wire Line
+	1950 2250 2150 2250
+Wire Wire Line
+	2650 2250 2750 2250
+Wire Wire Line
+	2050 2050 2050 2400
+Connection ~ 2050 2250
+Wire Wire Line
+	1350 2150 1350 2350
+Wire Wire Line
+	1350 2250 1450 2250
+Connection ~ 1350 2250
+Wire Wire Line
+	1350 2850 1350 2950
+Wire Wire Line
+	1350 2950 3150 2950
+Connection ~ 3150 2950
+Wire Wire Line
+	2050 2800 2050 2950
+Connection ~ 2050 2950
+Wire Wire Line
+	1350 1550 1350 1450
+Wire Wire Line
+	1350 1450 3150 1450
+Wire Wire Line
+	3150 1350 3150 1950
+Wire Wire Line
+	2050 1650 2050 1450
+Connection ~ 2050 1450
+Connection ~ 3150 1450
+Wire Wire Line
+	2750 2050 2650 2050
+Wire Wire Line
+	2650 1850 3150 1850
+Connection ~ 3150 1850
+Wire Wire Line
+	2650 2050 2650 1850
+Text Notes 1350 1150 0    60   ~ 0
+RESET
+Wire Wire Line
+	3950 2150 4050 2150
+Text HLabel 4050 2150 2    60   Output ~ 0
+RESET
+$EndSCHEMATC
