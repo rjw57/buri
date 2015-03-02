@@ -58,7 +58,7 @@ class ReadOnlyMemoryError(MachineError):
 class BuriSim(object):
     ROM_SIZE = 0x2000 # 8K
     ROM_RANGE = 0x10000 - ROM_SIZE, 0x10000
-    ACIA1_RANGE = 0xDFF0, 0xDFF4
+    ACIA1_RANGE = 0xDFFC, 0xDFFF
 
     # Screen memory is at top of RAM from 0x7B00
     SCREEN_RANGE = 0x7B00, 0x7B00 + ScreenMemory.SCREEN_SIZE_BYTES

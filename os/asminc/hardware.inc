@@ -2,8 +2,8 @@
 
 .import __IO_START__
 
-; ACIA1 is at final IO page
-ACIA1 		= __IO_START__ + $70
+; ACIA1 is at *end* of final IO page
+ACIA1 		= __IO_START__ + $70 + $0C
 ACIA1_DATA 	= ACIA1
 ACIA1_STATUS 	= ACIA1 + 1
 ACIA1_CMD 	= ACIA1 + 2
