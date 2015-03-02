@@ -47,8 +47,11 @@ all: $(EXE_FILES)
 clean:
 	rm -f $(CLEAN_FILES)
 
-%.bin: %.o $(LINK_CONFIG)
-	$(CL65) $(CL65_FLAGS) -o "$@" "$<"
+$(ASM_BINS):%.bin: %.o $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) $(CL65_ASM_FLAGS) -o "$@" "$<"
+
+$(C_BINS):%.bin: %.o $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) $(CL65_C_FLAGS) -o "$@" "$<"
 
 $(ASM_OBJECTS):%.o: %.s $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) $(CL65_ASM_FLAGS) -c -o "$@" "$<"
