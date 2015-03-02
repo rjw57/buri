@@ -7,6 +7,6 @@ void puts(const char* s) {
 }
 
 int main() {
-	puts("Hello, world\r\n");
+	puts("Hello, world from C!\r\n");
 	return 0;
 }
