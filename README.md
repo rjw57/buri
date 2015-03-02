@@ -15,18 +15,18 @@ the 80s.
 
 ## Contents of this repository
 
-The [hardware](hardware/README.md) directory contains schematics, etc for the
+The [hardware](hardware) directory contains schematics, etc for the
 microcomputer hardware itself.
 
-The [sim](sim/README.md) directory contains a simulator for the microcomputer.
-It's pretty slow and I only really use it to enable development of the
-operating system without waiting for the ROM to re-flash.
+The [sim](sim) directory contains a simulator for the microcomputer.  It's
+pretty slow and I only really use it to enable development of the operating
+system without waiting for the ROM to re-flash.
 
-The [os](os/README.md) directory contains a basic ROM-based operating system
-for the computer.
+The [os](os) directory contains a basic ROM-based operating system for the
+computer.
 
-The [examples](examples/README.md) directory contains example programs to run
-on the microcomputer.
+The [examples](examples) directory contains example programs to run on the
+microcomputer.
 
 ## Why "Buri"?
 
