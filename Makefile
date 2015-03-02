@@ -8,3 +8,9 @@ os:
 .PHONY: examples
 examples:
 	$(MAKE) -C examples/
+
+.PHONY: clean
+clean:
+	$(MAKE) -C os/ clean
+	$(MAKE) -C examples/ clean
+
