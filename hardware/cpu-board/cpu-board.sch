@@ -746,7 +746,7 @@ F 3 "" H 8600 1800 60  0000 C CNN
 $EndComp
 Text GLabel 1350 2050 0    60   Output ~ 0
 SYNC
-Text GLabel 10000 3700 0    60   Input ~ 0
+Text GLabel 9950 3900 0    60   Input ~ 0
 SYNC
 Text GLabel 9750 4400 0    60   Input ~ 0
 R/~W
@@ -777,9 +777,9 @@ Text Label 1450 3050 0    60   ~ 0
 ~RST
 Text GLabel 10000 4100 0    60   Input ~ 0
 ~RST
-Text GLabel 9650 3800 0    60   Output ~ 0
+Text GLabel 9650 3700 0    60   Output ~ 0
 ~IRQ
-Text GLabel 10000 3900 0    60   Output ~ 0
+Text GLabel 9900 3600 0    60   Output ~ 0
 RDY
 Text GLabel 10000 4300 0    60   Output ~ 0
 BE
@@ -1051,7 +1051,7 @@ F 3 "" H 10450 4350 60  0000 C CNN
 $EndComp
 Text Label 9700 3500 0    60   ~ 0
 GND
-Text Label 9700 3400 0    60   ~ 0
+Text Label 9700 3800 0    60   ~ 0
 VCC
 NoConn ~ 10100 4500
 NoConn ~ 10100 4600
@@ -1436,7 +1436,7 @@ Wire Wire Line
 Wire Wire Line
 	10100 4100 10000 4100
 Wire Wire Line
-	10100 3900 10000 3900
+	10100 3600 9900 3600
 Wire Wire Line
 	7450 900  8600 900 
 Wire Wire Line
@@ -1521,13 +1521,13 @@ Connection ~ 700  850
 Wire Wire Line
 	9750 4200 10100 4200
 Wire Wire Line
-	10000 3700 10100 3700
+	9950 3900 10100 3900
 Wire Wire Line
 	10100 4300 10000 4300
 Wire Wire Line
 	9750 4400 10100 4400
 Wire Wire Line
-	10100 3800 9650 3800
+	10100 3700 9650 3700
 Wire Wire Line
 	6400 3950 6800 3950
 Wire Wire Line
@@ -1604,7 +1604,7 @@ Wire Wire Line
 Wire Wire Line
 	8200 5500 8200 5400
 Wire Wire Line
-	10100 3400 9700 3400
+	10100 3800 9700 3800
 Wire Wire Line
 	10100 3500 9700 3500
 Wire Wire Line
@@ -1633,8 +1633,8 @@ Connection ~ 8900 6100
 Text Label 8500 6100 2    60   ~ 0
 GND
 Wire Wire Line
-	10100 3600 9700 3600
-Text Label 9700 3600 0    60   ~ 0
+	10100 3400 9700 3400
+Text Label 9700 3400 0    60   ~ 0
 VIN
 $Comp
 L CP1 C12
