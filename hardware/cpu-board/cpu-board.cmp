@@ -1,100 +1,114 @@
-Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Mon 23 Feb 2015 23:10:17 GMT
+Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sat 21 Mar 2015 21:52:29 GMT
 
 BeginCmp
-TimeStamp = /54777000;
+TimeStamp = /54D141C5;
 Reference = C1;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /5477715E;
+TimeStamp = /54777000;
 Reference = C2;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54777171;
+TimeStamp = /54EA4032;
 Reference = C3;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D141C5;
+TimeStamp = /5477715E;
 Reference = C4;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /547780F8;
+TimeStamp = /54777171;
 Reference = C5;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D138B4;
+TimeStamp = /550DCF16;
 Reference = C6;
-ValeurCmp = 10nF;
+ValeurCmp = 4.7uF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D137B9;
+TimeStamp = /550DCF21;
 Reference = C7;
-ValeurCmp = 4.7uF;
+ValeurCmp = 10nF;
 IdModule  = Capacitors_Elko_ThroughHole:Elko_vert_DM5_RM2;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D63A81/54D63BC2;
+TimeStamp = /54EBB6DF;
 Reference = C8;
 ValeurCmp = 4.7uF;
 IdModule  = Capacitors_Elko_ThroughHole:Elko_vert_DM5_RM2;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EA3EBE;
+TimeStamp = /54D138B4;
 Reference = C9;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EA3F36;
+TimeStamp = /54E60914/550E66C0;
 Reference = C10;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EA4032;
+TimeStamp = /54E60914/550E66D3;
 Reference = C11;
 ValeurCmp = 10nF;
 IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EBB6DF;
+TimeStamp = /54D63A81/54D63BC2;
 Reference = C12;
 ValeurCmp = 4.7uF;
 IdModule  = Capacitors_Elko_ThroughHole:Elko_vert_DM5_RM2;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D63A81/54D63BC3;
-Reference = D1;
-ValeurCmp = 1N4148;
-IdModule  = Diodes_ThroughHole:Diode_DO-35_SOD27_Horizontal_RM10;
+TimeStamp = /550DFC7E/550E28B3;
+Reference = C13;
+ValeurCmp = 10nF;
+IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DBAA9/550DC86C;
+Reference = CON1;
+ValeurCmp = BARREL_JACK;
+IdModule  = Connect:BARREL_JACK;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EBDEA0;
-Reference = D2;
+Reference = D1;
 ValeurCmp = 1N4001;
+IdModule  = Diodes_ThroughHole:Diode_DO-35_SOD27_Horizontal_RM10;
+EndCmp
+
+BeginCmp
+TimeStamp = /54D63A81/54D63BC3;
+Reference = D2;
+ValeurCmp = 1N4148;
 IdModule  = Diodes_ThroughHole:Diode_DO-41_SOD81_Horizontal_RM10;
 EndCmp
 
@@ -106,52 +120,59 @@ IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EA1127;
+TimeStamp = /550DFC7E/550E289D;
+Reference = JP2;
+ValeurCmp = JUMPER3;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DBAA9/550DBAE1;
 Reference = P1;
-ValeurCmp = DATA;
-IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
-EndCmp
-
-BeginCmp
-TimeStamp = /54EA11DE;
-Reference = P2;
-ValeurCmp = ADDR1;
-IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
-EndCmp
-
-BeginCmp
-TimeStamp = /54EA11E9;
-Reference = P3;
-ValeurCmp = ADDR2;
-IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
-EndCmp
-
-BeginCmp
-TimeStamp = /54EA1637;
-Reference = P4;
 ValeurCmp = CTRL1;
 IdModule  = Socket_Strips:Socket_Strip_Straight_1x06;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EA1649;
-Reference = P5;
+TimeStamp = /550DBAA9/550DBAE7;
+Reference = P2;
 ValeurCmp = CTRL2;
 IdModule  = Socket_Strips:Socket_Strip_Straight_1x06;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D1B354;
-Reference = P6;
-ValeurCmp = PWR;
-IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
+TimeStamp = /550DBAA9/550DBACF;
+Reference = P3;
+ValeurCmp = DATA;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
 EndCmp
 
 BeginCmp
-TimeStamp = /54EBB1AC;
-Reference = P7;
+TimeStamp = /550DBAA9/550DDF61;
+Reference = P4;
 ValeurCmp = IO;
 IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DBAA9/550DBAD5;
+Reference = P5;
+ValeurCmp = ADDR1;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DBAA9/550DBADB;
+Reference = P6;
+ValeurCmp = ADDR2;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DFC7E/550E2FD7;
+Reference = P7;
+ValeurCmp = SERIAL;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x06;
 EndCmp
 
 BeginCmp
@@ -211,66 +232,87 @@ IdModule  = IHeartKiCad:SW_M6_PTH;
 EndCmp
 
 BeginCmp
+TimeStamp = /550E0212;
+Reference = SW2;
+ValeurCmp = PWR;
+IdModule  = IHeartKiCad:SW_M6_PTH;
+EndCmp
+
+BeginCmp
 TimeStamp = /5476FF54;
 Reference = U1;
 ValeurCmp = WD65C02;
-IdModule  = Sockets_DIP:DIP-40__600;
+IdModule  = Sockets_DIP:DIP-40__600_ELL;
 EndCmp
 
 BeginCmp
 TimeStamp = /54779A61;
 Reference = U2;
 ValeurCmp = AT28C256;
-IdModule  = Sockets_DIP:DIP-28__600;
-EndCmp
-
-BeginCmp
-TimeStamp = /54778FB9;
-Reference = U3;
-ValeurCmp = MXO45HS;
-IdModule  = Sockets_DIP:DIP-8__300;
+IdModule  = Sockets_DIP:DIP-28__600_ELL;
 EndCmp
 
 BeginCmp
 TimeStamp = /54E639E9;
-Reference = U4;
+Reference = U3;
 ValeurCmp = 74HC132;
-IdModule  = Sockets_DIP:DIP-14__300;
+IdModule  = Sockets_DIP:DIP-14__300_ELL;
 EndCmp
 
 BeginCmp
 TimeStamp = /5476FF3E;
-Reference = U5;
+Reference = U4;
 ValeurCmp = CY7C199;
-IdModule  = Sockets_DIP:DIP-28__300;
+IdModule  = Sockets_DIP:DIP-28__300_ELL;
 EndCmp
 
 BeginCmp
-TimeStamp = /54E60914/54E60BC0;
-Reference = U6;
-ValeurCmp = 4012;
-IdModule  = Sockets_DIP:DIP-14__300;
-EndCmp
-
-BeginCmp
-TimeStamp = /54E60914/54E60B13;
-Reference = U7;
-ValeurCmp = 4012;
-IdModule  = Sockets_DIP:DIP-14__300;
-EndCmp
-
-BeginCmp
-TimeStamp = /54E60914/54E60F5B;
-Reference = U8;
-ValeurCmp = 74HC138;
-IdModule  = Sockets_DIP:DIP-16__300;
+TimeStamp = /54778FB9;
+Reference = U5;
+ValeurCmp = MXO45HS;
+IdModule  = Sockets_DIP:DIP-8__300_ELL;
 EndCmp
 
 BeginCmp
 TimeStamp = /54EA4CC6;
-Reference = U9;
+Reference = U6;
 ValeurCmp = 7805;
 IdModule  = Discret:LM78XXV;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E60914/54E60BC0;
+Reference = U7;
+ValeurCmp = 4012;
+IdModule  = Sockets_DIP:DIP-14__300_ELL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E60914/54E60B13;
+Reference = U8;
+ValeurCmp = 4012;
+IdModule  = Sockets_DIP:DIP-14__300_ELL;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E60914/54E60F5B;
+Reference = U9;
+ValeurCmp = 74HC138;
+IdModule  = Sockets_DIP:DIP-16__300_ELL;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DFC7E/550DFEB2;
+Reference = U10;
+ValeurCmp = W65C51N;
+IdModule  = Sockets_DIP:DIP-28__600_ELL;
+EndCmp
+
+BeginCmp
+TimeStamp = /550DFC7E/550E18D0;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = Crystals:Crystal_HC49-U_Vertical;
 EndCmp
 
 EndListe
