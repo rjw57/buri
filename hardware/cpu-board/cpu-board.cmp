@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sat 21 Mar 2015 21:52:29 GMT
+Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sun 22 Mar 2015 22:49:37 GMT
 
 BeginCmp
 TimeStamp = /54D141C5;
@@ -85,13 +85,6 @@ IdModule  = Capacitors_Elko_ThroughHole:Elko_vert_DM5_RM2;
 EndCmp
 
 BeginCmp
-TimeStamp = /550DFC7E/550E28B3;
-Reference = C13;
-ValeurCmp = 10nF;
-IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
-EndCmp
-
-BeginCmp
 TimeStamp = /550DBAA9/550DC86C;
 Reference = CON1;
 ValeurCmp = BARREL_JACK;
@@ -113,16 +106,16 @@ IdModule  = Diodes_ThroughHole:Diode_DO-41_SOD81_Horizontal_RM10;
 EndCmp
 
 BeginCmp
-TimeStamp = /54DFDF35;
-Reference = JP1;
-ValeurCmp = ROM PROGRAMMABLE;
-IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+TimeStamp = /550F4B01;
+Reference = D3;
+ValeurCmp = LED;
+IdModule  = LEDs:LED-5MM;
 EndCmp
 
 BeginCmp
-TimeStamp = /550DFC7E/550E289D;
-Reference = JP2;
-ValeurCmp = JUMPER3;
+TimeStamp = /54DFDF35;
+Reference = JP1;
+ValeurCmp = ROM PROGRAMMABLE;
 IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
 EndCmp
 
@@ -166,13 +159,6 @@ TimeStamp = /550DBAA9/550DBADB;
 Reference = P6;
 ValeurCmp = ADDR2;
 IdModule  = Socket_Strips:Socket_Strip_Straight_1x08;
-EndCmp
-
-BeginCmp
-TimeStamp = /550DFC7E/550E2FD7;
-Reference = P7;
-ValeurCmp = SERIAL;
-IdModule  = Socket_Strips:Socket_Strip_Straight_1x06;
 EndCmp
 
 BeginCmp
@@ -221,6 +207,13 @@ BeginCmp
 TimeStamp = /54D63A81/54D63BBF;
 Reference = R7;
 ValeurCmp = 10K;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /550F4B15;
+Reference = R8;
+ValeurCmp = 330;
 IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
 EndCmp
 
@@ -299,20 +292,6 @@ TimeStamp = /54E60914/54E60F5B;
 Reference = U9;
 ValeurCmp = 74HC138;
 IdModule  = Sockets_DIP:DIP-16__300_ELL;
-EndCmp
-
-BeginCmp
-TimeStamp = /550DFC7E/550DFEB2;
-Reference = U10;
-ValeurCmp = W65C51N;
-IdModule  = Sockets_DIP:DIP-28__600_ELL;
-EndCmp
-
-BeginCmp
-TimeStamp = /550DFC7E/550E18D0;
-Reference = X1;
-ValeurCmp = CRYSTAL;
-IdModule  = Crystals:Crystal_HC49-U_Vertical;
 EndCmp
 
 EndListe
