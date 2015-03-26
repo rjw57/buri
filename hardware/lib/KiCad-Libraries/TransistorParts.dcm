@@ -1,0 +1,13 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NMOS_POWER
+D Power NMOS with body diode
+K Power MOSFET, NMOS, Body Diode
+$ENDCMP
+#
+$CMP PMOS_POWER
+D Power PMOS with body diode
+K Power MOSFET, PMOS, Body Diode
+$ENDCMP
+#
+#End Doc Library

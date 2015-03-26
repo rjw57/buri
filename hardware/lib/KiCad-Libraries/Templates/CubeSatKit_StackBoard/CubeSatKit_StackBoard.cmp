@@ -1,0 +1,17 @@
+Cmp-Mod V01 Created by CvPcb (2013-june-11)-stable date = Wed 25 Feb 2015 02:14:21 AM CST
+
+BeginCmp
+TimeStamp = /50F4617C;
+Reference = H1;
+ValeurCmp = H1;
+IdModule  = CSK_Header;
+EndCmp
+
+BeginCmp
+TimeStamp = /50F46180;
+Reference = H2;
+ValeurCmp = H2;
+IdModule  = CSK_Header;
+EndCmp
+
+EndListe

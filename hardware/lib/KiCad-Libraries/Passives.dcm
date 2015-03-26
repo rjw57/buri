@@ -1,0 +1,23 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP CAP
+D Unpolarized Capacitor
+K Capacitor
+$ENDCMP
+#
+$CMP CAP_POL
+D Polarized Capacitor
+K Polarized Capacitor
+$ENDCMP
+#
+$CMP IND
+D Inductor
+K Inductor
+$ENDCMP
+#
+$CMP RES
+D Resistor
+K Resistor
+$ENDCMP
+#
+#End Doc Library

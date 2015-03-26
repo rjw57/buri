@@ -1,0 +1,66 @@
+Cmp-Mod V01 Created by CvPcb (2013-06-11 BZR 4021)-stable date = Sat 22 Feb 2014 12:49:37 AM CST
+
+BeginCmp
+TimeStamp = /5308433C;
+Reference = P1;
+ValeurCmp = CONN_6;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /5308434B;
+Reference = P2;
+ValeurCmp = CONN_8;
+IdModule  = SIL-8;
+EndCmp
+
+BeginCmp
+TimeStamp = /5308435A;
+Reference = P3;
+ValeurCmp = CONN_8;
+IdModule  = SIL-8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53084985;
+Reference = P4;
+ValeurCmp = CONN_8X2;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53084994;
+Reference = P5;
+ValeurCmp = CONN_8X2;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53084397;
+Reference = P6;
+ValeurCmp = CONN_8X2;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53084388;
+Reference = P7;
+ValeurCmp = CONN_8X2;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /53084379;
+Reference = P8;
+ValeurCmp = CONN_8;
+IdModule  = SIL-8;
+EndCmp
+
+BeginCmp
+TimeStamp = /530849F9;
+Reference = P9;
+ValeurCmp = CONN_3X2;
+IdModule  = CONN_2x3;
+EndCmp
+
+EndListe

@@ -1,0 +1,16 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP D_DIODE
+D Diode
+$ENDCMP
+#
+$CMP D_LED
+D Light Emitting Diode
+K LED
+$ENDCMP
+#
+$CMP D_ZENER
+D Diode
+$ENDCMP
+#
+#End Doc Library

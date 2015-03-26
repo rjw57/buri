@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LM3481
+D Boost Regulator Controller by TI
+K Boost Controller, Boost Converter
+F Datasheets/TI_Regulator-LM3481.pdf
+$ENDCMP
+#
+#End Doc Library
