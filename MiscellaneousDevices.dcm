@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP ADA4805-1
+D ADA4805-1 Operational Amplifier by Analog Devices
+K Operational Amplifier, Shutdown
+F Datasheets/AnalogDevices_OpAmp_ADA4805-1.pdf
+$ENDCMP
+#
+#End Doc Library

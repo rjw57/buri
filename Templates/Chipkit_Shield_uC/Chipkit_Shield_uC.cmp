@@ -1,0 +1,38 @@
+Cmp-Mod V01 Created by CvPcb (2013-06-11 BZR 4021)-stable date = Wed 21 Aug 2013 10:54:44 AM CDT
+
+BeginCmp
+TimeStamp = /5214C54F;
+Reference = P1;
+ValeurCmp = Power;
+IdModule  = SIL-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /5214C59A;
+Reference = P2;
+ValeurCmp = Analog;
+IdModule  = CONN_2x6;
+EndCmp
+
+BeginCmp
+TimeStamp = /5214C701;
+Reference = P3;
+ValeurCmp = PWM/Digital;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /5214C710;
+Reference = P4;
+ValeurCmp = PWM/Digital;
+IdModule  = CONN_2x8;
+EndCmp
+
+BeginCmp
+TimeStamp = /5214E23D;
+Reference = P5;
+ValeurCmp = SPI;
+IdModule  = CONN_2x3;
+EndCmp
+
+EndListe

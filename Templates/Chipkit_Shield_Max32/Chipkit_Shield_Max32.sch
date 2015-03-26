@@ -1,0 +1,151 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:special
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:DataStorage
+LIBS:Microprocessors
+LIBS:MiscellaneousDevices
+LIBS:RF_OEM_Parts
+LIBS:Sensors
+LIBS:TransistorParts
+EELAYER 27 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "22 feb 2014"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L CONN_6 P1
+U 1 1 5308433C
+P 3100 2200
+F 0 "P1" V 3050 2200 60  0000 C CNN
+F 1 "CONN_6" V 3150 2200 60  0000 C CNN
+F 2 "~" H 3100 2200 60  0000 C CNN
+F 3 "~" H 3100 2200 60  0000 C CNN
+	1    3100 2200
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_8 P2
+U 1 1 5308434B
+P 3100 3100
+F 0 "P2" V 3050 3100 60  0000 C CNN
+F 1 "CONN_8" V 3150 3100 60  0000 C CNN
+F 2 "~" H 3100 3100 60  0000 C CNN
+F 3 "~" H 3100 3100 60  0000 C CNN
+	1    3100 3100
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_8 P3
+U 1 1 5308435A
+P 3100 4100
+F 0 "P3" V 3050 4100 60  0000 C CNN
+F 1 "CONN_8" V 3150 4100 60  0000 C CNN
+F 2 "~" H 3100 4100 60  0000 C CNN
+F 3 "~" H 3100 4100 60  0000 C CNN
+	1    3100 4100
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_8 P8
+U 1 1 53084379
+P 6750 4100
+F 0 "P8" V 6700 4100 60  0000 C CNN
+F 1 "CONN_8" V 6800 4100 60  0000 C CNN
+F 2 "~" H 6750 4100 60  0000 C CNN
+F 3 "~" H 6750 4100 60  0000 C CNN
+	1    6750 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_8X2 P7
+U 1 1 53084388
+P 6750 3200
+F 0 "P7" H 6750 3650 60  0000 C CNN
+F 1 "CONN_8X2" V 6750 3200 50  0000 C CNN
+F 2 "~" H 6750 3200 60  0000 C CNN
+F 3 "~" H 6750 3200 60  0000 C CNN
+	1    6750 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_8X2 P6
+U 1 1 53084397
+P 6750 2250
+F 0 "P6" H 6750 2700 60  0000 C CNN
+F 1 "CONN_8X2" V 6750 2250 50  0000 C CNN
+F 2 "~" H 6750 2250 60  0000 C CNN
+F 3 "~" H 6750 2250 60  0000 C CNN
+	1    6750 2250
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_8X2 P4
+U 1 1 53084985
+P 4250 5600
+F 0 "P4" H 4250 6050 60  0000 C CNN
+F 1 "CONN_8X2" V 4250 5600 50  0000 C CNN
+F 2 "~" H 4250 5600 60  0000 C CNN
+F 3 "~" H 4250 5600 60  0000 C CNN
+	1    4250 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_8X2 P5
+U 1 1 53084994
+P 4250 6550
+F 0 "P5" H 4250 7000 60  0000 C CNN
+F 1 "CONN_8X2" V 4250 6550 50  0000 C CNN
+F 2 "~" H 4250 6550 60  0000 C CNN
+F 3 "~" H 4250 6550 60  0000 C CNN
+	1    4250 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_3X2 P9
+U 1 1 530849F9
+P 4950 3550
+F 0 "P9" H 4950 3800 50  0000 C CNN
+F 1 "CONN_3X2" V 4950 3600 40  0000 C CNN
+F 2 "~" H 4950 3550 60  0000 C CNN
+F 3 "~" H 4950 3550 60  0000 C CNN
+	1    4950 3550
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC

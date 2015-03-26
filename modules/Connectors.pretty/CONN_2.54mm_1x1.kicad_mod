@@ -1,0 +1,9 @@
+(module CONN_2.54mm_1x1 (layer F.Cu) (tedit 5510705F)
+  (fp_text reference CONN_2.54mm_1x1 (at 0 1.7) (layer F.SilkS)
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+  (fp_text value VAL** (at 0 -1.5) (layer F.SilkS) hide
+    (effects (font (size 1 1) (thickness 0.2)))
+  )
+  (pad 1 thru_hole circle (at 0 0) (size 1.397 1.397) (drill 0.8128) (layers *.Cu *.Mask F.SilkS))
+)
