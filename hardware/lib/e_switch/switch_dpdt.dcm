@@ -1,0 +1,8 @@
+EESchema-DOCLIB  Version 2.0  Date: dim. 14 avril 2013 00:39:50 CEST
+#
+$CMP SWITCH_DPDT
+D Switch double pole double throw (DPDT)
+K Switch
+$ENDCMP
+#
+#End Doc Library

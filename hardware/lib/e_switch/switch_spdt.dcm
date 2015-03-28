@@ -1,0 +1,8 @@
+EESchema-DOCLIB  Version 2.0  Date: sam. 13 avril 2013 22:33:08 CEST
+#
+$CMP SWITCH_SPDT
+D Switch single pole double throw (SPDT)
+K Switch
+$ENDCMP
+#
+#End Doc Library

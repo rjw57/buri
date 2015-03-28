@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Sun 22 Mar 2015 22:49:37 GMT
+Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Thu 26 Mar 2015 17:49:34 GMT
 
 BeginCmp
 TimeStamp = /54D141C5;
@@ -82,6 +82,13 @@ TimeStamp = /54D63A81/54D63BC2;
 Reference = C12;
 ValeurCmp = 4.7uF;
 IdModule  = Capacitors_Elko_ThroughHole:Elko_vert_DM5_RM2;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E60914/55144A39;
+Reference = C13;
+ValeurCmp = 10nF;
+IdModule  = Capacitors_ThroughHole:Capacitor4x3RM2.5;
 EndCmp
 
 BeginCmp
@@ -218,16 +225,16 @@ IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
 EndCmp
 
 BeginCmp
-TimeStamp = /54D63A81/54D63BC1;
-Reference = SW1;
-ValeurCmp = RESET;
-IdModule  = IHeartKiCad:SW_M6_PTH;
+TimeStamp = /55144FCE;
+Reference = S1;
+ValeurCmp = PVA2;
+IdModule  = switch-misc-PVA2F;
 EndCmp
 
 BeginCmp
-TimeStamp = /550E0212;
-Reference = SW2;
-ValeurCmp = PWR;
+TimeStamp = /54D63A81/54D63BC1;
+Reference = SW1;
+ValeurCmp = RESET;
 IdModule  = IHeartKiCad:SW_M6_PTH;
 EndCmp
 
