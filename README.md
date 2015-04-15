@@ -18,7 +18,8 @@ the 80s.
 The [hardware](hardware) directory contains schematics, etc for the
 microcomputer hardware itself. Pre-rendered plots of PCB layout and schematics
 can be found in gerber and PDF format in the [CPU board plot
-directory](hardware/cpu-board/plots).
+directory](hardware/cpu-board/plots) and the [monitor board plot
+directory](hardware/monitor-board/plots).
 
 The [sim](sim) directory contains a simulator for the microcomputer.  It's
 pretty slow and I only really use it to enable development of the operating
