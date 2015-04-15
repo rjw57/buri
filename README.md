@@ -15,6 +15,8 @@ the 80s.
 
 ## Contents of this repository
 
+![CPU board PCB](hardware/cpu-board/plots/cpu-board-pcb.png)
+
 The [hardware](hardware) directory contains schematics, etc for the
 microcomputer hardware itself. Pre-rendered plots of PCB layout and schematics
 can be found in gerber and PDF format in the [CPU board plot
