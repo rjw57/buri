@@ -3,3 +3,5 @@
 *-cache.lib
 *-bak
 cpu-board/cpu-board.dsn
+*.dsn
+*.ses
