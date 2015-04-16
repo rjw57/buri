@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Thu 16 Apr 2015 17:15:35 BST
+Cmp-Mod V01 Created by CvPcb (2014-jan-25)-product date = Thu 16 Apr 2015 18:02:50 BST
 
 BeginCmp
 TimeStamp = /552FE706;
@@ -46,14 +46,14 @@ BeginCmp
 TimeStamp = /552FE86B;
 Reference = P7;
 ValeurCmp = CTRL_BUS;
-IdModule  = Pin_Headers:Pin_Header_Angled_2x13;
+IdModule  = ab2tech:AB2_HDR_M13-2V;
 EndCmp
 
 BeginCmp
 TimeStamp = /552FE75D;
 Reference = P8;
 ValeurCmp = AD_BUS;
-IdModule  = Pin_Headers:Pin_Header_Angled_2x13;
+IdModule  = ab2tech:AB2_HDR_M13-2V;
 EndCmp
 
 EndListe

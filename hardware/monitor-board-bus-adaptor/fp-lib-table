@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name ab2tech)(type KiCad)(uri ${KIPRJMOD}/../lib/ab2tech/modules/ab2_header.pretty)(options "")(descr ""))
+)
