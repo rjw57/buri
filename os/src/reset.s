@@ -2,6 +2,7 @@
 ; Processor reset vector
 ;
 .import init
+.import init_osvecs
 
 ; Called on processor reset. Bootstraps stack pointer, clears zero page and
 ; jumps to init.
@@ -20,6 +21,9 @@
 	sta	$00,X			; write A to ZP location X
 	inx				; increment X (wraps at $FF)
 	bne	@loop			; if X has not wrapped, loop
+
+	; Initialise vector table
+	jsr init_osvecs
 
 	cli				; re-enable interrupts
 	jmp	init			; jump to entry point

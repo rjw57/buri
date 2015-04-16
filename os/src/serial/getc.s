@@ -1,12 +1,12 @@
 .include "hardware.inc"
 
-.export getc
+.export srl_getc
 
-; getc - wait for the next character from the serial port
+; srl_getc - wait for the next character from the serial port
 ;
 ; on exit:
 ; 	A - the ASCII code of the character read
-.proc getc
+.proc srl_getc
 	lda	#ACIA_ST_RDRF		; load RDRF mask into A
 
 @wait_rx_full:

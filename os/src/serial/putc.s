@@ -1,14 +1,14 @@
 .include "hardware.inc"
 
-.export putc
+.export srl_putc
 
-; putc - send a character along the serial connection
+; srl_putc - send a character along the serial connection
 ;
 ; on entry:
 ; 	A - the ASCII code of the character to send
 ; on exit:
 ; 	A - preserved
-.proc putc
+.proc srl_putc
 	pha				; save A on stack
 	
 	lda	#ACIA_ST_TDRE		; load TDRE mask into A

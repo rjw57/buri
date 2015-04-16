@@ -1,0 +1,12 @@
+BURI memory map
+
+0000-00CF	User code zero page
+00D0-00FF	OS zero page
+0100-01FF	Hardware stack
+0200-03FF	OS dedicated RAM
+ -> 0200-0201	PUTC vector
+ -> 0202-0203	GETC vector
+0400-7FFF	User RAM
+DF80-DFFF	IO areas
+ -> DFFC-DFFF	ACIA1
+E000-FFFF	OS ROM
