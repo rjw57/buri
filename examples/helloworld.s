@@ -1,4 +1,4 @@
-.import putc
+.import v_putc
 
 ; Program entry routine
 ;
@@ -24,6 +24,10 @@ loop:
 exit:
 	rts				; Exit from program
 .endproc
+
+putc:
+	jmp (v_putc)
+	rts
 
 ; The DATA segment holds the program's initialised data. In this case, it is a
 ; C-style string.
