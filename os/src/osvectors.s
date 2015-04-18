@@ -6,19 +6,21 @@
 .export init_osvecs
 .export putc, getc
 
-.import srl_putc, srl_getc
+.import srl_putc, srl_getc, syscall
 
 	.rodata
 init_vec_table_start:
 	.word	srl_putc
 	.word	srl_getc
+	.word	syscall
 init_vec_table_end:
 init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
 
 	.segment "OSVECTORS"
 os_vectors:
-v_putc:	.res 2
-v_getc:	.res 2
+v_putc:		.res 2
+v_getc:		.res 2
+v_osbyte:	.res 2
 
 	.code
 putc:	jmp (v_putc)
