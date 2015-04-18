@@ -3,7 +3,7 @@ Simulate the buri microcomputer.
 
 Usage:
     burisim (-h | --help)
-    burisim [options] [--serial URL] <rom>
+    burisim [options] [--serial URL] [--load FILE] <rom>
 
 Options:
     -h, --help          Show a brief usage summary.
@@ -11,6 +11,7 @@ Options:
 
 Hardware options:
     --serial URL        Connect ACIA1 to this serial port. [default: loop://]
+    --load FILE         Pre-load FILE at location 0x5000 in RAM.
 
     See http://pyserial.sourceforge.net/pyserial_api.html#urls for a discussion
     of possible serial connection URLs.
@@ -96,6 +97,16 @@ class BuriSim(object):
         else:
             self.load_rom_bytes(fobj_or_string.read())
 
+    def load_ram(self, fobj_or_string, addr):
+        """Load a RAM image from the passed file object or filename-string.
+
+        """
+        if isinstance(fobj_or_string, basestring):
+            with open(fobj_or_string, 'rb') as fobj:
+                self.load_ram_bytes(fobj.read(), addr)
+        else:
+            self.load_ram_bytes(fobj_or_string.read(), addr)
+
     def load_rom_bytes(self, rom_bytes):
         """Load a ROM image from the passed bytes object. The ROM is truncated
         or repeated as necessary to fill the buri ROM region.
@@ -110,6 +121,15 @@ class BuriSim(object):
         with self.writable_rom():
             for addr, val in zip(range(*BuriSim.ROM_RANGE), cycle(rom_bytes)):
                 self.mem[addr] = val
+
+    def load_ram_bytes(self, ram_bytes, addr):
+        """Load a RAM image from the passed bytes object.
+
+        """
+        _LOGGER.info('loading RAM image of %s bytes', len(ram_bytes))
+
+        for off, val in enumerate(ram_bytes):
+            self.mem[addr + off] = val
 
     def reset(self):
         """Perform a hardware reset."""
@@ -411,6 +431,9 @@ def main():
 
     # Read ROM
     sim.load_rom(opts['<rom>'])
+
+    if opts['--load'] is not None:
+        sim.load_ram(opts['--load'], 0x5000)
 
     # Step
     sim.reset()
