@@ -191,8 +191,14 @@ exit:
 yloop:
 	ldx #0
 xloop:
+	lda #0
+aloop:
 	jsr haveinput			; do we have any input?
 	bcs exit			; yes!
+
+	inc				; loop accum
+	cmp #5
+	bne aloop
 
 	inx				; loop X
 	cpx #0
