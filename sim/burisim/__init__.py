@@ -9,6 +9,8 @@ Options:
     -h, --help          Show a brief usage summary.
     -q, --quiet         Decrease verbosity.
 
+    --trace             Trace CPU execution.
+
 Hardware options:
     --serial URL        Connect ACIA1 to this serial port. [default: loop://]
     --load FILE         Pre-load FILE at location 0x5000 in RAM.
@@ -65,6 +67,8 @@ class BuriSim(object):
     SCREEN_RANGE = 0x7B00, 0x7B00 + ScreenMemory.SCREEN_SIZE_BYTES
 
     def __init__(self):
+        self.tracing = False
+
         # Behaviour flags
         self._raise_on_rom_write = True
 
@@ -152,6 +156,8 @@ class BuriSim(object):
             self.trigger_irq()
 
         # Step CPU
+        if self.tracing:
+            _LOGGER.info(repr(self.mpu))
         self.mpu.step()
 
     def trigger_irq(self):
@@ -424,6 +430,7 @@ def main():
 
     # Create simulator
     sim = BuriSim()
+    sim.tracing = opts['--trace']
 
     # Create serial port
     sp = serial.serial_for_url(opts['--serial'])
