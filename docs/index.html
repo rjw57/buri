@@ -1,0 +1,49 @@
+---
+layout: default
+---
+
+<div class="home">
+  <h1>Introduction</h1>
+
+  <p>
+  This is the site for my home-built 6502 computer system, Búri. More
+  information on why I decided to make Búri, what I hope to achieve and what
+  to expect from this site can be found on the <a href="about">about page</a>.
+  </p>
+
+  <h2><a href="hardware">Hardware</a></h2>
+
+  <p>
+  Details on the actual hardware of Búri. Descriptions of the design software
+  used and links to the schematics.
+  </p>
+
+  <h2><a href="software">Software</a></h2>
+
+  <p>
+  Details on the Operating System and user software for Búri. Descriptions of
+  the non-hardware memory map and guides for writing software.
+  </p>
+
+  <h2><a href="peripherals">Perhipherals</a></h2>
+
+  <p>
+  Add-on hardware modules for Búri such as a serial port, debugging "monitor"
+  system and LCD display.
+  </p>
+
+  <h1>Updates</h1>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>
