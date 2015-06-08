@@ -17,14 +17,15 @@ body {
     font-family: $base-font-family;
     font-size: $base-font-size;
     line-height: $base-line-height;
-    font-weight: 300;
+    font-weight: $base-font-weight;
     color: $text-color;
     background-color: $background-color;
     -webkit-text-size-adjust: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: $display-font-family;
+    font-family: $heading-font-family;
+    font-weight: $heading-font-weight;
 }
 
 

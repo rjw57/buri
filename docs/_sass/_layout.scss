@@ -11,6 +11,8 @@
 }
 
 .site-title {
+    font-family: $heading-font-family;
+    font-weight: $heading-font-weight;
     font-size: 26px;
     line-height: 56px;
     letter-spacing: -1px;
@@ -32,6 +34,8 @@
     }
 
     .page-link {
+        font-family: $heading-font-family;
+        font-weight: $heading-font-weight;
         color: $text-color;
         line-height: $base-line-height;
 
