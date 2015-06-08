@@ -188,6 +188,21 @@
     font-size: 24px;
 }
 
+.figure {
+    margin-top: $spacing-unit;
+
+    .figure-body {
+      border-radius: $spacing-unit * 0.25;
+    }
+
+    .figure-caption {
+      text-align: right;
+      font-style: italic;
+      margin-top: $spacing-unit * 0.25;
+      color: mix($text-color, $background-color, 50%);
+      font-size: $small-font-size;
+    }
+}
 
 
 /**

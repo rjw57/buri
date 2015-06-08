@@ -5,6 +5,7 @@ description: > # this means to ignore newlines until "baseurl:"
   An experiment in learning electronics and low-level software through a
   personal project to recreate a 1980s-style home computer.
 baseurl: "/buri/" # the subpath of your site, e.g. /blog/
+imageurl: "/buri/img/" # subpath for images
 url: "https://rjw57.github.io/" # the base hostname & protocol for your site
 twitter_username: richwareham
 github_username:  rjw57
