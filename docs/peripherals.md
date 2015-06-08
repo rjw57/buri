@@ -1,12 +1,12 @@
 ---
 layout: page
-title: Hardware
-permalink: /hardware/
-menuorder: 1
+title: Peripherals
+permalink: /peripherals/
 menu: top
+menuorder: 3
 ---
 
-{% assign pages = site.pages | where: "categories", "hardware" | sort: "priortity" %}
+{% assign pages = site.pages | where: "categories", "peripherals" | sort: "priortity" %}
 
 {% for page in pages %}
 <h1 class="page-heading">

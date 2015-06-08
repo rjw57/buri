@@ -128,7 +128,12 @@ blockquote {
     }
 }
 
-
+/**
+ * Typography
+ */
+.invert, s {
+    text-decoration: overline;
+}
 
 /**
  * Code formatting

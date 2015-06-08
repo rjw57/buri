@@ -62,6 +62,14 @@ layout: default
   used and links to the schematics.
   </p>
 
+  {% assign hardware_pages = site.pages | where: "categories", "hardware" | sort: "priortity" %}
+  <p>
+  {% for page in hardware_pages %}
+    {% unless forloop.first %} | {% endunless %}
+    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  {% endfor %}
+  </p>
+
   <h2><a href="software">Software</a></h2>
 
   <p>
@@ -69,11 +77,27 @@ layout: default
   the non-hardware memory map and guides for writing software.
   </p>
 
+  <p>
+  {% assign software_pages = site.pages | where: "categories", "software" | sort: "priortity" %}
+  {% for page in software_pages %}
+    {% unless forloop.first %} | {% endunless %}
+    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  {% endfor %}
+  </p>
+
   <h2><a href="peripherals">Peripherals</a></h2>
 
   <p>
   Add-on hardware modules for Búri such as a serial port, debugging "monitor"
   system and LCD display.
+  </p>
+
+  <p>
+  {% assign peripheral_pages = site.pages | where: "categories", "peripheral" | sort: "priortity" %}
+  {% for page in peripheral_pages %}
+    {% unless forloop.first %} | {% endunless %}
+    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  {% endfor %}
   </p>
 
 </div>

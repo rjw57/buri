@@ -2,6 +2,7 @@
 layout: page
 title: About Búri
 permalink: /about/
+menuorder: 0
 menu: top
 ---
 
