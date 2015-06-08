@@ -23,6 +23,9 @@ body {
     -webkit-text-size-adjust: 100%;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: $display-font-family;
+}
 
 
 /**
@@ -52,10 +55,15 @@ img {
  */
 figure > img {
     display: block;
+    border-radius: $spacing-unit * 0.25;
 }
 
 figcaption {
     font-size: $small-font-size;
+    text-align: right;
+    font-style: italic;
+    margin-top: $spacing-unit * 0.25;
+    color: mix($text-color, $background-color, 66%);
 }
 
 
