@@ -10,4 +10,10 @@ excerpt: >
   simple bit of hardware driven by an Arduino.
 ---
 
+<figure>
+  <img alt="The Búri monitor board implemented on a breadboard."
+    src="{{ "monitor-board.jpg" | prepend: site.imageurl }}">
+  <figcaption>The Búri monitor board implemented on a breadboard.</figcaption>
+</figure>
+
 TODO

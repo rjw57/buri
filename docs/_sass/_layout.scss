@@ -192,42 +192,6 @@
     font-size: 24px;
 }
 
-.image-strip {
-    margin: 0;
-    list-style-type: none;
-    display: table;
-    margin-left: -0.5 * $spacing-unit;
-
-    @include media-query($on-palm) {
-        display: block;
-    }
-
-    .image-strip-image {
-        display: table-cell;
-        margin: 0;
-        padding: 0;
-        padding-left: 0.5 * $spacing-unit;
-        box-sizing: border-box;
-
-        @include media-query($on-palm) {
-            display: block;
-            float: left;
-            max-width: 50%;
-            margin-bottom: 0.5*$spacing-unit;
-        }
-
-        img {
-            max-width: 100%;
-            width: 100%;
-            border-radius: $spacing-unit * 0.25;
-        }
-    }
-
-    .image-strip-image::first-child {
-        padding-left: 0;
-    }
-}
-
 /**
  * Posts
  */

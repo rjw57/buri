@@ -66,3 +66,45 @@ $mem-map-unit: $spacing-unit;
     .mem-map-40 { height: 8 * $mem-map-unit; }
     .mem-map-80 { height: 9 * $mem-map-unit; }
 }
+
+.image-strip {
+    margin: 0;
+    list-style-type: none;
+    display: table;
+    margin-left: -0.5 * $spacing-unit;
+    width: 100%;
+
+    @include media-query($on-palm) {
+        display: block;
+    }
+
+    .image-strip-image {
+        display: table-cell;
+        margin: 0;
+        padding: 0;
+        padding-left: 0.5 * $spacing-unit;
+        box-sizing: border-box;
+
+        @include media-query($on-palm) {
+            display: block;
+            float: left;
+            max-width: 50%;
+            margin-bottom: 0.5*$spacing-unit;
+        }
+
+        img {
+            object-fit: cover;
+            object-position: center;
+            width: 100%;
+            min-width: 100%;
+            height: $spacing-unit * 4;
+            border-radius: $spacing-unit * 0.25;
+        }
+
+        img.tall { height: $spacing-unit * 8; }
+    }
+
+    .image-strip-image::first-child {
+        padding-left: 0;
+    }
+}

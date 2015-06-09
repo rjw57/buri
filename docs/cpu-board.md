@@ -54,12 +54,12 @@ disconnected from the circuit.
   <ul class="image-strip">
     <li class="image-strip-image">
       <a href="{{ "bodge-1.jpg" | prepend: site.imageurl }}">
-        <img src="{{ "bodge-1-thumb.jpg" | prepend: site.imageurl }}">
+        <img class="tall" src="{{ "bodge-1.jpg" | prepend: site.thumburl }}">
       </a>
     </li>
     <li class="image-strip-image">
       <a href="{{ "bodge-2.jpg" | prepend: site.imageurl }}">
-        <img src="{{ "bodge-2-thumb.jpg" | prepend: site.imageurl }}">
+        <img class="tall" src="{{ "bodge-2.jpg" | prepend: site.thumburl }}">
       </a>
     </li>
   </ul>
