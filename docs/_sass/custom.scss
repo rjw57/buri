@@ -20,6 +20,10 @@
     }
 }
 
+.palm-hidden {
+    @include media-query($on-palm) { display: none !important; visibility: hidden; }
+}
+
 $mem-map-unit: $spacing-unit;
 .mem-map {
     width: 100%;
