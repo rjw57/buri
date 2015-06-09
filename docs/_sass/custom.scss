@@ -55,7 +55,7 @@ $mem-map-unit: $spacing-unit;
     }
 
     .mem-map-top { height: 100%; }
-    .mem-map-description { width: 100%; }
+    .mem-map-description { width: 100%; td { vertical-align: top; } }
 
     .mem-map-01 { height: 2 * $mem-map-unit; }
     .mem-map-02 { height: 3 * $mem-map-unit; }

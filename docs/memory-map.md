@@ -52,9 +52,9 @@ arrangement is.
         to for various entry points. The entry points are:
       </p>
       <table>
-        <tr><td>$0200&ndash;$0201</td><td>Put character (<code>putc</code>)</td></tr>
-        <tr><td>$0202&ndash;$0203</td><td>Get character (<code>getc</code>)</td></tr>
-        <tr><td>$0204&ndash;$0205</td><td>Is input available? (<code>hasc</code>)</td></tr>
+        <tr><td>$0200&ndash;$0201:</td><td>Put character (<code>putc</code>)</td></tr>
+        <tr><td>$0202&ndash;$0203:</td><td>Get character (<code>getc</code>)</td></tr>
+        <tr><td>$0204&ndash;$0205:</td><td>Is input available? (<code>hasc</code>)</td></tr>
       </table>
     </td>
   </tr>
@@ -159,7 +159,15 @@ arrangement is.
       <div class="mem-map-bottom">$DFFF</div>
     </td>
     <td class="mem-map-description">
-      I/O area 7.
+      <p>I/O area 7.</p>
+      <p>Within this I/O area, the following hardware registers are assumed to
+      be exposed.</p>
+      <table>
+        <tr><td>$DFFC:</td><td>ACIA receive register (read) / transmit register (write)</td></tr>
+        <tr><td>$DFFD:</td><td>ACIA status register (read) / programmed reset (write)</td></tr>
+        <tr><td>$DFFE:</td><td>ACIA command register</td></tr>
+        <tr><td>$DFFF:</td><td>ACIA control register</td></tr>
+      </table>
     </td>
   </tr>
   <tr class="mem-map-entry">
