@@ -75,26 +75,30 @@ $mem-map-unit: $spacing-unit;
 
     @include media-query($on-palm) {
         display: block;
-        margin-left: 0;
     }
 
-    .image-strip-image:first-child {
-        padding-left: 0;
+    .image-strip-row {
+        display: table-row;
+        margin: 0; padding: 0;
+        width: 100%;
+
+        @include media-query($on-palm) {
+            display: block;
+        }
     }
 
     .image-strip-image {
         display: table-cell;
-        margin: 0;
-        padding: 0;
-        padding-left: 0.5 * $spacing-unit;
+        margin: 0; padding: 0;
+        padding-right: 0.5 * $spacing-unit;
         box-sizing: border-box;
 
         @include media-query($on-palm) {
-            max-width: 50%;
-            width: 50%;
+            max-width: 100%;
+            width: 100%;
             display: block;
-            float: left;
             margin-bottom: 0.5 * $spacing-unit;
+            padding: 0;
         }
 
         img {
@@ -109,7 +113,7 @@ $mem-map-unit: $spacing-unit;
         img.tall { height: $spacing-unit * 8; }
     }
 
-    .image-strip-image::first-child {
-        padding-left: 0;
+    .image-strip-image:last-child {
+        padding-right: 0;
     }
 }
