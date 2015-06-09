@@ -61,10 +61,26 @@ arrangement is.
   <tr class="mem-map-entry">
     <td class="mem-map-02">
       <div class="mem-map-top">$0206</div>
-      <div class="mem-map-bottom">$03FF</div>
+      <div class="mem-map-bottom">$02FF</div>
     </td>
     <td class="mem-map-description">
       Operating system reserved RAM space.
+    </td>
+  </tr>
+  <tr class="mem-map-entry">
+    <td class="mem-map-02">
+      <div class="mem-map-top">$0300</div>
+      <div class="mem-map-bottom">$03FF</div>
+    </td>
+    <td class="mem-map-description">
+      <p>Conventional area for RAM-patched OS vectors.</p>
+      <p>
+        If you patch the OS vector table at <code>$0200</code> by convention
+        the routines can live in this page. At the moment the OS needs only one
+        page of RAM but this may change in future. You should try and keep the
+        OS vector patches position-independent since it may be neat to add an OS
+        "patch" routine at a later date which chooses where to copy the routine.
+      </p>
     </td>
   </tr>
   <tr class="mem-map-entry">
