@@ -54,6 +54,7 @@ layout: default
   </ul>
 
   <h1>Sections</h1>
+  {% assign pages = site.pages | sort: 'priority' %}
 
   <h2><a href="hardware">Hardware</a></h2>
 
@@ -62,13 +63,15 @@ layout: default
   used and links to the schematics.
   </p>
 
-  {% assign hardware_pages = site.pages | where: "categories", "hardware" | sort: "priortity" %}
-  <p>
-  {% for page in hardware_pages %}
-    {% unless forloop.first %} | {% endunless %}
-    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  <ul class="page-list">
+  {% for page in pages %}
+    {% if page.categories contains 'hardware' %}
+      <li class="page-list-link">
+        <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+      </li>
+    {% endif %}
   {% endfor %}
-  </p>
+  </ul>
 
   <h2><a href="software">Software</a></h2>
 
@@ -77,13 +80,15 @@ layout: default
   the non-hardware memory map and guides for writing software.
   </p>
 
-  <p>
-  {% assign software_pages = site.pages | where: "categories", "software" | sort: "priortity" %}
-  {% for page in software_pages %}
-    {% unless forloop.first %} | {% endunless %}
-    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  <ul class="page-list">
+  {% for page in pages %}
+    {% if page.categories contains 'software' %}
+      <li class="page-list-link">
+        <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+      </li>
+    {% endif %}
   {% endfor %}
-  </p>
+  </ul>
 
   <h2><a href="peripherals">Peripherals</a></h2>
 
@@ -92,12 +97,14 @@ layout: default
   system and LCD display.
   </p>
 
-  <p>
-  {% assign peripheral_pages = site.pages | where: "categories", "peripheral" | sort: "priortity" %}
-  {% for page in peripheral_pages %}
-    {% unless forloop.first %} | {% endunless %}
-    <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+  <ul class="page-list">
+  {% for page in pages %}
+    {% if page.categories contains 'peripheral' %}
+      <li class="page-list-link">
+        <a href="{{ page.permalink | prepend: site.baseurl }}">{{ page.title }}</a>
+      </li>
+    {% endif %}
   {% endfor %}
-  </p>
+  </ul>
 
 </div>

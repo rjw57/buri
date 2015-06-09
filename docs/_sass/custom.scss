@@ -1,0 +1,68 @@
+/**
+ * Custom, site-specific, SASS styling
+ */
+.page-list {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    list-style-type: none;
+
+    .page-list-link {
+        display: inline;
+    }
+
+    .page-list-link:after {
+        content: ' | ';
+    }
+
+    .page-list-link:last-child:after {
+        content: '';
+    }
+}
+
+$mem-map-unit: $spacing-unit;
+.mem-map {
+    width: 100%;
+    border-collapse: collapse;
+
+    .mem-map-entry:nth-child(2n) {
+        background: darken($background-color, 5%);
+    }
+
+    .mem-map-entry > td, .mem-map-heading > th {
+        border: 1px solid mix($text-color, $background-color, 33%);
+        padding: 0.2 * $spacing-unit;
+        vertical-align: top;
+        position: relative;
+    }
+
+    .mem-map-heading > th {
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .mem-map-bottom {
+        bottom: 0.2 * $spacing-unit;
+        position: absolute;
+    }
+
+    .mem-map-top {
+        margin-bottom: $base-line-height * $base-font-size; // for ...-bottom element
+    }
+
+    .mem-map-top, .mem-map-bottom, .mem-map-range {
+        font-family: $monospace-font-family;
+    }
+
+    .mem-map-top { height: 100%; }
+    .mem-map-description { width: 100%; }
+
+    .mem-map-01 { height: 2 * $mem-map-unit; }
+    .mem-map-02 { height: 3 * $mem-map-unit; }
+    .mem-map-04 { height: 4 * $mem-map-unit; }
+    .mem-map-08 { height: 5 * $mem-map-unit; }
+    .mem-map-10 { height: 6 * $mem-map-unit; }
+    .mem-map-20 { height: 7 * $mem-map-unit; }
+    .mem-map-40 { height: 8 * $mem-map-unit; }
+    .mem-map-80 { height: 9 * $mem-map-unit; }
+}

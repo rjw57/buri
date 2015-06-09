@@ -138,6 +138,10 @@ blockquote {
 /**
  * Code formatting
  */
+pre, code {
+    font-family: $monospace-font-family;
+}
+
 pre,
 code {
     font-size: 15px;
