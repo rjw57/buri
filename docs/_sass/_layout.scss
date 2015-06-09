@@ -19,6 +19,10 @@
     margin-bottom: 0;
     float: left;
 
+    @include media-query($on-palm) {
+        padding-right: 60px;    // so that hamburger menu does not obscure
+    }
+
     &,
     &:visited {
         color: $grey-color-dark;

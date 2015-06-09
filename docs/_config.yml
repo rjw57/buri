@@ -1,5 +1,5 @@
 # Site settings
-title: "Búri: a Homebrew 6502 Computer"
+title: "Búri: my 6502 computer"
 email: rich.buri@richwareham.com
 description: > # this means to ignore newlines until "baseurl:"
   An experiment in learning electronics and low-level software through a
