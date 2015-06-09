@@ -71,11 +71,15 @@ $mem-map-unit: $spacing-unit;
     margin: 0;
     list-style-type: none;
     display: table;
-    margin-left: -0.5 * $spacing-unit;
     width: 100%;
 
     @include media-query($on-palm) {
         display: block;
+        margin-left: 0;
+    }
+
+    .image-strip-image:first-child {
+        padding-left: 0;
     }
 
     .image-strip-image {
@@ -86,10 +90,11 @@ $mem-map-unit: $spacing-unit;
         box-sizing: border-box;
 
         @include media-query($on-palm) {
+            max-width: 50%;
+            width: 50%;
             display: block;
             float: left;
-            max-width: 50%;
-            margin-bottom: 0.5*$spacing-unit;
+            margin-bottom: 0.5 * $spacing-unit;
         }
 
         img {

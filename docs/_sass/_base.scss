@@ -64,6 +64,7 @@ figcaption {
     font-style: italic;
     margin-top: $spacing-unit * 0.25;
     color: mix($text-color, $background-color, 66%);
+    clear: both;
 }
 
 
