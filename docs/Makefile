@@ -6,4 +6,7 @@ endif
 
 docs:
 	$(JEKYLL) build
-.PHONY: docs
+serve:
+	$(JEKYLL) serve
+
+.PHONY: docs serve
