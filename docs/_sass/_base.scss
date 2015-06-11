@@ -54,16 +54,16 @@ img {
 /**
  * Figures
  */
-figure > img {
+figure > img, figure > a > img {
     display: block;
-    border-radius: $spacing-unit * 0.25;
+    border: 1px solid $grey-color-light;
+    border-radius: $figure-border-radius;
 }
 
 figcaption {
     font-size: $small-font-size;
-    font-style: italic;
-    margin-top: $spacing-unit * 0.25;
-    color: mix($text-color, $background-color, 66%);
+    margin-top: 0.25 * $small-font-size;
+    color: $muted-text-color;
     clear: both;
 }
 
@@ -156,11 +156,11 @@ code {
 
 pre {
     border: 1px solid $grey-color-light;
-    border-radius: 3px;
+    border-radius: $figure-border-radius;
     background-color: #eef;
 
     padding: 8px 12px;
-    overflow-x: scroll;
+    overflow-x: auto;
 
     > code {
         border: 0;

@@ -12,6 +12,6 @@ twitter_username: richwareham
 github_username:  rjw57
 
 # Build settings
-markdown: kramdown
+markdown: redcarpet
 
 exclude: [Makefile, README.md]

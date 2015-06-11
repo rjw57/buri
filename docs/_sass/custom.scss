@@ -1,6 +1,12 @@
 /**
  * Custom, site-specific, SASS styling
  */
+
+aside {
+    font-size: $small-font-size;
+    color: $muted-text-color;
+}
+
 .page-list {
     margin-left: 0;
     margin-right: 0;
@@ -27,14 +33,15 @@
 $mem-map-unit: $spacing-unit;
 .mem-map {
     width: 100%;
+    border-spacing: 0;
     border-collapse: collapse;
 
     .mem-map-entry:nth-child(2n) {
-        background: darken($background-color, 5%);
+        background: $light-background-color;
     }
 
     .mem-map-entry > td, .mem-map-heading > th {
-        border: 1px solid mix($text-color, $background-color, 33%);
+        border: 1px solid $grey-color-dark;
         padding: 0.2 * $spacing-unit;
         vertical-align: top;
         position: relative;
@@ -111,7 +118,7 @@ $mem-map-unit: $spacing-unit;
             width: 100%;
             min-width: 100%;
             height: $spacing-unit * 4;
-            border-radius: $spacing-unit * 0.25;
+            border-radius: $figure-border-radius;
         }
 
         img.tall { height: $spacing-unit * 8; }
