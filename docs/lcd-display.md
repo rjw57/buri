@@ -31,34 +31,30 @@ display that the values on the control/data lines are intended for it.
 
 Reading data from the display is a relatively unsurprising affair:
 
-<ol>
-  <li>Set RS to indicate whether one is reading the busy flag/RAM address or
-  reading data from the display.</li>
-  <li>Set R/<s>W</s> high.</li>
-  <li>Set E high.</li>
-  <li>Read byte from D[0&hellip;7].</li>
-  <li>Set E low</li>
-</ol>
+1. Set RS to indicate whether one is reading the busy flag/RAM address or
+   reading data from the display.
+2. Set R/<s>W</s> high.
+3. Set E high.
+4. Read byte from D[0&hellip;7].
+5. Set E low.
 
 Similarly, writing data to the display is straightforward:
 
-<ol>
-  <li>Set RS to indicate whether one is writing the control register or sending
-  data.</li>
-  <li>Set R/<s>W</s> low</li>
-  <li>Set byte on D[0&hellip;7].</li>
-  <li>Set E high.</li>
-  <li>Set E low</li>
-</ol>
+1. Set RS to indicate whether one is writing the control register or sending
+   data.
+2. Set R/<s>W</s> low.
+3. Set byte on D[0&hellip;7].
+4. Set E high.
+5. Set E low.
 
-This is very similar to the 6502 read/write cycles. The subtlety is in how the E
-signal is generated. If it is by some address line decoding, which it is on
-Búri, then the E signal will change during &phi;1 which is <em>before</em> the
-R/<s>W</s> and data lines are stable. This is easily fixed by making E
-conditional on &phi;2 being high.
+This is very similar to the way the 6502 performs reads and writes. The subtlety
+is in how the E signal is generated. If it is by some address line decoding,
+which it is on Búri, then the E signal will change during &phi;1 which is
+<em>before</em> the R/<s>W</s> and data lines are stable. This is easily fixed
+by making E conditional on &phi;2 being high.
 
-All of the displays I have can run at 2MHz so no additional logic is needed if
-the 6502 is running at 2MHz or slower. Thankfully Búri is a 2MHz machine by
+All of the displays I have can run at 2MHz and so no additional logic is needed
+if the 6502 is running at 2MHz or slower. Thankfully Búri is a 2MHz machine by
 design so I can stop here. I may need to re-visit the bus adapter at a later
 date if I move Búri to 4MHz or greater.
 
@@ -71,15 +67,15 @@ date if I move Búri to 4MHz or greater.
   </figcaption>
 </figure>
 
-The complete bus logic is shown above. Here we've used a 74138 3-to-8 decoder to
-select out the bottom two bytes from [I/O area 7] Búri will take <s>IO7</s> low when bytes
-in the range $DFF0&ndash;$DFFF are accessed. We use A0 as register
-select and feed A[1&hellip;3] into the '138. We use a single 7400 NAND gate to
-condition E on &phi;2 and a couple of 7404 NOT gates to flip some signals
-around.
+The complete bus logic is shown above. Here I've used a 74138 3-to-8 decoder to
+select out the bottom two bytes from [I/O area 7]. (Búri will take <s>IO7</s>
+low when bytes in the range $DFF0&ndash;$DFFF are accessed.) I use A0 as
+register select and feed A[1&hellip;3] into the '138. I use a single 7400 NAND
+gate to condition E on &phi;2 and a couple of 7404 NOT gates to flip some
+signals around.
 
 <aside>
-We could've just used some NAND gates to select the display when A1 = A2 = A3 =
+I could've just used some NAND gates to select the display when A1 = A2 = A3 =
 low but using the '138 is useful since it exposes some other lines which can be
 used to select other peripherals in I/O area 7 such as the [serial port].
 </aside>
@@ -88,7 +84,7 @@ used to select other peripherals in I/O area 7 such as the [serial port].
 
 According to the [datasheet], the display is controlled by writing to register 0
 (which is at $DFF0 using the circuit above) and data is written to register 1
-(exposed at $DFF1). The control bytes we need to send are:
+(exposed at $DFF1). The control bytes I need to send are:
 
 * $38: enable 8-bit mode, 2 line display and 5&times;8 font.
 * $0D: switch display on and have "blinking block"-style cursor.
@@ -116,8 +112,34 @@ $DFF1:
 
 ## Software
 
-```asm
-.proc display_addr_to_pos
+The LCD driver software is written in assembly.
+
+The first thing to do is to define the various parameters of our display. My
+20&times;4 display is arranged with a slightly odd ordering of lines with
+respect to display addresses. Rather than taking up space with code to compute
+the line offsets, it's more space-efficient to just code a small lookup table:
+
+```ca65
+LINE_LEN   = 20       ; Length of a single line (characters)
+LINE_COUNT = 4        ; Number of lines of text
+
+; Lookup table for addresses corresponding to start of lines in display RAM.
+line_starts:
+  .byte #0, #64, #20, #84
+```
+
+With the lookup table it's easy enough to write a routine to calculate a
+display address from the corresponding x- and y-co-ordinates.
+
+```ca65
+; Interpret X as characters from right (0-based) and Y as lines from top
+; (0-based). Set A to the corresponding display address. If X and Y are outside
+; of the defined area, the result is undefined.
+.proc pos_to_display_addr
+  txa                 ; set A = X to begin with
+  clc
+  adc line_starts, Y  ; A += offset to start of line Y
+  rts
 .endproc
 ```
 
