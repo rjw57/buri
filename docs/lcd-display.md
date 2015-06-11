@@ -114,6 +114,37 @@ $DFF1:
 
 The LCD driver software is written in assembly.
 
+```ca65
+; Location of the LCD registers in memory
+LCD_R0 = $DFF0
+LCD_R1 = LCD_R0 + 1
+
+; Macro to wait for display to be ready. Sets A to the current address which
+; will be written to by send_cmd.
+.macro wait_rdy
+    .local loop
+loop:
+    lda LCD_R0          ; read register 0
+    bmi loop            ; loop if busy flag (bit 7) set
+.endmacro
+
+; Macro to write value in A to display. Reg should be LCD_R0 or LCD_R1 to
+; determine if value is written to control or data register.
+.macro write_dpy Reg
+    pha                 ; save A on stack
+    wait_rdy            ; wait for display (corrupts A)
+    pla                 ; restore A
+    sta Reg             ; write A
+.endmacro
+
+; Macro to read value into A from display. Reg should be LCD_R0 or LCD_R1 to
+; determine if value is read from control or data register.
+.macro read_dpy Reg
+    wait_rdy            ; wait for display (corrupts A)
+    lda Reg             ; read A
+.endmacro
+```
+
 The first thing to do is to define the various parameters of our display. My
 20&times;4 display is arranged with a slightly odd ordering of lines with
 respect to display addresses. Rather than taking up space with code to compute
@@ -124,8 +155,9 @@ LINE_LEN   = 20       ; Length of a single line (characters)
 LINE_COUNT = 4        ; Number of lines of text
 
 ; Lookup table for addresses corresponding to start of lines in display RAM.
-line_starts:
-  .byte #0, #64, #20, #84
+.export line_addrs
+line_addrs:
+    .byte #0, #64, #20, #84
 ```
 
 With the lookup table it's easy enough to write a routine to calculate a
@@ -136,11 +168,29 @@ display address from the corresponding x- and y-co-ordinates.
 ; (0-based). Set A to the corresponding display address. If X and Y are outside
 ; of the defined area, the result is undefined.
 .proc pos_to_display_addr
-  txa                 ; set A = X to begin with
-  clc
-  adc line_starts, Y  ; A += offset to start of line Y
-  rts
+    txa                 ; set A = X to begin with
+    clc
+    adc line_starts, Y  ; A += offset to start of line Y
+    rts
 .endproc
+```
+
+```ca65
+; Interpret X as characters from right (0-based) and Y as lines from top
+; (0-based). Set A to the corresponding display address. If X and Y are outside
+; of the defined area, the result is undefined.
+.macro pos_to_dpy_addr
+    txa                 ; set A = X to begin with
+    clc
+    adc line_addrs, Y   ; A += offset to start of line Y
+.endmacro
+
+; A holds the address to moce the cursor to. Write a command to the LCD to move
+; the cursor. Corrupts A.
+.macro set_cursor_addr
+    ora #$80
+    write_dpy LCD_R0
+.endmacro
 ```
 
 [HD4480]: http://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller
