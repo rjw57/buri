@@ -2,11 +2,45 @@
  * Custom, site-specific, SASS styling
  */
 
+@import url(//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css);
+
 aside {
     font-size: $small-font-size;
     color: $muted-text-color;
     padding-left: 0.5*$small-font-size;
     border-left: 0.25*$small-font-size solid $grey-color-light;
+}
+
+aside:before {
+    content: "Aside:";
+}
+
+.see-also {
+    margin-bottom: 0.5*$spacing-unit;
+    padding: 0.5*$base-font-size $base-font-size;
+    border-radius: $figure-border-radius;
+    background-color: $grey-color-light;
+    color: $muted-text-color;
+}
+
+.see-also:before {
+    content: "\f059"; // question-circle
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    margin-right: 0.5*$base-font-size;
+}
+
+.hero-banner {
+    margin-bottom: 0.5*$spacing-unit;
+    padding: 0.5*1.5*$base-font-size 1.5*$base-font-size;
+    border-radius: $figure-border-radius;
+    background-color: $grey-color-light;
+    font-size: 1.5*$base-font-size;
+    font-family: $heading-font-family;
+    font-weight: $heading-font-weight;
+    color: $muted-text-color;
 }
 
 .page-list {
@@ -43,7 +77,7 @@ $mem-map-unit: $spacing-unit;
     }
 
     .mem-map-entry > td, .mem-map-heading > th {
-        border: 1px solid $grey-color;
+        border: 1px solid $grey-color-light;
         padding: 0.2 * $spacing-unit;
         vertical-align: top;
         position: relative;

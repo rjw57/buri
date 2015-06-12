@@ -8,9 +8,9 @@ The OS is in the form of an 8K ROM image. Compilation of this software requires
 [cc65](https://github.com/cc65/cc65). Assuming that cc65 is installed under
 ``$HOME/opt/cc65``, you can clone the source and make the image:
 
-```console
+{% highlight console %}
 $ git clone https://github.com/rjw57/buri-6502-os
 $ cd buri-6502-os
 $ CC65_DIR=$HOME/opt/cc65 make
-```
+{% endhighlight %}
 

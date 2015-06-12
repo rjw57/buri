@@ -8,11 +8,11 @@ and the OS source can be found at https://github.com/rjw57/buri-6502-os.
 
 Clone this repo and then install via ``pip``:
 
-```console
+{% highlight console %}
 $ cd /path/to/this/repo
 $ pip install -r requirements.txt
 $ pip install -e .
-```
+{% endhighlight %}
 
 ## Running
 
@@ -25,11 +25,11 @@ The ``burisim`` command accepts a serial device to connect ACIA1 to via the
 ``-serial`` parameter. The ``socat`` utility can be used to create a
 pseudo-terminal for this device:
 
-```console
+{% highlight console %}
 $ socat PTY,link=/tmp/a,raw,echo=0 PTY,link=/tmp/b,raw,echo=0
 $ picocom --noinit /tmp/a
 $ burisim --serial /tmp/b /path/to/rom.bin
-```
+{% endhighlight %}
 
 ## Acknowledgements
 

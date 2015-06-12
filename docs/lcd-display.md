@@ -93,23 +93,23 @@ According to the [datasheet], the display is controlled by writing to register 0
 
 With the [Búri OS], these steps can be performed via the ``poke`` command:
 
-```text
+{% highlight text %}
 *poke dff0 38
 *poke dff0 0d
 *poke dff0 01
-```
+{% endhighlight %}
 
 Writing a message can be performed by writing character codes one at a time to
 $DFF1:
 
-```text
+{% highlight text %}
 *poke dff1 48
 *poke dff1 65
 *poke dff1 6c
 *poke dff1 6c
 *poke dff1 6f
 *poke dff1 21
-```
+{% endhighlight %}
 
 With the display connected to Búri, this is what I got after typing those
 commands:
@@ -135,7 +135,7 @@ reading data.
 
 Let's start with some basic macros to read and write to the display.
 
-```ca65
+{% highlight ca65 %}
 ; Location of the LCD registers in memory
 LCD_R0 = $DFF0
 LCD_R1 = LCD_R0 + 1
@@ -164,14 +164,14 @@ loop:
     wait_rdy            ; wait for display (corrupts A)
     lda Reg             ; read A
 .endmacro
-```
+{% endhighlight %}
 
 Now we can define the various parameters of our display. My 20&times;4 display
 is arranged with a slightly odd ordering of lines with respect to display
 addresses. Rather than taking up space with code to compute the line offsets,
 it's more space-efficient to just code a small lookup table:
 
-```ca65
+{% highlight ca65 %}
 LINE_LEN   = 20       ; Length of a single line (characters)
 LINE_COUNT = 4        ; Number of lines of text
 
@@ -179,14 +179,14 @@ LINE_COUNT = 4        ; Number of lines of text
 .export line_addrs
 line_addrs:
     .byte #0, #64, #20, #84
-```
+{% endhighlight %}
 
 ### Cursor positioning
 
 With the lookup table it's easy enough to write a macro to calculate a
 display address from the corresponding x- and y-co-ordinates.
 
-```ca65
+{% highlight ca65 %}
 ; Interpret X as characters from right (0-based) and Y as lines from top
 ; (0-based). Set A to the corresponding display address. If X and Y are outside
 ; of the defined area, the result is undefined.
@@ -195,12 +195,12 @@ display address from the corresponding x- and y-co-ordinates.
     clc
     adc line_addrs, Y   ; A += offset to start of line Y
 .endmacro
-```
+{% endhighlight %}
 
 We can use our macros to write a routine which sets the current cursor position
 based on the X and Y registers.
 
-```ca65
+{% highlight ca65 %}
 ; Interpret X as characters from right (0-based) and Y as lines from top
 ; (0-based). Move the display cursor to this position. A is set to the value
 ; currently on the display at that position. If X and Y are outside of the
@@ -212,12 +212,12 @@ based on the X and Y registers.
     read_dpy LCD_R1     ; read contents
     rts
 .endproc
-```
+{% endhighlight %}
 
 Our OS will use the two zeropage locations ``lcdx`` and ``lcdy`` to store the
 current cursor position. We can use these to write a "move right" routine.
 
-```ca65
+{% highlight ca65 %}
 .zeropage
 
 ; Reserve two bytes of zero page for LCD cursor.
@@ -257,7 +257,7 @@ exit:
     ply
     rts
 .endproc
-```
+{% endhighlight %}
 
 Our move right routine simple wraps the cursor at the bottom-right back to the
 top-left. In the actual implementation, Y is set to ``LINE_COUNT-1`` and the
@@ -271,7 +271,7 @@ much difficulty.
 With these support routines in place, writing a simple ``putc`` implementation
 is fairly straightforward.
 
-```ca65
+{% highlight ca65 %}
 ; Write ASCII character in A to the LCD screen and, if printable advance cursor
 ; to the right.
 .export lcd_putc
@@ -293,7 +293,7 @@ printable:
     jsr move_cursor_right ; advance cursor...
     rts                   ; ...and return
 .endproc
-```
+{% endhighlight %}
 
 This function assumes that the LCD hardware cursor and ``lcdx``, ``lcdy`` stay
 in sync. We could explicitly set the cursor position before writing the

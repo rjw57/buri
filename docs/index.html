@@ -3,6 +3,15 @@ layout: default
 ---
 
 <div class="home">
+  <div class="hero-banner">
+    If this is your first time on the site, you probably want to take the
+    <a href="{{site.baseurl}}/guided-tour">guided tour</a>. If you're a regular
+    visitor, the <a href="#updates">updates</a> section below will let you know
+    of any additions to the site.
+  </div>
+
+  <h1>Introduction</h1>
+
   <figure>
     <div class="image-strip">
       <ul class="image-strip-row">
@@ -22,8 +31,8 @@ layout: default
           </a>
         </li>
         <li class="image-strip-image palm-hidden">
-          <a href="{{ "cpu-board.jpg" | prepend: site.imageurl }}">
-            <img src="{{ "cpu-board.jpg" | prepend: site.thumburl }}">
+          <a href="{{site.imageurl}}/buri-os-1.jpg">
+            <img src="{{site.imageurl}}/buri-os-1.jpg">
           </a>
         </li>
       </ul>
@@ -32,8 +41,6 @@ layout: default
       Some pictures of the Búri system.
     </figcaption>
   </figure>
-
-  <h1>Introduction</h1>
 
   <p>
   This is the site for my home-built 6502 computer system, Búri. More
@@ -62,6 +69,7 @@ layout: default
   </ul>
 
   <h2><a href="software">Software</a></h2>
+  <a name="updates">
 
   <p>
   Details on the Operating System and user software for Búri. Descriptions of

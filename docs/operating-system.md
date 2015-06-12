@@ -10,6 +10,13 @@ excerpt: >
   initial command-line interface.
 ---
 
+<figure>
+  <a href="{{site.imageurl}}/buri-os-1.jpg">
+    <img src="{{site.imageurl}}/buri-os-1.jpg">
+  </a>
+  <figcaption>The Búri OS running over the serial port console.</figcaption>
+</figure>
+
 The Búri Operating System lives in ROM in the top 8KB of memory. See the [memory
 map] for the full details.
 

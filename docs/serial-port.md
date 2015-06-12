@@ -107,7 +107,7 @@ make referring to the registers by name possible. If one refers to the
 indicated by bits 3 and 4 in the status register. Let's also define a couple of
 masks to keep track of that.
 
-```ca65
+{% highlight ca65 %}
 ; The linker exports this symbol pointingf to the start of the I/O ranges.
 .import __IO_START__
 
@@ -121,7 +121,7 @@ ACIA1_CTRL      = ACIA1 + 3
 ; ACIA-related constants
 ACIA_ST_TDRE = %00010000        ; status: transmit data register empty
 ACIA_ST_RDRF = %00001000        ; status: read data register full
-```
+{% endhighlight %}
 
 ### Initialisation
 
@@ -131,7 +131,7 @@ future, we can just hard-code the fastest baud rate possible. We'll also be
 using direct polling rather than interrupts for reasons of simplicity. Again,
 referring to the [datasheet], it's easy to find the appropriate values.
 
-```ca65
+{% highlight ca65 %}
 ; srl_init - initialise serial port on ACAI1
 .global srl_init
 .proc srl_init
@@ -146,7 +146,7 @@ referring to the [datasheet], it's easy to find the appropriate values.
         pla
         rts
 .endproc
-```
+{% endhighlight %}
 
 ### Reading and writing data
 
@@ -163,7 +163,7 @@ send and receive routines.
 The remainder of the ``putc`` and ``getc`` routines are very simple, we write A
 to ACIA1_DATA or read A from it as appropriate.
 
-```ca65
+{% highlight ca65 %}
 ; srl_putc - send a character along the serial connection.
 ;
 ; On entry, A is the ASCII code of the character to send.
@@ -195,7 +195,7 @@ wait_rx_full:
         lda     ACIA1_DATA              ; read character from ACIA
         rts                             ; return
 .endproc
-```
+{% endhighlight %}
 
 ## The other side
 
@@ -217,9 +217,9 @@ command in the [Búri OS].
 Running picocom and specifying the use of XMODEM as a file transfer program is
 straightforward in Linux:
 
-```console
+{% highlight console %}
 $ picocom -b 19200 /dev/ttyUSB0 -s sx
-```
+{% endhighlight %}
 
 This command specifies that picocom should use a baud rate of 19200, use the
 ``sx`` program for sending files and that the serial port device is
