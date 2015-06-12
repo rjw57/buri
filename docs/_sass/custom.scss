@@ -5,6 +5,8 @@
 aside {
     font-size: $small-font-size;
     color: $muted-text-color;
+    padding-left: 0.5*$small-font-size;
+    border-left: 0.25*$small-font-size solid $grey-color-light;
 }
 
 .page-list {
