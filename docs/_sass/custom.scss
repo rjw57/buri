@@ -43,7 +43,7 @@ $mem-map-unit: $spacing-unit;
     }
 
     .mem-map-entry > td, .mem-map-heading > th {
-        border: 1px solid $grey-color-dark;
+        border: 1px solid $grey-color;
         padding: 0.2 * $spacing-unit;
         vertical-align: top;
         position: relative;
