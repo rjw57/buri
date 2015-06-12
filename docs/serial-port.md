@@ -209,8 +209,8 @@ command in the [Búri OS].
     <img src="{{site.imageurl}}/cool-retro-term.jpg">
   </a>
   <figcaption>
-    Some interaction with the [Búri OS] over the serial console using
-    [cool-retro-term].
+    Some interaction with the Búri OS over the serial console using
+    cool-retro-term.
   </figcaption>
 </figure>
 
