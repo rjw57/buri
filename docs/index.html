@@ -17,8 +17,8 @@ layout: default
           </a>
         </li>
         <li class="image-strip-image palm-hidden">
-          <a href="{{ "cpu-board.jpg" | prepend: site.imageurl }}">
-            <img src="{{ "cpu-board.jpg" | prepend: site.thumburl }}">
+          <a href="{{site.imageurl}}/lcd-hello.jpg">
+            <img src="{{site.thumburl}}/lcd-hello.jpg">
           </a>
         </li>
         <li class="image-strip-image palm-hidden">
@@ -40,20 +40,6 @@ layout: default
   information on why I decided to make Búri, what I hope to achieve and what
   to expect from this site can be found on the <a href="about">about page</a>.
   </p>
-
-  <h1>Updates</h1>
-
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
-    {% endfor %}
-  </ul>
 
   <h1>Sections</h1>
   {% assign pages = site.pages | sort: 'priority' %}
@@ -107,6 +93,22 @@ layout: default
       </li>
     {% endif %}
   {% endfor %}
+  </ul>
+
+  <h1>Updates</h1>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+
+        <p>{{ post.excerpt }}</p>
+      </li>
+    {% endfor %}
   </ul>
 
 </div>

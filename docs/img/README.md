@@ -7,3 +7,10 @@ generated from the SVGs using commands like:
 $ inkscape -b white -d 300 -e foo.png foo.svg
 ```
 
+# Thumbnails
+
+Thumbnails are generated via imagemagick:
+
+```console
+$ convert foo.jpg -thumbnail 800x thumb/foo.jpg
+```

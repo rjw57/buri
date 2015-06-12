@@ -77,7 +77,8 @@ signals around.
 <aside>
 I could've just used some NAND gates to select the display when A1 = A2 = A3 =
 low but using the '138 is useful since it exposes some other lines which can be
-used to select other peripherals in I/O area 7 such as the [serial port].
+used to select other peripherals in I/O area 7 such as the
+<a href="{{site.baseurl}}/peripherals/serial-port/">serial port</a>.
 </aside>
 
 ## Testing
@@ -110,9 +111,29 @@ $DFF1:
 *poke dff1 21
 ```
 
+With the display connected to Búri, this is what I got after typing those
+commands:
+
+<figure>
+  <a href="{{site.imageurl}}/lcd-hello.jpg">
+    <img src="{{site.thumburl}}/lcd-hello.jpg">
+  </a>
+  <figcaption>
+    A simple greeting on the display.
+  </figcaption>
+</figure>
+
 ## Software
 
-The LCD driver software is written in assembly.
+The LCD driver software is written in assembly. Most of the code is actually a
+series of macros to make writing routines more convenient. For example, the most
+basic functionality is writing data to and reading data from the display. We
+need to be careful to make sure the display is not busy before writing or
+reading data.
+
+### Basic I/O
+
+Let's start with some basic macros to read and write to the display.
 
 ```ca65
 ; Location of the LCD registers in memory
@@ -145,10 +166,10 @@ loop:
 .endmacro
 ```
 
-The first thing to do is to define the various parameters of our display. My
-20&times;4 display is arranged with a slightly odd ordering of lines with
-respect to display addresses. Rather than taking up space with code to compute
-the line offsets, it's more space-efficient to just code a small lookup table:
+Now we can define the various parameters of our display. My 20&times;4 display
+is arranged with a slightly odd ordering of lines with respect to display
+addresses. Rather than taking up space with code to compute the line offsets,
+it's more space-efficient to just code a small lookup table:
 
 ```ca65
 LINE_LEN   = 20       ; Length of a single line (characters)
@@ -160,20 +181,10 @@ line_addrs:
     .byte #0, #64, #20, #84
 ```
 
-With the lookup table it's easy enough to write a routine to calculate a
-display address from the corresponding x- and y-co-ordinates.
+### Cursor positioning
 
-```ca65
-; Interpret X as characters from right (0-based) and Y as lines from top
-; (0-based). Set A to the corresponding display address. If X and Y are outside
-; of the defined area, the result is undefined.
-.proc pos_to_display_addr
-    txa                 ; set A = X to begin with
-    clc
-    adc line_starts, Y  ; A += offset to start of line Y
-    rts
-.endproc
-```
+With the lookup table it's easy enough to write a macro to calculate a
+display address from the corresponding x- and y-co-ordinates.
 
 ```ca65
 ; Interpret X as characters from right (0-based) and Y as lines from top
@@ -184,14 +195,114 @@ display address from the corresponding x- and y-co-ordinates.
     clc
     adc line_addrs, Y   ; A += offset to start of line Y
 .endmacro
-
-; A holds the address to moce the cursor to. Write a command to the LCD to move
-; the cursor. Corrupts A.
-.macro set_cursor_addr
-    ora #$80
-    write_dpy LCD_R0
-.endmacro
 ```
+
+We can use our macros to write a routine which sets the current cursor position
+based on the X and Y registers.
+
+```ca65
+; Interpret X as characters from right (0-based) and Y as lines from top
+; (0-based). Move the display cursor to this position. A is set to the value
+; currently on the display at that position. If X and Y are outside of the
+; defined area, the result is undefined.
+.proc move_cursor
+    pos_to_dpy_addr     ; X, Y => address stored in A
+    ora #$80            ; set high bit
+    write_dpy LCD_R0    ; write command byte to display
+    read_dpy LCD_R1     ; read contents
+    rts
+.endproc
+```
+
+Our OS will use the two zeropage locations ``lcdx`` and ``lcdy`` to store the
+current cursor position. We can use these to write a "move right" routine.
+
+```ca65
+.zeropage
+
+; Reserve two bytes of zero page for LCD cursor.
+lcdx: .res 1
+lcdy: .res 1
+
+.code
+
+; Move the cursor to the right.
+.proc move_cursor_right
+    pha                 ; save registers on stack
+    phx
+    phy
+
+    ldx lcdx            ; load current position into X and Y
+    ldy lcdy
+
+    inx                 ; increment X
+    cpx #LINE_LEN       ; compare X to line length
+    bcc set_pos         ; X < line length, all done
+
+    ldx #0              ; move to next line
+    iny
+    cpy #LINE_COUNT     ; compare Y to number of lines
+    bcc set_pos         ; Y < number of lines, all done
+
+    ldy #0              ; reset back to upper left, see comment below
+
+set_pos:
+    stx lcdx            ; record new X
+    sty lcdy            ; record new Y
+    jsr move_cursor     ; move display cursor
+
+exit:
+    pla                 ; restore registers from stack
+    plx
+    ply
+    rts
+.endproc
+```
+
+Our move right routine simple wraps the cursor at the bottom-right back to the
+top-left. In the actual implementation, Y is set to ``LINE_COUNT-1`` and the
+display is scrolled up by copying data from lower lines to upper lines. The
+scroll code isn't very interesting. Similar ``move_cursor_left``,
+``move_cursor_up`` and ``move_cursor_down`` routines can be written without too
+much difficulty.
+
+### Writing characters to the display
+
+With these support routines in place, writing a simple ``putc`` implementation
+is fairly straightforward.
+
+```ca65
+; Write ASCII character in A to the LCD screen and, if printable advance cursor
+; to the right.
+.export lcd_putc
+.proc lcd_putc
+    cmp #$20              ; printable chars are >= $20
+    bcs printable         ; if A >= $20 it's printable
+
+    cmp #$08              ; is A == ASCII backspace?
+    beq backspace
+
+    rts                   ; ignore all other chars (TODO: newline, etc)
+
+backspace:
+    jsr move_cursor_left  ; perform backspace...
+    rts                   ; ...and return
+
+printable:
+    write_dpy LCD_R1      ; write character to display
+    jsr move_cursor_right ; advance cursor...
+    rts                   ; ...and return
+.endproc
+```
+
+This function assumes that the LCD hardware cursor and ``lcdx``, ``lcdy`` stay
+in sync. We could explicitly set the cursor position before writing the
+character but if you start writing directly to the LCD behind the OS' back, you
+deserve what you get!
+
+Adding support for newline and carriage return is simply a case of
+checking for ASCII $0A and $0D respectively then calling the appropriate
+``move_cursor_...`` routine.
 
 [HD4480]: http://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller
 [datasheet]: https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
