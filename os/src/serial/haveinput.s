@@ -1,4 +1,5 @@
 .include "hardware.inc"
+.include "globals.inc"
 
 .export haveinput
 
@@ -9,7 +10,7 @@
 .proc haveinput
 	pha
 	lda	#ACIA_ST_RDRF		; load RDRF mask into A
-	bit	ACIA1_STATUS		; is the rx register full?
+	bit	acia_sr			; is the rx register full?
 	beq	no_input		; no, no input
 	sec
 	pla

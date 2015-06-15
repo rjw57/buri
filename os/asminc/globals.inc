@@ -27,6 +27,9 @@ LINE_BUFFER_SIZE = $80
 .globalzp arg2
 .globalzp arg3
 
+; Cache of ACIA status register copied when there's an interrupt.
+.globalzp acia_sr
+
 ;; OS PRIVATE PAGE
 
 ; Command input buffer

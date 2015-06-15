@@ -13,6 +13,8 @@ arg1:		.res 1
 arg2:		.res 1
 arg3:		.res 1
 
+acia_sr:	.res 1
+
 .segment "BSS"
 line_buffer:	.res LINE_BUFFER_SIZE
 

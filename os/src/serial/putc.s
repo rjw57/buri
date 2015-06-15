@@ -1,4 +1,5 @@
 .include "hardware.inc"
+.include "globals.inc"
 
 .export srl_putc
 
@@ -15,6 +16,9 @@
 wait_tx_free:
 	bit	ACIA1_STATUS		; is the tx register empty?
 	beq	wait_tx_free		; ... no, loop
+
+	lda	ACIA1_STATUS		; cache status reg
+	sta	acia_sr
 
 	pla				; retrieve input from stack
 	sta	ACIA1_DATA		; write character to tx data reg
