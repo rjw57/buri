@@ -14,13 +14,16 @@
 	
 	lda	#ACIA_ST_TDRE		; load TDRE mask into A
 wait_tx_free:
-	bit	ACIA1_STATUS		; is the tx register empty?
+	bit	acia_sr			; is the tx register empty?
 	beq	wait_tx_free		; ... no, loop
-
-	lda	ACIA1_STATUS		; cache status reg
-	sta	acia_sr
 
 	pla				; retrieve input from stack
 	sta	ACIA1_DATA		; write character to tx data reg
+	pha
+
+	lda	ACIA1_STATUS		; cache status reg after reading
+	sta	acia_sr
+	pla
+
 	rts				; return
 .endproc
