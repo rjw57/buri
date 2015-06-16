@@ -28,7 +28,8 @@ arrangement is.
       <div class="mem-map-bottom">$00FF</div>
     </td>
     <td class="mem-map-description">
-      Zero page.
+      <p>Zero page.</p>
+      <p>$D0--$FF are reserved for the OS. The rest is yours.</p>
     </td>
   </tr>
   <tr class="mem-map-entry">
