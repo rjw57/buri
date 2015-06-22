@@ -22,13 +22,57 @@ all very fun but that I wanted a big, ambitious long-term project. The Búri
 project is it.
 
 Find out more on the motivations and aims of the project on the [about] page.
-fsdmklfsdm fsdnjkfdsn sdfjk sfdjk fdsjkdsf jkdsf jsdkf jksfd
 {: .see-also }
-
 
 ## Timeline
 
+If you're interested in the history of the project, I've put some brief progress
+notes below in rough chronological order.
 
+### January 2014
+
+A bare bones wiring of ROM, RAM and processor onto the same address and data
+busses. No address decode circuitry and so ROM/RAM hard-wired into "disable"
+state and data bus hard-wired into NOP instruction ($EA).
+
+<figure>
+  <a href="{{ site.imageurl }}/free-running.jpg">
+    <img src="{{ site.imageurl }}/free-running.jpg">
+  </a>
+  <figcaption>The first "free running" protoptype.</figcaption>
+</figure>
+
+### March 2014
+
+OS up and running. First prototype serial console working. Enhanced BASIC ported
+over to Búri in a very limited way.
+
+There's some discussion on the structure of the OS on the [OS
+page]({{ site.baseurl }}/software/os/).
+{: .see-also }
+
+### April 2014
+
+CPU board design done, PCB manufactured and debugged. Búri lives on something
+other than a breadboard for the first time.
+
+Find out more about on the [CPU board]({{ site.baseurl }}/hardware/cpu-board/) page.
+{: .see-also }
+
+<figure>
+  <a href="{{ site.imageurl }}/cpu-board.jpg">
+    <img src="{{ site.imageurl }}/cpu-board.jpg">
+  </a>
+  <figcaption>Búri assembled onto the first CPU board.</figcaption>
+</figure>
+
+### May 2014
+
+Serial port module created. The first peripheral for Búri! Not much more than a
+convenience to make adding a 6551 to the bus less error prone.
+
+See all the gory details on the [Serial port]({{ site.baseurl }}/hardware/serial-port/) page.
+{: .see-also }
 
 [Arduino]: http://www.arduino.cc/
 [about]: {{site.baseurl}}/about/
