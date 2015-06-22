@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LCD Display</title>
+  <meta name="description" content="Interfacing a 20&times;4 LCD display based on the popular HD44780 display chip to Búri.">
+
+  <link rel="stylesheet" href="/buri//css/main.css">
+  <link rel="canonical" href="https://rjw57.github.io//buri//peripherals/lcd-display/">
+  <link rel="alternate" type="application/rss+xml" title="Búri: my 6502 computer" href="https://rjw57.github.io//buri//feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/buri//">Búri: my 6502 computer</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/buri//about/">About Búri</a>
+          
+        
+          
+          <a class="page-link" href="/buri//hardware/">Hardware</a>
+          
+        
+          
+          <a class="page-link" href="/buri//software/">Software</a>
+          
+        
+          
+          <a class="page-link" href="/buri//peripherals/">Peripherals</a>
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">LCD Display</h1>
+  </header>
+
+  <article class="post-content">
+    <figure>
+  <img src="http://placehold.it/800x400" alt="A typical LCD display" />
+  <figcaption>A typical LCD display module</figcaption>
+</figure>
+
+<p>The <a href="http://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller">HD4480</a> is a popular chipset used in all manner of small LCD displays. This
+page documents how to wire one up to the 6502 processor bus and some code to
+control it.</p>
+
+<h2 id="bus-interfacing">Bus interfacing</h2>
+
+<p>The electrical interface to the HD4480 is fairly 6502 friendly. There are 8
+parallel data lines D[0…7] which are set by the HD4480 when reading data
+from the display and read by the HD4480 when writing. There is a single register
+select (RS) line which is low to indicate access to the control register(s) and
+high to read/write data from the display itself. There is the usual R/<s>W</s>
+line to indicate whether data is being read from or written to the display and
+there is a display enable (E) line which is taken high to indicate to the
+display that the values on the control/data lines are intended for it.</p>
+
+<p>Reading data from the display is a relatively unsurprising affair:</p>
+
+<ol>
+  <li>Set RS to indicate whether one is reading the busy flag/RAM address or
+reading data from the display.</li>
+  <li>Set R/<s>W</s> high.</li>
+  <li>Set E high.</li>
+  <li>Read byte from D[0…7].</li>
+  <li>Set E low.</li>
+</ol>
+
+<p>Similarly, writing data to the display is straightforward:</p>
+
+<ol>
+  <li>Set RS to indicate whether one is writing the control register or sending
+data.</li>
+  <li>Set R/<s>W</s> low.</li>
+  <li>Set byte on D[0…7].</li>
+  <li>Set E high.</li>
+  <li>Set E low.</li>
+</ol>
+
+<p>This is very similar to the way the 6502 performs reads and writes. The subtlety
+is in how the E signal is generated. If it is by some address line decoding,
+which it is on Búri, then the E signal will change during φ1 which is
+<em>before</em> the R/<s>W</s> and data lines are stable. This is easily fixed
+by making E conditional on φ2 being high.</p>
+
+<p>All of the displays I have can run at 2MHz and so no additional logic is needed
+if the 6502 is running at 2MHz or slower. Thankfully Búri is a 2MHz machine by
+design so I can stop here. I may need to re-visit the bus adapter at a later
+date if I move Búri to 4MHz or greater.</p>
+
+<figure>
+  <a href="/buri/img/lcd-bus-adapter.svg">
+    <img src="/buri/img/lcd-bus-adapter.png" />
+  </a>
+  <figcaption>
+    The Búri bus adapter circuitry for interfacing a HD44780-style LCD display.
+  </figcaption>
+</figure>
+
+<p>The complete bus logic is shown above. Here I’ve used a 74138 3-to-8 decoder to
+select out the bottom two bytes from <a href="/buri//misc/memory-map/">I/O area 7</a>. (Búri will take <s>IO7</s>
+low when bytes in the range $DFF0–$DFFF are accessed.) I use A0 as
+register select and feed A[1…3] into the ‘138. I use a single 7400 NAND
+gate to condition E on φ2 and a couple of 7404 NOT gates to flip some
+signals around.</p>
+
+<aside>
+I could've just used some NAND gates to select the display when A1 = A2 = A3 =
+low but using the '138 is useful since it exposes some other lines which can be
+used to select other peripherals in I/O area 7 such as the
+<a href="/buri//peripherals/serial-port/">serial port</a>.
+</aside>
+
+<h2 id="testing">Testing</h2>
+
+<p>According to the <a href="https://www.sparkfun.com/datasheets/LCD/HD44780.pdf">datasheet</a>, the display is controlled by writing to register 0
+(which is at $DFF0 using the circuit above) and data is written to register 1
+(exposed at $DFF1). The control bytes I need to send are:</p>
+
+<ul>
+  <li>$38: enable 8-bit mode, 2 line display and 5×8 font.</li>
+  <li>$0D: switch display on and have “blinking block”-style cursor.</li>
+  <li>$01: clear display and move cursor to home position.</li>
+</ul>
+
+<p>With the <a href="/buri//software/os/">Búri OS</a>, these steps can be performed via the <code>poke</code> command:</p>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">*poke dff0 38
+*poke dff0 0d
+*poke dff0 01</code></pre></div>
+
+<p>Writing a message can be performed by writing character codes one at a time to
+$DFF1:</p>
+
+<div class="highlight"><pre><code class="language-text" data-lang="text">*poke dff1 48
+*poke dff1 65
+*poke dff1 6c
+*poke dff1 6c
+*poke dff1 6f
+*poke dff1 21</code></pre></div>
+
+<p>With the display connected to Búri, this is what I got after typing those
+commands:</p>
+
+<figure>
+  <a href="/buri/img//lcd-hello.jpg">
+    <img src="/buri/img/thumb//lcd-hello.jpg" />
+  </a>
+  <figcaption>
+    A simple greeting on the display.
+  </figcaption>
+</figure>
+
+<h2 id="software">Software</h2>
+
+<p>The LCD driver software is written in assembly. Most of the code is actually a
+series of macros to make writing routines more convenient. For example, the most
+basic functionality is writing data to and reading data from the display. We
+need to be careful to make sure the display is not busy before writing or
+reading data.</p>
+
+<h3 id="basic-io">Basic I/O</h3>
+
+<p>Let’s start with some basic macros to read and write to the display.</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="c1">; Location of the LCD registers in memory</span>
+<span class="n">LCD_R0</span> <span class="o">=</span> <span class="mh">$DFF0</span>
+<span class="n">LCD_R1</span> <span class="o">=</span> <span class="n">LCD_R0</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c1">; Macro to wait for display to be ready. Sets A to the current address which</span>
+<span class="c1">; will be written to by send_cmd.</span>
+<span class="kp">.macro</span> <span class="n">wait_rdy</span>
+    <span class="kp">.local</span> <span class="n">loop</span>
+<span class="nl">loop:</span>
+    <span class="k">lda</span> <span class="n">LCD_R0</span>          <span class="c1">; read register 0</span>
+    <span class="k">bmi</span> <span class="n">loop</span>            <span class="c1">; loop if busy flag (bit 7) set</span>
+<span class="kp">.endmacro</span>
+
+<span class="c1">; Macro to write value in A to display. Reg should be LCD_R0 or LCD_R1 to</span>
+<span class="c1">; determine if value is written to control or data register.</span>
+<span class="kp">.macro</span> <span class="n">write_dpy</span> <span class="n">Reg</span>
+    <span class="k">pha</span>                 <span class="c1">; save A on stack</span>
+    <span class="n">wait_rdy</span>            <span class="c1">; wait for display (corrupts A)</span>
+    <span class="k">pla</span>                 <span class="c1">; restore A</span>
+    <span class="k">sta</span> <span class="n">Reg</span>             <span class="c1">; write A</span>
+<span class="kp">.endmacro</span>
+
+<span class="c1">; Macro to read value into A from display. Reg should be LCD_R0 or LCD_R1 to</span>
+<span class="c1">; determine if value is read from control or data register.</span>
+<span class="kp">.macro</span> <span class="n">read_dpy</span> <span class="n">Reg</span>
+    <span class="n">wait_rdy</span>            <span class="c1">; wait for display (corrupts A)</span>
+    <span class="k">lda</span> <span class="n">Reg</span>             <span class="c1">; read A</span>
+<span class="kp">.endmacro</span></code></pre></div>
+
+<p>Now we can define the various parameters of our display. My 20×4 display
+is arranged with a slightly odd ordering of lines with respect to display
+addresses. Rather than taking up space with code to compute the line offsets,
+it’s more space-efficient to just code a small lookup table:</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="n">LINE_LEN</span>   <span class="o">=</span> <span class="mi">20</span>       <span class="c1">; Length of a single line (characters)</span>
+<span class="n">LINE_COUNT</span> <span class="o">=</span> <span class="mi">4</span>        <span class="c1">; Number of lines of text</span>
+
+<span class="c1">; Lookup table for addresses corresponding to start of lines in display RAM.</span>
+<span class="kp">.export</span> <span class="n">line_addrs</span>
+<span class="nl">line_addrs:</span>
+    <span class="kp">.byte</span> <span class="p">#</span><span class="mi">0</span><span class="p">,</span> <span class="p">#</span><span class="mi">64</span><span class="p">,</span> <span class="p">#</span><span class="mi">20</span><span class="p">,</span> <span class="p">#</span><span class="mi">84</span></code></pre></div>
+
+<h3 id="cursor-positioning">Cursor positioning</h3>
+
+<p>With the lookup table it’s easy enough to write a macro to calculate a
+display address from the corresponding x- and y-co-ordinates.</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="c1">; Interpret X as characters from right (0-based) and Y as lines from top</span>
+<span class="c1">; (0-based). Set A to the corresponding display address. If X and Y are outside</span>
+<span class="c1">; of the defined area, the result is undefined.</span>
+<span class="kp">.macro</span> <span class="n">pos_to_dpy_addr</span>
+    <span class="k">txa</span>                 <span class="c1">; set A = X to begin with</span>
+    <span class="k">clc</span>
+    <span class="k">adc</span> <span class="n">line_addrs</span><span class="p">,</span> <span class="n">Y</span>   <span class="c1">; A += offset to start of line Y</span>
+<span class="kp">.endmacro</span></code></pre></div>
+
+<p>We can use our macros to write a routine which sets the current cursor position
+based on the X and Y registers.</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="c1">; Interpret X as characters from right (0-based) and Y as lines from top</span>
+<span class="c1">; (0-based). Move the display cursor to this position. A is set to the value</span>
+<span class="c1">; currently on the display at that position. If X and Y are outside of the</span>
+<span class="c1">; defined area, the result is undefined.</span>
+<span class="kp">.proc</span> <span class="n">move_cursor</span>
+    <span class="n">pos_to_dpy_addr</span>     <span class="c1">; X, Y =&gt; address stored in A</span>
+    <span class="k">ora</span> <span class="p">#</span><span class="mh">$80</span>            <span class="c1">; set high bit</span>
+    <span class="n">write_dpy</span> <span class="n">LCD_R0</span>    <span class="c1">; write command byte to display</span>
+    <span class="n">read_dpy</span> <span class="n">LCD_R1</span>     <span class="c1">; read contents</span>
+    <span class="k">rts</span>
+<span class="kp">.endproc</span></code></pre></div>
+
+<p>Our OS will use the two zeropage locations <code>lcdx</code> and <code>lcdy</code> to store the
+current cursor position. We can use these to write a “move right” routine.</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="kp">.zeropage</span>
+
+<span class="c1">; Reserve two bytes of zero page for LCD cursor.</span>
+<span class="nl">lcdx:</span> <span class="kp">.res</span> <span class="mi">1</span>
+<span class="nl">lcdy:</span> <span class="kp">.res</span> <span class="mi">1</span>
+
+<span class="kp">.code</span>
+
+<span class="c1">; Move the cursor to the right.</span>
+<span class="kp">.proc</span> <span class="n">move_cursor_right</span>
+    <span class="k">pha</span>                 <span class="c1">; save registers on stack</span>
+    <span class="n">phx</span>
+    <span class="n">phy</span>
+
+    <span class="k">ldx</span> <span class="n">lcdx</span>            <span class="c1">; load current position into X and Y</span>
+    <span class="k">ldy</span> <span class="n">lcdy</span>
+
+    <span class="k">inx</span>                 <span class="c1">; increment X</span>
+    <span class="k">cpx</span> <span class="p">#</span><span class="n">LINE_LEN</span>       <span class="c1">; compare X to line length</span>
+    <span class="k">bcc</span> <span class="n">set_pos</span>         <span class="c1">; X &lt; line length, all done</span>
+
+    <span class="k">ldx</span> <span class="p">#</span><span class="mi">0</span>              <span class="c1">; move to next line</span>
+    <span class="k">iny</span>
+    <span class="k">cpy</span> <span class="p">#</span><span class="n">LINE_COUNT</span>     <span class="c1">; compare Y to number of lines</span>
+    <span class="k">bcc</span> <span class="n">set_pos</span>         <span class="c1">; Y &lt; number of lines, all done</span>
+
+    <span class="k">ldy</span> <span class="p">#</span><span class="mi">0</span>              <span class="c1">; reset back to upper left, see comment below</span>
+
+<span class="nl">set_pos:</span>
+    <span class="k">stx</span> <span class="n">lcdx</span>            <span class="c1">; record new X</span>
+    <span class="k">sty</span> <span class="n">lcdy</span>            <span class="c1">; record new Y</span>
+    <span class="k">jsr</span> <span class="n">move_cursor</span>     <span class="c1">; move display cursor</span>
+
+<span class="nl">exit:</span>
+    <span class="k">pla</span>                 <span class="c1">; restore registers from stack</span>
+    <span class="n">plx</span>
+    <span class="n">ply</span>
+    <span class="k">rts</span>
+<span class="kp">.endproc</span></code></pre></div>
+
+<p>Our move right routine simple wraps the cursor at the bottom-right back to the
+top-left. In the actual implementation, Y is set to <code>LINE_COUNT-1</code> and the
+display is scrolled up by copying data from lower lines to upper lines. The
+scroll code isn’t very interesting. Similar <code>move_cursor_left</code>,
+<code>move_cursor_up</code> and <code>move_cursor_down</code> routines can be written without too
+much difficulty.</p>
+
+<h3 id="writing-characters-to-the-display">Writing characters to the display</h3>
+
+<p>With these support routines in place, writing a simple <code>putc</code> implementation
+is fairly straightforward.</p>
+
+<div class="highlight"><pre><code class="language-ca65" data-lang="ca65"><span class="c1">; Write ASCII character in A to the LCD screen and, if printable advance cursor</span>
+<span class="c1">; to the right.</span>
+<span class="kp">.export</span> <span class="n">lcd_putc</span>
+<span class="kp">.proc</span> <span class="n">lcd_putc</span>
+    <span class="k">cmp</span> <span class="p">#</span><span class="mh">$20</span>              <span class="c1">; printable chars are &gt;= $20</span>
+    <span class="k">bcs</span> <span class="n">printable</span>         <span class="c1">; if A &gt;= $20 it&#39;s printable</span>
+
+    <span class="k">cmp</span> <span class="p">#</span><span class="mh">$08</span>              <span class="c1">; is A == ASCII backspace?</span>
+    <span class="k">beq</span> <span class="n">backspace</span>
+
+    <span class="k">rts</span>                   <span class="c1">; ignore all other chars (TODO: newline, etc)</span>
+
+<span class="nl">backspace:</span>
+    <span class="k">jsr</span> <span class="n">move_cursor_left</span>  <span class="c1">; perform backspace...</span>
+    <span class="k">rts</span>                   <span class="c1">; ...and return</span>
+
+<span class="nl">printable:</span>
+    <span class="n">write_dpy</span> <span class="n">LCD_R1</span>      <span class="c1">; write character to display</span>
+    <span class="k">jsr</span> <span class="n">move_cursor_right</span> <span class="c1">; advance cursor...</span>
+    <span class="k">rts</span>                   <span class="c1">; ...and return</span>
+<span class="kp">.endproc</span></code></pre></div>
+
+<p>This function assumes that the LCD hardware cursor and <code>lcdx</code>, <code>lcdy</code> stay
+in sync. We could explicitly set the cursor position before writing the
+character but if you start writing directly to the LCD behind the OS’ back, you
+deserve what you get!</p>
+
+<p>Adding support for newline and carriage return is simply a case of
+checking for ASCII $0A and $0D respectively then calling the appropriate
+<code>move_cursor_...</code> routine.</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Búri: my 6502 computer</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Búri: my 6502 computer</li>
+          <li><a href="mailto:rich.buri@richwareham.com">rich.buri@richwareham.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/rjw57">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">rjw57</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/richwareham">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">richwareham</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">An experiment in learning electronics and low-level software through a personal project to recreate a 1980s-style home computer.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -6,12 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Búri: my 6502 computer</title>
+  <title>About Búri</title>
   <meta name="description" content="An experiment in learning electronics and low-level software through a personal project to recreate a 1980s-style home computer.
 ">
 
   <link rel="stylesheet" href="/buri//css/main.css">
-  <link rel="canonical" href="https://rjw57.github.io//buri//">
+  <link rel="canonical" href="https://rjw57.github.io//buri//about/">
   <link rel="alternate" type="application/rss+xml" title="Búri: my 6502 computer" href="https://rjw57.github.io//buri//feed.xml" />
 </head>
 
@@ -82,219 +82,61 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
-  <div class="hero-banner">
-    If this is your first time on the site, you probably want to take the
-    <a href="/buri//guided-tour">guided tour</a>. If you're a regular
-    visitor, the <a href="#updates">updates</a> section below will let you know
-    of any additions to the site.
-  </div>
+        <div class="post">
 
-  <h1>Introduction</h1>
+  <header class="post-header">
+    <h1 class="post-title">About Búri</h1>
+  </header>
 
-  <figure>
-    <div class="image-strip">
-      <ul class="image-strip-row">
-        <li class="image-strip-image">
-          <a href="/buri/img/cpu-board.jpg">
-            <img src="/buri/img/thumb/cpu-board.jpg">
-          </a>
-        </li>
-        <li class="image-strip-image">
-          <a href="/buri/img/monitor-board.jpg">
-            <img src="/buri/img/thumb/monitor-board.jpg">
-          </a>
-        </li>
-        <li class="image-strip-image palm-hidden">
-          <a href="/buri/img//lcd-hello.jpg">
-            <img src="/buri/img/thumb//lcd-hello.jpg">
-          </a>
-        </li>
-        <li class="image-strip-image palm-hidden">
-          <a href="/buri/img//buri-os-1.jpg">
-            <img src="/buri/img//buri-os-1.jpg">
-          </a>
-        </li>
-      </ul>
-    </div>
-    <figcaption>
-      Some pictures of the Búri system.
-    </figcaption>
-  </figure>
+  <article class="post-content">
+    <h1 id="what-is-bri">What is Búri?</h1>
 
-  <p>
-  This is the site for my home-built 6502 computer system, Búri. More
-  information on why I decided to make Búri, what I hope to achieve and what
-  to expect from this site can be found on the <a href="about">about page</a>.
-  </p>
+<p>Búri is my personal electronics project. I’m aiming to re-create a computer
+system which would be recognisable to an electrical engineer from the 1980s. I’m
+heavily inspired by systems such as the <a href="http://en.wikipedia.org/wiki/Acorn_System_1">Acorn System
+1</a> and <a href="http://en.wikipedia.org/wiki/Apple_I">Apple
+I</a> for hardware design and the <a href="http://en.wikipedia.org/wiki/BBC_Micro">BBC
+Microcomputer</a> for OS design.</p>
 
-  <h1>Sections</h1>
-  
+<h1 id="why">Why?</h1>
 
-  <h2><a href="hardware">Hardware</a></h2>
+<p>Around Christmas 2014, I decided I’d like a new long-term learning project. I’ve
+always been interested in Software development but, until then, my knowledge of
+hardware design has been limited to say the least. I had fond memories of
+low-level programming the BBC Microcomputer when I was a youngster and wanted to
+re-create some of that with my more modern knowledge.</p>
 
-  <p>
-  Details on the actual hardware of Búri. Descriptions of the design software
-  used and links to the schematics.
-  </p>
+<p>Having an ambitious goal is very motivating for me and it’s intellectually
+satisfying to “fill the gaps” in my knowledge from Silicon up to C.</p>
 
-  <ul class="page-list">
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//hardware/cpu-board/">CPU Board</a>
-      </li>
-    
-  
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//hardware/monitor-board/">Monitor Board</a>
-      </li>
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//misc/memory-map/">Memory map</a>
-      </li>
-    
-  
-    
-  
-  </ul>
+<h1 id="how-far-along-are-you">How far along are you?</h1>
 
-  <h2><a href="software">Software</a></h2>
-  <a name="updates"></a>
+<p>I managed to get a first version of the CPU board up and running. It’s got 8KB
+of EEPROM, 32KB of RAM and a <a href="http://en.wikipedia.org/wiki/WDC_65C02">65C02</a> running at 2MHz. The CPU bus is exposed via
+some Arduino-like connectors and it’s got a somewhat over-spec’ed 5V regulated
+supply on it. The EEPROM can be programmed in situ via a “monitor” system which
+also allows for single-stepping and examining memory independently of the
+processor.</p>
 
-  <p>
-  Details on the Operating System and user software for Búri. Descriptions of
-  the non-hardware memory map and guides for writing software.
-  </p>
+<p>Separate to the CPU and monitor modules, I’ve got a working serial port module
+which, when combined with a FTDI USB-to-serial adaptor, allows for interaction
+with the computer and uploading programs via <a href="http://en.wikipedia.org/wiki/XMODEM">XMODEM</a>.</p>
 
-  <ul class="page-list">
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//software/os/">Operating System</a>
-      </li>
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//misc/memory-map/">Memory map</a>
-      </li>
-    
-  
-    
-  
-  </ul>
+<p>I’ve got a version of Enhanced BASIC working on the system and have managed to
+compile, upload and run some C-code via the <a href="http://cc65.github.io/doc/">CC65</a> compiler.</p>
 
-  <h2><a href="peripherals">Peripherals</a></h2>
+<p>I’m currently writing the OS and developing some peripherals for a “v2” board
+which will have some more on-board functionality.</p>
 
-  <p>
-  Add-on hardware modules for Búri such as a serial port, debugging "monitor"
-  system and LCD display.
-  </p>
+<h1 id="bri-why-the-weird-name">Búri? Why the weird name?</h1>
 
-  <ul class="page-list">
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//peripherals/serial-port/">Serial port</a>
-      </li>
-    
-  
-    
-  
-    
-  
-    
-  
-    
-      <li class="page-list-link">
-        <a href="/buri//peripherals/lcd-display/">LCD Display</a>
-      </li>
-    
-  
-  </ul>
+<p>I name all of my computers after mythological figures. When I was coming up with
+the initial design I was also, separately, learning Old Norse. It seemed fitting
+to name a computer which is aiming to be like the first home computer systems
+after <a href="http://en.wikipedia.org/wiki/B%C3%BAri">the first Norse god</a>.</p>
 
-  <h1>Updates</h1>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Jun 8, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/buri//update/2015/06/08/docs-site-launched.html">Búri site launched</a>
-        </h2>
-
-        <p><p>I’ve just got around to writing up some of my work on Búri, a home-build
-6502-base microcomputer.</p>
-
-</p>
-      </li>
-    
-  </ul>
+  </article>
 
 </div>
 
