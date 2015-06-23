@@ -6,9 +6,24 @@
 </description>
     <link>https://rjw57.github.io//buri//</link>
     <atom:link href="https://rjw57.github.io//buri//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 22 Jun 2015 15:08:39 +0100</pubDate>
-    <lastBuildDate>Mon, 22 Jun 2015 15:08:39 +0100</lastBuildDate>
+    <pubDate>Tue, 23 Jun 2015 12:42:34 +0100</pubDate>
+    <lastBuildDate>Tue, 23 Jun 2015 12:42:34 +0100</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>OS pages updated</title>
+        <description>&lt;p&gt;The &lt;a href=&quot;/buri//software/os/&quot;&gt;operating system&lt;/a&gt; page has been updated with a brief description of boot up
+and a discussion of the available OS commands.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 23 Jun 2015 00:00:00 +0100</pubDate>
+        <link>https://rjw57.github.io//buri//update/2015/06/23/os-pages-updated.html</link>
+        <guid isPermaLink="true">https://rjw57.github.io//buri//update/2015/06/23/os-pages-updated.html</guid>
+        
+        
+        <category>update</category>
+        
+      </item>
     
       <item>
         <title>Búri site launched</title>

@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Operating System</title>
-  <meta name="description" content="The Operating System is the ROM-resident code which is run on system reset and provides low-level driver routines for the Búri hardware along with the initia...">
+  <title>OS pages updated</title>
+  <meta name="description" content="The operating system page has been updated with a brief description of boot upand a discussion of the available OS commands.">
 
   <link rel="stylesheet" href="/buri//css/main.css">
-  <link rel="canonical" href="https://rjw57.github.io//buri//software/os/">
+  <link rel="canonical" href="https://rjw57.github.io//buri//update/2015/06/23/os-pages-updated.html">
   <link rel="alternate" type="application/rss+xml" title="Búri: my 6502 computer" href="https://rjw57.github.io//buri//feed.xml" />
 </head>
 
@@ -84,125 +84,13 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Operating System</h1>
+    <h1 class="post-title">OS pages updated</h1>
+    <p class="post-meta">Jun 23, 2015</p>
   </header>
 
   <article class="post-content">
-    <figure>
-  <a href="/buri/img//buri-os-1.jpg">
-    <img src="/buri/img//buri-os-1.jpg" />
-  </a>
-  <figcaption>The Búri OS running over the serial port console.</figcaption>
-</figure>
-
-<p>The Búri Operating System lives in ROM in the top 8KB of memory.  (See the
-<a href="/buri//misc/memory-map/">memory map</a> for the full details.) The <a href="https://github.com/rjw57/buri/tree/master/os">source code</a> is available in the Búri
-repository.  It is the first code which is run on reset. The OS at the moment is
-fairly simplistic.</p>
-
-<h2 id="booting">Booting</h2>
-
-<p>On reset, the processor vectors to the code in <a href="https://github.com/rjw57/buri/blob/master/os/src/reset.s">reset.s</a>.  The OS then performs
-the following tasks:</p>
-
-<ol>
-  <li>Disable interrupts.</li>
-  <li>Make sure that binary-mode arithmetic is enabled.</li>
-  <li>Clear page zero (sets all bytes to 0x00).</li>
-  <li>Initialise the <a href="#vector-table">OS vector table</a>.</li>
-  <li>Enable interrupts.</li>
-  <li>Jump to the initialisation routine.</li>
-</ol>
-
-<p>At this point the processor is sanely bootstrapped. The initialisation routine
-in <a href="https://github.com/rjw57/buri/blob/master/os/src/init.s">init.s</a> takes over to bring up the computer. It does the following:</p>
-
-<ol>
-  <li>Configure the serial adapter, if present.</li>
-  <li>Clear the terminal.</li>
-  <li>Write the “welcome” banner.</li>
-  <li>Enter the <a href="#command-line">command-line loop</a>.</li>
-</ol>
-
-<h2 id="vectors">Vectors</h2>
-<p><a name="vector-table"></a></p>
-
-<p>The OS provides some basic routines such as “output a byte” (<code>putc</code>) and
-“block and read a byte” (<code>getc</code>). These routines are vectored through a table
-starting at $0200. For example, when calling <code>putc</code>, the OS will call the
-little-endian 16-bit address stored at $0200. Code wishing to “patch” this
-routine can replace this address with a pointer to their own code. This is how
-the <a href="/buri//peripherals/lcd-display">LCD display</a> driver was developed.</p>
-
-<h2 id="command-line">Command line</h2>
-<p><a name="command-line"></a></p>
-
-<p>The init function then runs an endless loop of reading a line of input via
-<a href="https://github.com/rjw57/buri/blob/master/os/src/io/readln.s">readln</a> and executing it via the functions in the <a href="https://github.com/rjw57/buri/tree/master/os/src/cli">cli</a> directory. The OS
-command table is at the start of ROM and is searched for commands. At a later
-date I intend to vector this as well to allow for commands to be soft-loaded
-into the OS.</p>
-
-<h2 id="builtin-commands">Builtin commands</h2>
-
-<h3 id="echo">echo</h3>
-
-<pre><code>*echo &lt;arg1&gt; &lt;arg2&gt; &lt;arg3&gt;
-</code></pre>
-
-<p>Prints <code>arg1</code> through <code>arg3</code> to the output. Mostly used to test the CLI
-parsing routines.</p>
-
-<h3 id="call">call</h3>
-
-<pre><code>*call &lt;addr&gt;
-</code></pre>
-
-<p>Takes a hexadecimal address <code>&lt;addr&gt;</code> and jumps to it via <code>JSR</code>. When the
-code calls <code>RTS</code>, control returns to the OS.</p>
-
-<h3 id="dump">dump</h3>
-
-<pre><code>*dump &lt;addr&gt; [&lt;length&gt;]
-</code></pre>
-
-<p>Provides a hes-dump of memory starting from hexadecimal address <code>&lt;addr&gt;</code>. If
-<code>&lt;length&gt;</code> is present, it is a hexadecimal number giving the number of bytes
-to dump. If omitted, a single page of 256 bytes is assumed.</p>
-
-<h3 id="reset">reset</h3>
-
-<pre><code>*reset
-</code></pre>
-
-<p>Jumps to the OS reset vector. A software equivalent of pressing the reset
-button. In later OS revisions I plan to make this “soft” reset detectably
-different from a hard reset and make a warm reset different from a cold boot.</p>
-
-<h3 id="peek">peek</h3>
-
-<pre><code>*peek &lt;addr&gt;
-</code></pre>
-
-<p>Display the hexadecimal representation of the byte at hexadecimal address
-<code>&lt;addr&gt;</code> in memory.</p>
-
-<h3 id="poke">poke</h3>
-
-<pre><code>*poke &lt;addr&gt; &lt;value&gt;
-</code></pre>
-
-<p>Set the byte at hexadecimal address <code>&lt;addr&gt;</code> to the hexadecimal byte
-<code>&lt;value&gt;</code>.</p>
-
-<h3 id="xrecv">xrecv</h3>
-
-<pre><code>*xrecv &lt;addr&gt;
-</code></pre>
-
-<p>Begin receiving data via the <a href="https://en.wikipedia.org/wiki/XMODEM">XMODEM</a> protocol and write it starting from
-hexadecimal address <code>&lt;addr&gt;</code>. This is the current method by which most data is
-uploaded onto Búri.</p>
+    <p>The <a href="/buri//software/os/">operating system</a> page has been updated with a brief description of boot up
+and a discussion of the available OS commands.</p>
 
 
   </article>
