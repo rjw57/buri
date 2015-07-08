@@ -1,0 +1,262 @@
+Cmp-Mod V01 Created by Cvpcb (after 2015-mar-04 BZR unknown)-product   date = Wed 08 Jul 2015 12:31:27 BST
+
+BeginCmp
+TimeStamp = /559D962D;
+Reference = C1;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D9716;
+Reference = C2;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D9794;
+Reference = C3;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D9804;
+Reference = C4;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D9878;
+Reference = C5;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D98E0;
+Reference = C6;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559E0755;
+Reference = C7;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D5890;
+Reference = C8;
+ValeurCmp = 10n;
+IdModule  = Capacitors_ThroughHole:C_Disc_D3_P2.5;
+EndCmp
+
+BeginCmp
+TimeStamp = /559CE1CC;
+Reference = P1;
+ValeurCmp = BURI BUS;
+IdModule  = Socket_Strips:Socket_Strip_Straight_2x20;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D52DC;
+Reference = P2;
+ValeurCmp = SERIAL;
+IdModule  = Socket_Strips:Socket_Strip_Straight_1x06;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C67E2;
+Reference = Q1;
+ValeurCmp = BC546;
+IdModule  = Housings_TO-92:TO-92_Inline_Narrow_Oval;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C6FB8;
+Reference = Q2;
+ValeurCmp = BC546;
+IdModule  = Housings_TO-92:TO-92_Inline_Narrow_Oval;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D5ADD;
+Reference = Q3;
+ValeurCmp = BC546;
+IdModule  = Housings_TO-92:TO-92_Inline_Narrow_Oval;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C19DC;
+Reference = R1;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C19E2;
+Reference = R2;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C19E8;
+Reference = R3;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C19EE;
+Reference = R4;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C17DC;
+Reference = R5;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C18AE;
+Reference = R6;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C18D6;
+Reference = R7;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C18F8;
+Reference = R8;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C1F08;
+Reference = R9;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C1F0E;
+Reference = R10;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C5A84;
+Reference = R11;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D73E9;
+Reference = R12;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C6C22;
+Reference = R13;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C6FC9;
+Reference = R14;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559D5DA7;
+Reference = R15;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559DF848;
+Reference = R16;
+ValeurCmp = 2K7;
+IdModule  = Resistors_ThroughHole:Resistor_Horizontal_RM10mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C2958;
+Reference = U1;
+ValeurCmp = 74LS244;
+IdModule  = Housings_DIP:DIP-20__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C2E81;
+Reference = U2;
+ValeurCmp = 74HC245;
+IdModule  = Housings_DIP:DIP-20__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C46A4;
+Reference = U3;
+ValeurCmp = 7400;
+IdModule  = Housings_DIP:DIP-14__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559CB6D2;
+Reference = U4;
+ValeurCmp = 74LS138;
+IdModule  = Housings_DIP:DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C142B;
+Reference = U5;
+ValeurCmp = P8X32A-D40;
+IdModule  = Housings_DIP:DIP-40__600;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C389B;
+Reference = U6;
+ValeurCmp = 4050;
+IdModule  = Housings_DIP:DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559DC403;
+Reference = U7;
+ValeurCmp = 24C16;
+IdModule  = Housings_DIP:DIP-8__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /559C6289;
+Reference = Y1;
+ValeurCmp = Crystal;
+IdModule  = Crystals:Crystal_HC48-U_Vertical;
+EndCmp
+
+EndListe
