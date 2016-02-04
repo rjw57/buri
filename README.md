@@ -23,9 +23,9 @@ can be found in gerber and PDF format in the [CPU board plot
 directory](hardware/cpu-board/plots) and the [monitor board plot
 directory](hardware/monitor-board/plots).
 
-The [sim](sim) directory contains a simulator for the microcomputer.  It's
-pretty slow and I only really use it to enable development of the operating
-system without waiting for the ROM to re-flash.
+The https://github.com/rjw57/buri-simulator-python repository contains a simulator
+for the microcomputer.  It's pretty slow and I only really use it to enable development
+of the operating system without waiting for the ROM to re-flash.
 
 The [os](os) directory contains a basic ROM-based operating system for the
 computer.
