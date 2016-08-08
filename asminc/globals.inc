@@ -38,7 +38,7 @@ LINE_BUFFER_SIZE = $80
 ; Address of interrupt handler routines
 .global irq_vector
 .global nmi_vector
-.global brk_handler
+.global brk_vector
 
 ; vi:ft=asm
 

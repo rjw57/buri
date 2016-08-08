@@ -4,12 +4,12 @@
 
 ; Import the non-NOP vecto handlers
 .import vector_reset
-.import vector_irq
-.import vector_nmi
-.import vector_brk
+.import irq_head
+.import nmi_head
+.import brk_head
 
 ; A "NOP" vector which does nothing except return.
-.proc vector_nop
+.proc nop_handler
 	rti
 .endproc
 
@@ -19,17 +19,17 @@
 ; nmi and brk. Each of these end up being 
 
 .segment "VECTORS"
-.word vector_nop ; cop
-.word vector_brk
-.word vector_nop ; abort
-.word vector_nmi
-.word vector_nop
-.word vector_irq
+.word nop_handler ; cop
+.word brk_head
+.word nop_handler ; abort
+.word nmi_head
+.word nop_handler
+.word irq_head
 
 .segment "VECTORS_E"
-.word vector_nop
-.word vector_nop
-.word vector_nop
-.word vector_nop
+.word nop_handler
+.word nop_handler
+.word nop_handler
+.word nop_handler
 .word vector_reset
-.word vector_nop
+.word nop_handler

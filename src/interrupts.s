@@ -30,12 +30,17 @@
 	rts
 .endproc
 
-; Interrupt handler
-.global vector_irq
-.proc vector_irq
+; Interrupt handler head
+.global irq_head
+.proc irq_head
 	push_state
 	jsr setup_pages
+	jmp (irq_vector)
+.endproc
 
+; Interrupt handler tail
+.global irq_tail
+.proc irq_tail
 	; ACIA1 - copy status reg if interupt bit set
 	lda ACIA1_STATUS
 	bpl acia_done
@@ -47,14 +52,29 @@ acia_done:
 .endproc
 
 ; NMI handler
-.global vector_nmi
-.proc vector_nmi
+.global nmi_head
+.proc nmi_head
+	push_state
+	jsr setup_pages
+	jmp (nmi_vector)
+.endproc
+
+.global nmi_tail
+.proc nmi_tail
+	pop_state
 	rti			; return from handler
 .endproc
 
 ; BRK handler
-.global vector_brk
-.proc vector_brk
-	rti			; return from handler
+.global brk_head
+.proc brk_head
+	push_state
+	jsr setup_pages
+	jmp (brk_vector)
 .endproc
 
+.global brk_tail
+.proc brk_tail
+	pop_state
+	rti			; return from handler
+.endproc

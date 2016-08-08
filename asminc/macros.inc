@@ -1,6 +1,23 @@
 ; Useful macros
 
 ; ===========================================================================
+; 16-bit mode
+
+; Enable 16-bit accumulator and index
+.macro set_16
+	rep #$30
+	.a16
+	.i16
+.endmacro
+
+; Disable 16-bit accumulator and index
+.macro reset_16
+	.i8
+	.a8
+	sep #$30
+.endmacro
+
+; ===========================================================================
 ; Immediate loading
 
 ; Load an absolute 16-bit value into A (low byte) and X (high byte)

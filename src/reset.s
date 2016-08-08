@@ -1,3 +1,7 @@
+.include "globals.inc"
+.include "interrupts.inc"
+.include "macros.inc"
+
 ;
 ; Processor reset vector
 ;
@@ -27,6 +31,16 @@
 	sta	$00,X			; write A to ZP location X
 	inx				; increment X (wraps at $FF)
 	bne	@loop			; if X has not wrapped, loop
+
+	; Initialise indirect vectors
+	set_16
+	lda #irq_tail
+	sta irq_vector
+	lda #nmi_tail
+	sta nmi_vector
+	lda #brk_tail
+	sta brk_vector
+	reset_16
 
 	; Initialise vector table
 	jsr init_osvecs
