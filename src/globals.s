@@ -17,4 +17,6 @@ acia_sr:	.res 1
 
 .segment "BSS"
 line_buffer:	.res LINE_BUFFER_SIZE
-
+irq_vector:	.res 2
+nmi_vector:	.res 2
+brk_vector:	.res 2

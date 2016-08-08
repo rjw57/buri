@@ -35,5 +35,10 @@ LINE_BUFFER_SIZE = $80
 ; Command input buffer
 .global line_buffer
 
+; Address of interrupt handler routines
+.global irq_vector
+.global nmi_vector
+.global brk_handler
+
 ; vi:ft=asm
 

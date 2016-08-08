@@ -6,8 +6,8 @@
 
 ; Called on processor reset. Bootstraps stack pointer, clears zero page and
 ; jumps to init.
-.export reset
-.proc reset
+.export vector_reset
+.proc vector_reset
 	; Bootstrap processor
 	sei				; disable interrupts
 	cld				; use binary mode arithmetic
