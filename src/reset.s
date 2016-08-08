@@ -1,12 +1,13 @@
 .include "globals.inc"
-.include "interrupts.inc"
 .include "macros.inc"
 
 ;
 ; Processor reset vector
 ;
+
 .import init
 .import init_osvecs
+.import interrupts_init
 
 ; Called on processor reset. Bootstraps stack pointer, clears zero page and
 ; jumps to init.
@@ -32,15 +33,8 @@
 	inx				; increment X (wraps at $FF)
 	bne	@loop			; if X has not wrapped, loop
 
-	; Initialise indirect vectors
-	set_16
-	lda #irq_tail
-	sta irq_vector
-	lda #nmi_tail
-	sta nmi_vector
-	lda #brk_tail
-	sta brk_vector
-	reset_16
+	; Initialise interrupt trampolines
+	jsr interrupts_init
 
 	; Initialise vector table
 	jsr init_osvecs
