@@ -14,6 +14,12 @@
 	ldx	#$FF			; initialise stack pointer
 	txs
 
+	; Switch to native mode
+	clc				; clear carry bit
+	xce				; exchange carry and emulation
+
+	; ... now in 65816 native mode
+
 	; Clear zero page
 	lda 	#$00			; value to fill ZP with
 	ldx 	#$00			; where to start writing
