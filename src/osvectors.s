@@ -1,6 +1,10 @@
 ; OS vector table
 ;
-; Jump table stored in ROM used to vector OS calls such as get/put character.
+; OS "syscalls" are via the BRK instruction which is followed by a signature.
+; This signature determines which OS syscall will be invoked. This file contains
+; the jump table and handler rouine to dispatch a syscall to the correct OS
+; routine.
+;
 .include "globals.inc"
 
 .import srl_putc, srl_getc, syscall
@@ -9,21 +13,21 @@
 putc = srl_putc
 getc = srl_getc
 
-; OS jump table
-.rodata
-init_vec_table_start:
-	.word	nop
-	.word	putc
-	.word	getc
-init_vec_table_end:
-init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
-
-.code
-
 ; NOP syscall
 .proc nop
 	rts
 .endproc
+
+; OS jump table
+.rodata
+init_vec_table_start:
+	.word	nop		; $00 - NOP
+	.word	putc		; $01 - put character to output
+	.word	getc		; $02 - get character from input
+init_vec_table_end:
+init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
+
+.code
 
 ; Handle a BRK call. On entry, brk_signature is set to index of OS routine.
 ; A contains a parameter. On exit, A contains the return value. This call is

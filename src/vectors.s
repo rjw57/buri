@@ -1,22 +1,21 @@
+; Hardware vector table.
 ;
-; Processor reset and interrupt vector table.
-;
+; The 65816 has two hardware vector tables. One is active in "emulation" mode
+; and one in "native". This file defines the contents of both.
 
-; Import the non-NOP vecto handlers
+; Import the non-NOP handlers
 .import vector_reset
 .import irq_head
 .import nmi_head
 .import brk_head
 
-; A "NOP" vector which does nothing except return.
+; A "NOP" handler which does nothing except return.
 .proc nop_handler
 	rti
 .endproc
 
-; The 65816 has two separate vector tables, one for "emulation" mode and one for
-; "native" mode. Since we're a native-only OS, the emulation mode vectors are
-; all NOPs (apart from the reset vector). In native mode we support only irq,
-; nmi and brk. Each of these end up being 
+; Since we're a "native" OS, the emulation mode vectors are all NOPs (apart from
+; the reset vector).
 
 .segment "VECTORS"
 .word nop_handler ; cop
