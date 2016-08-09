@@ -26,7 +26,8 @@ init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
 .endproc
 
 ; Handle a BRK call. On entry, brk_signature is set to index of OS routine.
-; A, X and Y may contain parameters.
+; A contains a parameter. On exit, A contains the return value. This call is
+; free to corrupt X and Y.
 .global handle_brk
 .proc handle_brk
 	pha			; Save A

@@ -17,6 +17,28 @@
 	sep #$30
 .endmacro
 
+; Enable/disable 8-bit accumulator only
+.macro set_a16
+	.a16
+	rep #$20
+.endmacro
+
+.macro reset_a16
+	.a8
+	sep #$20
+.endmacro
+
+; Enable/disable 8-bit index only
+.macro set_i16
+	.i16
+	rep #$10
+.endmacro
+
+.macro reset_i16
+	.i8
+	sep #$10
+.endmacro
+
 ; ===========================================================================
 ; Immediate loading
 

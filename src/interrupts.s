@@ -42,17 +42,15 @@
 	pla
 .endmacro
 
-; Configure data bank and direct page registers.
+; Configure data bank and direct page registers. Corrupts A and sets 8-bit A.
+; and index
 .proc setup_pages
-	reset_16
-	pha
-	set_16
+	set_a16
 	lda #0			; A = 0
 	tcd			; A -> direct page reg.
-	reset_16
+	reset_a16
 	pha
 	plb			; A -> data bank register
-	pla
 	rts
 .endproc
 
@@ -109,6 +107,14 @@ acia_done:
 .proc brk_head
 	begin_handler
 
+	; We enable interrupts here since some OS routines (notably getc)
+	; require interrupts be enabled. They also have indeterminate latency
+	; so we should make sure interrupts will be handled ASAP. We're OK
+	; to re-enable here since we know that we're not going to perform any
+	; more BRKs until the brk_signature value has been read by brk_tail.
+
+	cli			; Enable interrupts
+
 	; We're going to examine the stack to find the address where the BRK
 	; instruction was and read the continuing byte. This then gets stuffed
 	; into the zero-page variable brk_signature.
@@ -118,16 +124,15 @@ acia_done:
 	; | PBR | PC Hi | PC Lo | P | A | A | X | X | Y | Y | B | D | D |
         ;   13    12      11      10  9   8   7   6   5   4   3   2   1
 
-	; Save regs which we corrupt. This adds 2 bytes to the stack
+	; Save regs which we corrupt. This adds 1 byte to the stack
 	; which needs to be corrected for below.
-	pha
 	phb
 
-	lda 13 + 2, S		; Load the PBR into A
+	lda 13 + 1, S		; Load the PBR into A
 	pha			; A -> stack
 	plb			; stack -> data bank reg
 	set_16
-	lda 11 + 2, S		; PC -> A
+	lda 11 + 1, S		; PC -> A
 	tax			; X = A
 	dex			; X -= 1
 	sep #$20		; A -> 8.bit
@@ -136,13 +141,22 @@ acia_done:
 
 	plb			; Restore data bank reg
 	sta brk_signature	; Save BRK signature
-	pla			; Restore other regs
+
+	; Now we're pulled the DBR, we no longer need the correction
+	set_16
+	lda 8, S		; Load enty value for A
+	reset_16
 
 	jmp (brk_vector)
 .endproc
 
 .global brk_tail
 .proc brk_tail
-	jsr handle_brk
+	jsr handle_brk		; Dispatch call
+
+	; Unusually, BRK can return a value in A. The simplest thing to do
+	; is to directly write it into the stack
+	set_16
+	sta 8, S		; Write value for A
 	end_handler
 .endproc
