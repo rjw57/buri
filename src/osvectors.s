@@ -1,48 +1,40 @@
 ; OS vector table
 ;
-; Jump table stored in RAM used to vector OS calls such as get/put character.
-; This jump table is initialised by init_osvecs.
-
-.export init_osvecs
-.export putc, getc
+; Jump table stored in ROM used to vector OS calls such as get/put character.
+.include "globals.inc"
 
 .import srl_putc, srl_getc, syscall
+.export putc, getc
 
-	.rodata
+putc = srl_putc
+getc = srl_getc
+
+; OS jump table
+.rodata
 init_vec_table_start:
-	.word	srl_putc
-	.word	srl_getc
-	.word	syscall
+	.word	nop
+	.word	putc
+	.word	getc
 init_vec_table_end:
 init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
 
-	.segment "OSVECTORS"
-os_vectors:
-v_putc:		.res 2
-v_getc:		.res 2
-v_osbyte:	.res 2
+.code
 
-	.code
-putc:	jmp (v_putc)
-getc:	jmp (v_getc)
-
-.proc init_osvecs
-	pha
-	phy
-
-	ldy #0
-@loop:
-	lda init_vec_table_start, Y
-	sta os_vectors, Y
-	iny
-	lda init_vec_table_start, Y
-	sta os_vectors, Y
-	iny
-
-	cpy #2*init_vec_table_len
-	bne @loop
-
-	ply
-	pla
+; NOP syscall
+.proc nop
 	rts
 .endproc
+
+; Handle a BRK call. On entry, brk_signature is set to index of OS routine.
+; A, X and Y may contain parameters.
+.global handle_brk
+.proc handle_brk
+	pha			; Save A
+	lda brk_signature	; A = brk_signature
+	asl			; A <<= 1 (i.e. doubled)
+	tax			; X = A
+	pla			; Restore A
+
+	jmp (init_vec_table_start, X) ; Jump
+.endproc
+

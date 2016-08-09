@@ -107,6 +107,17 @@
 ; Stack manipulation. Macro-ised to avoid silly mistakes w.r.t. ordering of
 ; push and pulls.
 
+; Save/restor data bank and direct page registers
+.macro save_bd
+	phb
+	phd
+.endmacro
+
+.macro restore_bd
+	pld
+	plb
+.endmacro
+
 ; Save/restore X, Y on entry/exit
 .macro save_xy
 	phx

@@ -8,9 +8,15 @@ The OS is in the form of an 8K ROM image. Compilation of this software requires
 [cc65](https://github.com/cc65/cc65). Assuming that cc65 is installed under
 ``$HOME/opt/cc65``, you can clone the source and make the image:
 
-{% highlight console %}
+```console
 $ git clone https://github.com/rjw57/buri-6502-os
 $ cd buri-6502-os
 $ CC65_DIR=$HOME/opt/cc65 make
-{% endhighlight %}
+```
+
+## Syscalls
+
+Syscalls are made via the `BRK` software-interrupt instruction. When a `BRK` is
+issued, the OS uses the value of the `X` register to index an OS call. Return
+values, if any, are stored in the `A` register.
 

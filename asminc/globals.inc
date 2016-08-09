@@ -30,6 +30,9 @@ LINE_BUFFER_SIZE = $80
 ; Cache of ACIA status register copied when there's an interrupt.
 .globalzp acia_sr
 
+; Signature byte from last BRK instruction
+.globalzp brk_signature
+
 ;; OS PRIVATE PAGE
 
 ; Command input buffer

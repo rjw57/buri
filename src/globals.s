@@ -15,6 +15,8 @@ arg3:		.res 1
 
 acia_sr:	.res 1
 
+brk_signature:	.res 1
+
 .segment "BSS"
 irq_vector:	.res 2
 nmi_vector:	.res 2

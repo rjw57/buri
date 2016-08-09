@@ -1,12 +1,11 @@
-.include "globals.inc"
-.include "macros.inc"
-
 ;
 ; Processor reset vector
 ;
 
+.include "globals.inc"
+.include "macros.inc"
+
 .import init
-.import init_osvecs
 .import interrupts_init
 
 ; Called on processor reset. Bootstraps stack pointer, clears zero page and
@@ -35,9 +34,6 @@
 
 	; Initialise interrupt trampolines
 	jsr interrupts_init
-
-	; Initialise vector table
-	jsr init_osvecs
 
 	cli				; re-enable interrupts
 	jmp	init			; jump to entry point
