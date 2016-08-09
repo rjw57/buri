@@ -30,24 +30,21 @@
 ; Saves registers onto stack. Makes sure that 16-bit mode is switched on for
 ; A and X, Y. Pushes 9 bytes onto the stack.
 .macro save_regs
-	set_16
 	pha
 	save_xy
 	save_bd
-	reset_16
 .endmacro
 
 ; Undoes save_regs.
 .macro restore_regs
-	set_16
 	restore_bd
 	restore_xy
 	pla
-	reset_16
 .endmacro
 
-; Configure data bank and direct page registers
+; Configure data bank and direct page registers.
 .proc setup_pages
+	reset_16
 	pha
 	set_16
 	lda #0			; A = 0
@@ -59,11 +56,26 @@
 	rts
 .endproc
 
+; Begin an interrupt handler. Saves A, X an Y registers on stack in 16-bit mode,
+; saves DB and DP registers. Resets DB and DP registers to zero.
+.macro begin_handler
+	set_16
+	save_regs
+	jsr setup_pages
+.endmacro
+
+; End an interupt handler. Undoes the actions of begin_handler and issues an RTI
+; instruction to return to the previous execution location.
+.macro end_handler
+	set_16
+	restore_regs
+	rti
+.endmacro
+
 ; Interrupt handler head
 .global irq_head
 .proc irq_head
-	save_regs
-	jsr setup_pages
+	begin_handler
 	jmp (irq_vector)
 .endproc
 
@@ -75,23 +87,19 @@
 	bpl acia_done
 	sta acia_sr
 acia_done:
-
-	restore_regs
-	rti			; return from handler
+	end_handler
 .endproc
 
 ; NMI handler
 .global nmi_head
 .proc nmi_head
-	save_regs
-	jsr setup_pages
+	begin_handler
 	jmp (nmi_vector)
 .endproc
 
 .global nmi_tail
 .proc nmi_tail
-	restore_regs
-	rti			; return from handler
+	end_handler
 .endproc
 
 ; BRK handler. Obtain byte immediately following BRK instruction and push onto
@@ -99,8 +107,7 @@ acia_done:
 ; preserved.
 .global brk_head
 .proc brk_head
-	save_regs
-	jsr setup_pages
+	begin_handler
 
 	; We're going to examine the stack to find the address where the BRK
 	; instruction was and read the continuing byte. This then gets stuffed
@@ -137,6 +144,5 @@ acia_done:
 .global brk_tail
 .proc brk_tail
 	jsr handle_brk
-	restore_regs
-	rti			; return from handler
+	end_handler
 .endproc
