@@ -76,6 +76,6 @@ halt_loop:
 banner1_str:
 	cstring "Buri microcomputer"
 banner2_str:
-	cstring "(C) 2015 Rich Wareham <rich.buri@richwareham.com>"
+	cstring "(C) 2015, 2016 Rich Wareham <rich.buri@richwareham.com>"
 nsc_str:
 	cstring "No such command"
