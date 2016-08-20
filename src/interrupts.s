@@ -12,18 +12,20 @@
 ; the bank zero addresses stored at {irq,nmi,brk}_vector. By default these
 ; are appropriate ROM-based interrupt handlers. By writing their own values to
 ; these memory locations software may "patch" the vectors.
+;
+; If the vectors are patched, the patches should JMP to the original location
+; after handling the interrupt. There's currently no official way to hook *after* 
+; the interrupt handler.
 .global interrupts_init
 .proc interrupts_init
-	pha
-	set_16				; enable 16-bit registers
+	mx16				; enable 16-bit registers
 	lda #irq_tail
 	sta irq_vector
 	lda #nmi_tail
 	sta nmi_vector
 	lda #brk_tail
 	sta brk_vector
-	reset_16			; disable 16-bit registers
-	pla
+	mx8			; disable 16-bit registers
 	rts
 .endproc
 
@@ -45,10 +47,10 @@
 ; Configure data bank and direct page registers. Corrupts A and sets 8-bit A.
 ; and index
 .proc setup_pages
-	set_a16
+	m16
 	lda #0			; A = 0
 	tcd			; A -> direct page reg.
-	reset_a16
+	m8
 	pha
 	plb			; A -> data bank register
 	rts
@@ -57,7 +59,7 @@
 ; Begin an interrupt handler. Saves A, X an Y registers on stack in 16-bit mode,
 ; saves DB and DP registers. Resets DB and DP registers to zero.
 .macro begin_handler
-	set_16
+	mx16
 	save_regs
 	jsr setup_pages
 .endmacro
@@ -65,7 +67,7 @@
 ; End an interupt handler. Undoes the actions of begin_handler and issues an RTI
 ; instruction to return to the previous execution location.
 .macro end_handler
-	set_16
+	mx16
 	restore_regs
 	rti
 .endmacro
@@ -131,21 +133,21 @@ acia_done:
 	lda 13 + 1, S		; Load the PBR into A
 	pha			; A -> stack
 	plb			; stack -> data bank reg
-	set_16
+	mx16
 	lda 11 + 1, S		; PC -> A
 	tax			; X = A
 	dex			; X -= 1
 	sep #$20		; A -> 8.bit
 	lda 0, X		; BRK following byte -> A
-	reset_16
+	mx8
 
 	plb			; Restore data bank reg
 	sta brk_signature	; Save BRK signature
 
 	; Now we're pulled the DBR, we no longer need the correction
-	set_16
+	mx16
 	lda 8, S		; Load enty value for A
-	reset_16
+	mx8
 
 	jmp (brk_vector)
 .endproc
@@ -156,7 +158,7 @@ acia_done:
 
 	; Unusually, BRK can return a value in A. The simplest thing to do
 	; is to directly write it into the stack
-	set_16
+	mx16
 	sta 8, S		; Write value for A
 	end_handler
 .endproc

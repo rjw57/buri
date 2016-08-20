@@ -20,9 +20,13 @@
 .import initscr
 .import cls
 
-; This function is never returned from.
+; After reset sets up the direct page, initial processor registers and processor
+; mode, this procedure is called. It sets up the IO devices and launches the
+; CLI.
 .export init
 .proc init
+	mx8
+
 	jsr initio		; reset I/O device
 	jsr initscr		; reset terminal
 

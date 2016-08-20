@@ -36,6 +36,9 @@ args_parsed:
 	pha
 	save_xy
 	jsr call_impl_
+	clc
+	xce				; in case called code set emulation mode
+	mx16				; in case called code set 8-bit mode
 	restore_xy
 	pla
 

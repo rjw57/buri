@@ -20,3 +20,11 @@ Syscalls are made via the `BRK` software-interrupt instruction. When a `BRK` is
 issued, the OS uses the value of the `X` register to index an OS call. Return
 values, if any, are stored in the `A` register.
 
+## Calling conventions
+
+The default throughout is for the M and X flags to be set (8-bit accumulator and
+index) which allows for more compact immediate addressing instructions. Code
+which enables a 16-bit register should take care to reset it before calling
+other public code. Generally, "public" means code in a separate source file.
+Functions should preserve the X and Y registers but are free to corrupt the A
+register (or use it as a return value).
