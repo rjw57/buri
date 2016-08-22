@@ -35,10 +35,11 @@ args_parsed:
 	; ptr2 - location
 	pha
 	save_xy
+	php				; save processor state
 	jsr call_impl_
 	clc
 	xce				; in case called code set emulation mode
-	mx16				; in case called code set 8-bit mode
+	plp				; restore processor state
 	restore_xy
 	pla
 
