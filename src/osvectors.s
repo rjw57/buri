@@ -24,10 +24,22 @@ init_vec_table_start:
 	.word	nop		; $00 - NOP
 	.word	putc		; $01 - put character to output
 	.word	getc		; $02 - get character from input
+	.word	havec		; $03 - test if character available
 init_vec_table_end:
 init_vec_table_len = (init_vec_table_end - init_vec_table_start) / 2
 
 .code
+
+.global haveinput
+.proc havec
+	jsr	haveinput
+	bcs	@input
+	lda	#$00
+	rts
+@input:
+	lda	#$FF
+	rts
+.endproc
 
 ; Handle a BRK call. On entry, brk_signature is set to index of OS routine.
 ; A contains a parameter. On exit, A contains the return value. This call is
