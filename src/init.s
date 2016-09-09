@@ -17,8 +17,7 @@
 .import splitcli
 .import findcmd
 
-.import initscr
-.import cls
+.import _putln, _initscr, _cls
 
 ; After reset sets up the direct page, initial processor registers and processor
 ; mode, this procedure is called. It sets up the IO devices and launches the
@@ -28,13 +27,16 @@
 	mx8
 
 	jsr initio		; reset I/O device
-	jsr initscr		; reset terminal
 
-	jsr cls			; clear screen
-	ldw ptr1, banner1_str	; write banner
-	jsr putln
-	ldw ptr1, banner2_str
-	jsr putln
+	jsr _initscr		; reset terminal
+	jsr _cls		; clear screen
+
+	lda #<banner1_str
+	ldx #>banner1_str
+	jsr _putln
+	lda #<banner2_str
+	ldx #>banner2_str
+	jsr _putln
 
 prompt_loop:
 	lda #'*'		; write command prompt
@@ -45,7 +47,6 @@ prompt_loop:
 	sta ptr1
 	lda #>line_buffer
 	sta ptr1+1
-	lda #>line_buffer
 	lda #LINE_BUFFER_SIZE
 	jsr readln
 

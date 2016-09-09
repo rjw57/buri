@@ -8,10 +8,13 @@
 .include "globals.inc"
 
 .import srl_putc, srl_getc, syscall
-.export putc, getc
+.export putc, getc, _putc, _getc
 
 putc = srl_putc
 getc = srl_getc
+
+_putc = putc
+_getc = getc
 
 ; NOP syscall
 .proc nop

@@ -55,3 +55,14 @@ exit:
 	pla
 	rts
 .endproc
+
+; unsigned int parsehex16(char* s)
+.export _parsehex16
+.proc _parsehex16
+	sta ptr1
+	stx ptr1+1
+	jsr parsehex16
+	lda ptr2
+	ldx ptr2+1
+	rts
+.endproc
