@@ -92,6 +92,9 @@ $(C_RUNTIME_DIR)/%.o: $(C_RUNTIME_DIR)/%.s $(LINK_CONFIG)
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(HDR_FILES) $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
 
+$(SRC_DIR)/%.s: $(SRC_DIR)/%.c $(HDR_FILES) $(LINK_CONFIG)
+	$(CL65) $(CL65_FLAGS) -S -o "$@" "$<"
+
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.s $(INC_FILES) $(LINK_CONFIG)
 	$(CL65) $(CL65_FLAGS) -c -o "$@" "$<"
 

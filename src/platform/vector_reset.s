@@ -1,17 +1,14 @@
-; Processor reset vector
-
-.include "globals.inc"
+; Reset vector for processor.
 .include "macros.inc"
 
-.import init
-.import interrupts_init
+.import _start
 
-.importzp sp
+.importzp sp 				; C stack pointer
 .import __OSCSTACK_START__, __OSCSTACK_SIZE__
 
 ; Called on processor reset. Bootstraps stack pointer, clears direct page, sets
-; native mode, ensures accumulator and index registers are 16-bit and jumps to
-; init.
+; native mode, ensures accumulator and index registers are 8-bit and jumps to
+; start.
 .export vector_reset
 .proc vector_reset
 	; Bootstrap processor
@@ -20,7 +17,7 @@
 	ldx	#$FF			; initialise stack pointer
 	txs
 
-	; Switch to native mode & 16-bit accum/index
+	; Switch to native mode & 8-bit accum/index
 	set_native
 	mx8
 
@@ -41,8 +38,8 @@
 	; Back to 8-bit accumulator
 	m8
 
-	jsr	interrupts_init		; initialise interrupt trampolines
+	; TODO initialise ISRs.
 
 	cli				; re-enable interrupts
-	jmp	init			; jump to entry point
+	jmp	_start			; jump to entry point
 .endproc
