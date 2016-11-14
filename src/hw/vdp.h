@@ -4,5 +4,11 @@
 /* Initialise VDP hardware */
 void vdp_init(void);
 
-/* Write a character to the VDP output */
-void vdp_write_char(u8 ch);
+/* Write to the VDP ctrl register */
+void vdp_write_ctrl(u8 value);
+
+/* Write to the VDP data register */
+void vdp_write_data(u8 value);
+
+/* Read from the VDP data register */
+u8 vdp_read_data(void);

@@ -42,16 +42,41 @@ VDP_NAME    = $0800
 .export _vdp_init := vdp_init
 
 ; =========================================================================
-; vdp_write_char: write a character to output
+; vdp_write_data: write byte to data register
 ;
-; C: void vdp_write_char(u8 ch)
+; C: void vdp_write_data(u8 value)
 ; =========================================================================
-.export vdp_write_char
-.proc vdp_write_char
+.export vdp_write_data
+.proc vdp_write_data
 	sta VDP_DATA
 	rts
 .endproc
-.export _vdp_write_char = vdp_write_char
+.export _vdp_write_data = vdp_write_data
+
+; =========================================================================
+; vdp_read_data: read byte from data register
+;
+; C: u8 vdp_read_data(void)
+; =========================================================================
+.export vdp_read_data
+.proc vdp_read_data
+	lda VDP_DATA
+	rts
+.endproc
+.export _vdp_read_data = vdp_read_data
+
+; =========================================================================
+; vdp_write_ctrl: write byte to control register
+; 	A - value
+;
+; C: void vdp_write_ctrl(u8 value)
+; =========================================================================
+.export vdp_write_ctrl
+.proc vdp_write_ctrl
+	sta VDP_CTRL
+	rts
+.endproc
+.export _vdp_write_ctrl := vdp_write_ctrl
 
 ; =========================================================================
 ; vdp_set_reg:
