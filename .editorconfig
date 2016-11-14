@@ -1,6 +1,10 @@
 root=true
 
-[*.cfg]
+[*.{c,h}]
 indent_style=space
 indent_size=4
+
+[*.{s,asm}]
+indent_style=space
+indent_size=8
 

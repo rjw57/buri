@@ -4,8 +4,11 @@
 /* Initialise VDP hardware */
 void vdp_init(void);
 
-/* Write to the VDP ctrl register */
-void vdp_write_ctrl(u8 value);
+/* Set VRAM write address */
+void vdp_set_write_addr(u16 addr);
+
+/* Set VRAM read address */
+void vdp_set_read_addr(u16 addr);
 
 /* Write to the VDP data register */
 void vdp_write_data(u8 value);
