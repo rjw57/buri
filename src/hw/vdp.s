@@ -106,10 +106,10 @@ VDP_NAME    = $0800
 ; =========================================================================
 ; VDP_INIT_TAB: initial register values for VDP
 ;
-; Text mode, green bg, white fg, pattern @ 0x0000, name @ 0x0800
+; Text mode, set fg/bg color, pattern @ 0x0000, name @ 0x0800
 ; =========================================================================
 VDP_INIT_TAB:
-	.byte $00, $D0, $02, $00, $00, $00, $00, $FC
+	.byte $00, $D0, $02, $00, $00, $00, $00, $12
 
 ; =========================================================================
 ; VDP_FONT_TAB: font table for VDP
