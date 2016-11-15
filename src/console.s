@@ -8,14 +8,22 @@
 CONSOLE_COLS = 40
 CONSOLE_ROWS = 24
 
+; When scrolling, CONSOLE_BLOCK_LEN specifies the number of bytes read from and
+; written to VRAM as one block. It should be a factor of CONSOLE_COLS. It also
+; shouldn't be too big because the C stack is used as temporary storage and
+; overflowing the stack is Bad News.
+CONSOLE_BLOCK_LEN = 10
+
 ; =========================================================================
 ; Zero page global variables
 ; =========================================================================
 .segment "OSZP": zeropage
 
-; Current row and column position of console cursor
+; Current row and column position of console cursor. The cursor is the location
+; on screen where the next character will be printed.
 console_cursor_col: .res 1
 console_cursor_row: .res 1
+.exportzp console_cursor_col, console_cursor_row
 
 .code
 
@@ -133,7 +141,7 @@ console_cursor_row: .res 1
 .export console_scroll_up
 .proc console_scroll_up
         ; Set Y to number of 8 byte copies required to scroll screen.
-        ldy #(CONSOLE_COLS*(CONSOLE_ROWS-1))>>3
+        ldy #(CONSOLE_COLS*(CONSOLE_ROWS-1))/CONSOLE_BLOCK_LEN
 
         m16                             ; ptr1 = VDP_NAM_TBL_BASE
         lda #VDP_NAM_TBL_BASE
@@ -148,7 +156,7 @@ console_cursor_row: .res 1
 
         m16                             ; ptr1 += 8
         lda ptr1
-        add #8
+        add #CONSOLE_BLOCK_LEN
         sta ptr1
         m8
 
@@ -164,16 +172,16 @@ console_cursor_row: .res 1
 ;       A - low byte VRAM address of *destination*
 ;       X - high byte VRAM address of *destination*
 ;
-; Letting addr be the 16-bit VRAM address, copies 8 bytes from VRAM address addr
-; + CONSOLE_COLS to addr.
+; Letting addr be the 16-bit VRAM address, copies CONSOLE_BLOCK_LEN bytes from
+; VRAM address addr + CONSOLE_COLS to addr.
 ; =========================================================================
 .proc console_copy_up
         sta ptr1                        ; ptr1 = destn. address
         stx ptr1+1
 
         m16                             ; 16-bit accumulator
-        lda sp                          ; sp -= 8
-        sub #8
+        lda sp                          ; sp -= CONSOLE_BLOCK_LEN
+        sub #CONSOLE_BLOCK_LEN
         sta sp
 
         lda ptr1                        ; A = VRAM addr
@@ -185,7 +193,7 @@ console_cursor_row: .res 1
         xba                             ; Low-byte -> A
         jsr vdp_set_read_addr
 
-        ldy #7                          ; Read 8 bytes
+        ldy #CONSOLE_BLOCK_LEN-1        ; Read CONSOLE_BLOCK_LEN bytes
 @readloop:
         lda VDP_DATA                    ; sp[i] = *VDP_DATA
         sta (sp), Y
@@ -196,7 +204,7 @@ console_cursor_row: .res 1
         ldx ptr1+1                      ; Restore high byte of destn.
         jsr vdp_set_write_addr          ; Set VRAM write detn.
 
-        ldy #7                          ; Write 8 bytes
+        ldy #CONSOLE_BLOCK_LEN-1        ; Write CONSOLE_BLOCK_LEN bytes
 @writeloop:
         lda (sp), Y                     ; *VDP_DATA = sp[i]
         sta VDP_DATA
@@ -204,8 +212,8 @@ console_cursor_row: .res 1
         bpl @writeloop
 
         m16                             ; 16-bit accumulator
-        lda sp                          ; sp += 8
-        add #8
+        lda sp                          ; sp += CONSOLE_BLOCK_LEN
+        add #CONSOLE_BLOCK_LEN
         sta sp
         m8                              ; 8-bit accumulator
 
