@@ -12,5 +12,9 @@ static void puts(const char* s) {
 void start(void) {
     vdp_init();
     console_init();
-    while(1) { puts(msg); puts(" "); }
+    while(1) {
+        int i=0;
+        puts(msg); puts(" ");
+        for(i=0; i<5000; ++i) { }
+    }
 }

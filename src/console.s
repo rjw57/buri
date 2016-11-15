@@ -164,6 +164,21 @@ console_cursor_row: .res 1
         dey
         bne @loop
 
+        m16                             ; ptr1 = start of last row
+        lda #VDP_NAM_TBL_BASE + (CONSOLE_COLS*(CONSOLE_ROWS-1))
+        sta ptr1
+        m8
+
+        lda ptr1                        ; start writing last row
+        ldx ptr1+1
+        jsr vdp_set_write_addr
+
+        ldy #CONSOLE_COLS               ; write CONSOLE_COLS zero bytes
+@clear_loop:
+        stz VDP_DATA
+        dey
+        bne @clear_loop
+
         rts
 .endproc
 
