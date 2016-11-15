@@ -69,7 +69,7 @@ CRT_LIB:=crt.lib
 CLEAN_FILES+=$(CRT_LIB)
 
 # Generate a map file
-CL65_FLAGS+= --mapfile "$(ROM_BIN).map"
+CL65_FLAGS+=-vm --mapfile "$(ROM_BIN).map"
 CLEAN_FILES+="$(ROM_BIN).map"
 
 .PHONY: all

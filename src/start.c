@@ -23,6 +23,7 @@ void start(void) {
     console_write_char('>');
     console_cursor_set(38, 2);
     console_write_char('A');
+    console_cursor_set(0, 0);
 
     while(1) { puts(msg); puts(" "); }
 }

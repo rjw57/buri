@@ -1,8 +1,9 @@
 ; Simple console driver using VDP
 .include "macros.inc"
 
-.importzp tmp1, sp
-.import vdp_set_write_addr, VDP_NAM_TBL_BASE, VDP_DATA
+.importzp tmp1, sp, ptr1
+.import vdp_set_write_addr, vdp_set_read_addr
+.import VDP_NAM_TBL_BASE, VDP_DATA
 
 CONSOLE_COLS = 40
 CONSOLE_ROWS = 24
@@ -60,15 +61,13 @@ console_cursor_row: .res 1
 
         m16                             ; Compute 16-bit offset in A
         lda #VDP_NAM_TBL_BASE           ; A = VDP_NAM_TBL_BASE
-        clc
         sty tmp1
-        adc tmp1                        ; A += Y
+        add tmp1                        ; A += Y
 
 @loop:                                  ; A += CONSOLE_COLS * X
         cpx #0
         beq @endloop
-        clc
-        adc #CONSOLE_COLS
+        add #CONSOLE_COLS
         dex
         bra @loop
 @endloop:
@@ -133,6 +132,82 @@ console_cursor_row: .res 1
 ; =========================================================================
 .export console_scroll_up
 .proc console_scroll_up
-        ; TODO: implement
+        ; Set Y to number of 8 byte copies required to scroll screen.
+        ldy #(CONSOLE_COLS*(CONSOLE_ROWS-1))>>3
+
+        m16                             ; ptr1 = VDP_NAM_TBL_BASE
+        lda #VDP_NAM_TBL_BASE
+        sta ptr1
+        m8
+
+@loop:                                  ; copy loop
+        phy                             ; save Y
+        lda ptr1                        ; load destn. address
+        ldx ptr1+1
+        jsr console_copy_up             ; copy
+
+        m16                             ; ptr1 += 8
+        lda ptr1
+        add #8
+        sta ptr1
+        m8
+
+        ply                             ; restore Y
+        dey
+        bne @loop
+
         rts
+.endproc
+
+; =========================================================================
+; console_copy_up: copy 8 bytes from VRAM one row up
+;       A - low byte VRAM address of *destination*
+;       X - high byte VRAM address of *destination*
+;
+; Letting addr be the 16-bit VRAM address, copies 8 bytes from VRAM address addr
+; + CONSOLE_COLS to addr.
+; =========================================================================
+.proc console_copy_up
+        sta ptr1                        ; ptr1 = destn. address
+        stx ptr1+1
+
+        m16                             ; 16-bit accumulator
+        lda sp                          ; sp -= 8
+        sub #8
+        sta sp
+
+        lda ptr1                        ; A = VRAM addr
+        add #CONSOLE_COLS               ; A += CONSOLE_COLS
+        m8                              ; 8-bit accumulator
+
+        xba                             ; High-byte -> X
+        tax
+        xba                             ; Low-byte -> A
+        jsr vdp_set_read_addr
+
+        ldy #7                          ; Read 8 bytes
+@readloop:
+        lda VDP_DATA                    ; sp[i] = *VDP_DATA
+        sta (sp), Y
+        dey
+        bpl @readloop
+
+        lda ptr1                        ; Restore low byte of destn.
+        ldx ptr1+1                      ; Restore high byte of destn.
+        jsr vdp_set_write_addr          ; Set VRAM write detn.
+
+        ldy #7                          ; Write 8 bytes
+@writeloop:
+        lda (sp), Y                     ; *VDP_DATA = sp[i]
+        sta VDP_DATA
+        dey
+        bpl @writeloop
+
+        m16                             ; 16-bit accumulator
+        lda sp                          ; sp += 8
+        add #8
+        sta sp
+        m8                              ; 8-bit accumulator
+
+        rts                             ; Exit
 .endproc

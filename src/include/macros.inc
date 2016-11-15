@@ -56,4 +56,29 @@
 	xce
 .endmacro
 
+; ===========================================================================
+; Pseudo instructions
+
+; add without carry
+.macro add arg
+	clc
+	adc arg
+.endmacro
+
+; subtract without carry
+.macro sub arg
+	sec
+	sbc arg
+.endmacro
+
+; branch if less than (another name for bcc)
+.macro blt arg
+	bcc arg
+.endmacro
+
+; branch if greater ot equal (another name for bcs)
+.macro bge arg
+	bcs arg
+.endmacro
+
 ; vi:ft=asm_ca65
