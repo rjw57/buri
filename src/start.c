@@ -8,11 +8,28 @@ static void puts(const char* s) {
     }
 }
 
+static void put_hex_nibble(u8 val) {
+    console_write_char(val < 10 ? val + '0' : val + 'A' - 10);
+}
+
+static void put_hex_byte(u8 val) {
+    put_hex_nibble(val>>4);
+    put_hex_nibble(val&0xf);
+}
+
+int keyboard_read(void);
+
 void start(void) {
     console_init();
+    puts(msg);
+    console_write_char(' ');
+
     while(1) {
-        int i=0;
-        puts(msg); puts(" ");
+        int v = keyboard_read();
+        if(v >= 0) {
+            put_hex_byte(v);
+            console_write_char(' ');
+        }
     }
 }
 
