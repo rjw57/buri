@@ -4,7 +4,7 @@ root=true
 indent_style=space
 indent_size=4
 
-[*.{s,asm}]
+[*.{s,asm,inc}]
 indent_style=space
 indent_size=8
 

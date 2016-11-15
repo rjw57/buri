@@ -2,7 +2,8 @@
 .include "macros.inc"
 
 .importzp tmp1, sp, ptr1
-.import vdp_set_write_addr, vdp_set_read_addr
+.import vdp_init, vdp_set_write_addr, vdp_set_read_addr
+.import keyboard_init
 .import VDP_NAM_TBL_BASE, VDP_DATA
 
 CONSOLE_COLS = 40
@@ -30,12 +31,15 @@ console_cursor_row: .res 1
 ; =========================================================================
 ; console_init: initialise console driver
 ;
-; requires: vdp_init called
+; calls: vdp_init, keyboard_init
 ;
 ; C: void console_init(void)
 ; =========================================================================
 .export console_init
 .proc console_init
+        jsr vdp_init
+        jsr keyboard_init
+
         lda #0
         ldx #0
         jmp console_cursor_set

@@ -1,6 +1,8 @@
 ; Device driver for VDP
 .include "macros.inc"
 
+.import irq_first_handler
+
 ; Memory-mapped data and control ports
 VDP_DATA                = $DE00
 VDP_CTRL                = $DE01
@@ -19,6 +21,13 @@ VDP_NAM_TBL_BASE        = $0800
         sta VDP_CTRL
 .endmacro
 
+.bss
+
+; Next IRQ handler routine to pass control to after vdp_irq_handler is finished.
+next_handler: .res 2
+
+.code
+
 ; =========================================================================
 ; vdp_init: initialise VDP after reset
 ;
@@ -26,6 +35,8 @@ VDP_NAM_TBL_BASE        = $0800
 ; =========================================================================
 .export vdp_init
 .proc vdp_init
+        irq_add_handler vdp_irq_handler, next_handler
+
         jsr vdp_clear_vram
         jsr vdp_load_font
 
@@ -163,12 +174,25 @@ VDP_NAM_TBL_BASE        = $0800
 .endproc
 
 ; =========================================================================
+; vdp_irq_handler: handle VDP interrupt
+; =========================================================================
+.export vdp_irq_handler
+.proc vdp_irq_handler
+@test:
+        lda #$80                        ; F flag set in status register?
+        bit VDP_CTRL
+        bne @test
+@done:
+        jmp (next_handler)
+.endproc
+
+; =========================================================================
 ; VDP_INIT_TAB: initial register values for VDP
 ;
-; Text mode, set fg/bg color, pattern @ 0x0000, name @ 0x0800
+; Text mode, interrupt enable, set fg/bg color, pattern @ 0x0000, name @ 0x0800
 ; =========================================================================
 VDP_INIT_TAB:
-        .byte $00, $D0, $02, $00, $00, $00, $00, $12
+        .byte $00, $F0, $02, $00, $00, $00, $00, $12
 
 ; =========================================================================
 ; VDP_FONT_TAB: font table for VDP
