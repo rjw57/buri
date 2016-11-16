@@ -6,6 +6,8 @@ static void puts(const char* s) {
     for(; *s != '\0'; ++s) {
         console_write_char(*s);
     }
+    console_write_char(0x0A);
+    console_write_char(0x0D);
 }
 
 static void put_hex_nibble(u8 val) {
@@ -20,9 +22,10 @@ static void put_hex_byte(u8 val) {
 i16 keyboard_get_next_scancode(void);
 
 void start(void) {
+    int i=0;
     console_init();
+
     puts(msg);
-    console_write_char(' ');
 
     while(1) {
         i16 v = console_read_char();
@@ -30,6 +33,10 @@ void start(void) {
 
         if((u8)v >= 0x20) {
             console_write_char(v);
+        } else if((u8)v == 0x0D) {
+            // Enter
+            console_write_char(0x0A);
+            console_write_char(0x0D);
         } else {
             console_write_char('<');
             put_hex_byte(v);

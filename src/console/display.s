@@ -12,7 +12,7 @@ CONSOLE_ROWS = 24
 ; written to VRAM as one block. It should be a factor of CONSOLE_COLS. It also
 ; shouldn't be too big because the C stack is used as temporary storage and
 ; overflowing the stack is Bad News.
-CONSOLE_BLOCK_LEN = 10
+CONSOLE_BLOCK_LEN = 8
 
 ; =========================================================================
 ; Zero page global variables
@@ -37,18 +37,36 @@ console_cursor_row: .res 1
 .export console_cursor_set
 .proc console_cursor_set
         cmp #CONSOLE_COLS               ; clamp cols
-        bcc @cols_ok                    ; cols < CONSOLE_COLS?
-        lda #CONSOLE_COLS-1
+        blt @cols_ok                    ; cols < CONSOLE_COLS?
+        lda #CONSOLE_COLS
+        dec
 @cols_ok:
         cpx #CONSOLE_ROWS               ; clamp rows
-        bcc @rows_ok                    ; rows < CONSOLE_ROWS?
-        ldx #CONSOLE_ROWS-1
+        blt @rows_ok                    ; rows < CONSOLE_ROWS?
+        ldx #CONSOLE_ROWS
+        dex
 @rows_ok:
 
         sta console_cursor_col
         stx console_cursor_row
+        rts
+.endproc
 
-        tay                             ; Y <- columns
+; C fastcall thunk for console_cursor_set
+.export _console_cursor_set
+.proc _console_cursor_set
+        tax                             ; X <- rightmost argument
+        ldy #0
+        lda (sp),Y                      ; A <- first value on stack
+        jmp console_cursor_set
+.endproc
+
+; =========================================================================
+; console_cursor_ensure: ensure VDP VRAM pointer matches cursor
+; =========================================================================
+.proc console_cursor_ensure
+        ldy console_cursor_col          ; Y = col
+        ldx console_cursor_row          ; X = row
 
         m16                             ; Compute 16-bit offset in A
         lda #VDP_NAM_TBL_BASE           ; A = VDP_NAM_TBL_BASE
@@ -72,15 +90,6 @@ console_cursor_row: .res 1
         jmp vdp_set_write_addr          ; Update VRAM address (tail call)
 .endproc
 
-; C fastcall thunk for console_cursor_set
-.export _console_cursor_set
-.proc _console_cursor_set
-        tax                             ; X <- rightmost argument
-        ldy #0
-        lda (sp),Y                      ; A <- first value on stack
-        jmp console_cursor_set
-.endproc
-
 ; =========================================================================
 ; console_write_char: write character to console
 ;       A - byte to write
@@ -89,32 +98,62 @@ console_cursor_row: .res 1
 ; =========================================================================
 .export console_write_char
 .proc console_write_char
-        ldx console_cursor_col          ; Advance cursor column
-        cpx #CONSOLE_COLS-1
-        bcc @col_ok                     ; column < CONSOLE_COLS-1?
+        cmp #$0A                        ; ASCII line feed
+        beq console_cursor_down
+
+        cmp #$0D                        ; ASCII carriage return
+        bne nocr
+        lda #$00
         ldx console_cursor_row
-        cpx #CONSOLE_ROWS-1
-        bcs @need_scroll                ; row >= CONSOLE_ROWS-1?
-        inx
-        stx console_cursor_row
-        stz console_cursor_col
-        bra @done
-@need_scroll:
-        pha
-        jsr console_scroll_up
-        lda #0
-        ldx #CONSOLE_ROWS-1
-        jsr console_cursor_set
-        pla
-        bra @done
-@col_ok:
-        inx
-        stx console_cursor_col
-@done:
-        sta VDP_DATA
-        rts
+        bra console_cursor_set
+nocr:
+
+        pha                             ; save character
+        jsr console_cursor_ensure       ; ensure VRAM pointer
+        pla                             ; restore character
+        sta VDP_DATA                    ; write character
+        bra console_cursor_right        ; advance cursor (tail call)
 .endproc
 .export _console_write_char := console_write_char
+
+; =========================================================================
+; console_cursor_right: move cursor to the right one position
+;
+; This will scroll the console if the cursor goes off the screen
+; =========================================================================
+.proc console_cursor_right
+        inc console_cursor_col          ; common-case
+
+        lda console_cursor_col          ; if cols < CONSOLE_COLS, exit
+        cmp #CONSOLE_COLS
+        blt exit
+
+        stz console_cursor_col          ; move to next row instead
+        bra console_cursor_down
+exit:
+        rts
+.endproc
+
+; =========================================================================
+; console_cursor_down: move cursor down one position
+;
+; This will scroll the console if the cursor goes off the screen
+; =========================================================================
+.proc console_cursor_down
+        inc console_cursor_row
+        lda console_cursor_row          ; if rows < CONSOLE_ROWS, exit
+        cmp #CONSOLE_ROWS
+        blt exit
+
+        ; We now enter the rare case where the cursor has gone off the bottom
+        ; right of the screen. Undo our increment of row and instead scroll the
+        ; screen
+        dec console_cursor_row
+        jsr console_scroll_up
+
+exit:
+        rts
+.endproc
 
 ; =========================================================================
 ; console_scroll_up: scrolls console screen up by one row
