@@ -17,7 +17,7 @@ static void put_hex_byte(u8 val) {
     put_hex_nibble(val&0xf);
 }
 
-int keyboard_read(void);
+int keyboard_get_next_scancode(void);
 
 void start(void) {
     console_init();
@@ -25,7 +25,7 @@ void start(void) {
     console_write_char(' ');
 
     while(1) {
-        int v = keyboard_read();
+        int v = keyboard_get_next_scancode();
         if(v >= 0) {
             put_hex_byte(v);
             console_write_char(' ');
