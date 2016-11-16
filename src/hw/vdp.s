@@ -23,6 +23,9 @@ VDP_NAM_TBL_BASE        = $0800
 
 .bss
 
+vdp_tick: .res 2
+.export vdp_tick
+
 ; Next IRQ handler routine to pass control to after vdp_irq_handler is finished.
 next_handler: .res 2
 
@@ -178,11 +181,17 @@ next_handler: .res 2
 ; =========================================================================
 .export vdp_irq_handler
 .proc vdp_irq_handler
-@test:
+test:
         lda #$80                        ; F flag set in status register?
         bit VDP_CTRL
-        bne @test
-@done:
+        beq done
+
+        m16
+        inc vdp_tick
+        m8
+
+        bra test
+done:
         jmp (next_handler)
 .endproc
 

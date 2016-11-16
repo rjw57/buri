@@ -2,7 +2,9 @@
 .include "macros.inc"
 
 .import keyboard_init, vdp_init
-.import console_cursor_set
+
+.importzp console_cursor_row, console_cursor_col
+.import console_cursor_recalc
 
 ; =========================================================================
 ; console_init: initialise console driver
@@ -15,11 +17,9 @@
 .proc console_init
         jsr vdp_init
         jsr keyboard_init
-
-        lda #0
-        ldx #0
-        jmp console_cursor_set
-
+        stz console_cursor_row
+        stz console_cursor_col
+        jsr console_cursor_recalc
         rts
 .endproc
 .export _console_init := console_init

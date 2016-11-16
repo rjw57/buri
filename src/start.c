@@ -29,6 +29,8 @@ void start(void) {
 
     while(1) {
         i16 v = console_read_char();
+        console_idle();
+
         if(v < 0) { continue; }
 
         if((u8)v >= 0x20) {

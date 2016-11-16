@@ -2,7 +2,7 @@
 .include "macros.inc"
 
 .importzp tmp1, sp, ptr1
-.import vdp_set_write_addr, vdp_set_read_addr
+.import vdp_set_write_addr, vdp_set_read_addr, vdp_tick
 .import VDP_NAM_TBL_BASE, VDP_DATA
 
 CONSOLE_COLS = 40
@@ -25,7 +25,54 @@ console_cursor_col: .res 1
 console_cursor_row: .res 1
 .exportzp console_cursor_col, console_cursor_row
 
+.bss
+
+console_cursor_vram_addr: .res 2
+
 .code
+
+; =========================================================================
+; console_cursor_recalc: recalculate cursor VRAM address
+; =========================================================================
+.export console_cursor_recalc
+.proc console_cursor_recalc
+        ldy console_cursor_col          ; Y = col
+        ldx console_cursor_row          ; X = row
+
+        m16                             ; Compute 16-bit offset in A
+        tya                             ; A = VDP_NAM_TBL_BASE + Y
+        add #VDP_NAM_TBL_BASE
+
+@loop:                                  ; A += CONSOLE_COLS * X
+        cpx #0
+        beq @endloop
+        add #CONSOLE_COLS
+        dex
+        bra @loop
+@endloop:
+
+        sta console_cursor_vram_addr
+        m8                              ; Back to 8-bit A
+        rts
+.endproc
+
+; =========================================================================
+; console_idle: idle handler
+;
+; C: void console_idle(void)
+; =========================================================================
+.export console_idle
+.proc console_idle
+        lda vdp_tick
+        and #$10
+        beq tock
+        bra end
+tock:
+end:
+
+        rts
+.endproc
+.export _console_idle := console_idle
 
 ; =========================================================================
 ; console_cursor_set: move text mode cursor
@@ -49,7 +96,7 @@ console_cursor_row: .res 1
 
         sta console_cursor_col
         stx console_cursor_row
-        rts
+        jmp console_cursor_recalc       ; tail call
 .endproc
 
 ; C fastcall thunk for console_cursor_set
@@ -62,32 +109,27 @@ console_cursor_row: .res 1
 .endproc
 
 ; =========================================================================
-; console_cursor_ensure: ensure VDP VRAM pointer matches cursor
+; console_cursor_clear: clear cursor from output
 ; =========================================================================
-.proc console_cursor_ensure
-        ldy console_cursor_col          ; Y = col
-        ldx console_cursor_row          ; X = row
+.proc console_cursor_clear
+        lda console_cursor_vram_addr
+        ldx console_cursor_vram_addr+1
+        jsr vdp_set_write_addr
+        lda #' '
+        sta VDP_DATA
+        rts
+.endproc
 
-        m16                             ; Compute 16-bit offset in A
-        lda #VDP_NAM_TBL_BASE           ; A = VDP_NAM_TBL_BASE
-        sty tmp1
-        add tmp1                        ; A += Y
-
-@loop:                                  ; A += CONSOLE_COLS * X
-        cpx #0
-        beq @endloop
-        add #CONSOLE_COLS
-        dex
-        bra @loop
-@endloop:
-
-        m8                              ; Back to 8-bit A
-
-        xba                             ; High-byte of VRAM address -> A
-        tax                             ; High-byte of VRAM address -> X
-        xba                             ; Low-byte of VRAM address -> A
-
-        jmp vdp_set_write_addr          ; Update VRAM address (tail call)
+; =========================================================================
+; console_cursor_draw: draw cursor on screen
+; =========================================================================
+.proc console_cursor_draw
+        lda console_cursor_vram_addr
+        ldx console_cursor_vram_addr+1
+        jsr vdp_set_write_addr
+        lda #'_'
+        sta VDP_DATA
+        rts
 .endproc
 
 ; =========================================================================
@@ -109,7 +151,9 @@ console_cursor_row: .res 1
 nocr:
 
         pha                             ; save character
-        jsr console_cursor_ensure       ; ensure VRAM pointer
+        lda console_cursor_vram_addr
+        ldx console_cursor_vram_addr+1
+        jsr vdp_set_write_addr
         pla                             ; restore character
         sta VDP_DATA                    ; write character
         bra console_cursor_right        ; advance cursor (tail call)
@@ -131,7 +175,7 @@ nocr:
         stz console_cursor_col          ; move to next row instead
         bra console_cursor_down
 exit:
-        rts
+        jmp console_cursor_recalc
 .endproc
 
 ; =========================================================================
@@ -150,9 +194,8 @@ exit:
         ; screen
         dec console_cursor_row
         jsr console_scroll_up
-
 exit:
-        rts
+        jmp console_cursor_recalc
 .endproc
 
 ; =========================================================================
