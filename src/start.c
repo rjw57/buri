@@ -17,18 +17,22 @@ static void put_hex_byte(u8 val) {
     put_hex_nibble(val&0xf);
 }
 
-int keyboard_get_next_scancode(void);
-
 void start(void) {
     console_init();
     puts(msg);
     console_write_char(' ');
 
     while(1) {
-        int v = keyboard_get_next_scancode();
-        if(v >= 0) {
-            put_hex_byte(v);
-            console_write_char(' ');
+        i16 v = console_read_char();
+        u8 c = v;
+        if(v < 0) { continue; }
+
+        if(c >= 0x20) {
+            console_write_char(c);
+        } else {
+            console_write_char('<');
+            put_hex_byte(c);
+            console_write_char('>');
         }
     }
 }
