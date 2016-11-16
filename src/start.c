@@ -38,6 +38,11 @@ void start(void) {
 
         if((u8)v >= 0x20) {
             console_write_char(v);
+        } else if((u8)v == 0x08) {
+            // Backspace
+            console_write_char(0x08);
+            console_write_char(' ');
+            console_write_char(0x08);
         } else if((u8)v == 0x0D) {
             // Enter
             console_write_char(0x0A);

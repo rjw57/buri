@@ -89,6 +89,81 @@ CONSOLE_BLOCK_LEN = 8
 .endproc
 
 ; =========================================================================
+; console_cursor_left: move cursor to the left one position
+; =========================================================================
+.export console_cursor_left
+.proc console_cursor_left
+        jsr console_cursor_erase
+
+        dec console_cursor_col          ; common-case
+        m16
+        dec console_cursor_vram_addr
+        m8
+
+        lda console_cursor_col          ; if cols >= 0, exit
+        bmi moveup
+
+exit:
+        jsr console_cursor_draw
+        rts
+
+moveup:
+        lda console_cursor_row          ; check if we're on row 0
+        bne notfirstrow
+
+        inc console_cursor_col          ; first row, just do nothing
+        m16
+        inc console_cursor_vram_addr
+        m8
+        bra exit
+
+notfirstrow:
+        lda #CONSOLE_COLS               ; reset column
+        dec
+        sta console_cursor_col
+        m16                             ; correct VRAM address
+        lda console_cursor_vram_addr
+        add #CONSOLE_COLS
+        sta console_cursor_vram_addr
+        m8
+
+        jsr console_cursor_draw
+
+        ; We intentionally fall through to console_cursor_up
+.endproc
+
+; =========================================================================
+; console_cursor_up: move cursor up one position
+; =========================================================================
+.export console_cursor_up
+.proc console_cursor_up
+        jsr console_cursor_erase
+
+        dec console_cursor_row          ; decrement row
+        m16                             ; update VRAM address
+        lda console_cursor_vram_addr
+        sub #CONSOLE_COLS
+        sta console_cursor_vram_addr
+        m8
+        lda console_cursor_row          ; if rows >= 0, exit
+        bmi undo
+
+        jsr console_cursor_draw
+        rts
+
+undo:
+        ; We cannot scroll the screen down so just undo what we did
+        inc console_cursor_row
+        m16                             ; update VRAM address
+        lda console_cursor_vram_addr
+        add #CONSOLE_COLS
+        sta console_cursor_vram_addr
+        m8
+
+        jmp console_cursor_draw         ; tail call
+.endproc
+
+; =========================================================================
 ; console_cursor_right: move cursor to the right one position
 ;
 ; This will scroll the console if the cursor goes off the screen

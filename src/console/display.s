@@ -7,6 +7,7 @@
 .importzp console_cursor_col, console_cursor_row
 .import console_cursor_save, console_cursor_char, console_cursor_vram_addr
 .import console_cursor_right, console_cursor_down, console_cursor_set
+.import console_cursor_left
 
 CONSOLE_COLS = 40
 CONSOLE_ROWS = 24
@@ -107,18 +108,8 @@ exit:
 ; =========================================================================
 .export console_write_char
 .proc console_write_char
-        cmp #$0A                        ; ASCII line feed
-        bne nolf
-        jmp console_cursor_down         ; tail-call
-nolf:
-
-        cmp #$0D                        ; ASCII carriage return
-        bne nocr
-        lda #$00
-        ldx console_cursor_row
-        jmp console_cursor_set          ; tail-call
-nocr:
-
+        cmp #$20                        ; printable
+        blt noprint
         pha                             ; save character
         jsr console_cursor_erase
         lda console_cursor_vram_addr
@@ -127,7 +118,23 @@ nocr:
         pla                             ; restore character
         sta VDP_DATA                    ; write character
         jsr console_cursor_draw
-
         jmp console_cursor_right        ; advance cursor (tail call)
+
+noprint:
+        cmp #$0A                        ; ASCII line feed
+        bne nolf
+        jmp console_cursor_down         ; tail-call
+nolf:
+        cmp #$0D                        ; ASCII carriage return
+        bne nocr
+        lda #$00
+        ldx console_cursor_row
+        jmp console_cursor_set          ; tail-call
+nocr:
+        cmp #$08                        ; ASCII backspace
+        bne nobs
+        jmp console_cursor_left         ; tail-call
+nobs:
+        rts
 .endproc
 .export _console_write_char := console_write_char
