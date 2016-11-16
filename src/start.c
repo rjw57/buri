@@ -6,8 +6,6 @@ static void puts(const char* s) {
     for(; *s != '\0'; ++s) {
         console_write_char(*s);
     }
-    console_write_char(0x0A);
-    console_write_char(0x0D);
 }
 
 static void put_hex_nibble(u8 val) {
@@ -25,7 +23,12 @@ void start(void) {
     int i=0;
     console_init();
 
-    puts(msg);
+    do {
+        puts(msg);
+        console_write_char(' ');
+    } while(0);
+    console_write_char(0x0A);
+    console_write_char(0x0D);
 
     while(1) {
         i16 v = console_read_char();

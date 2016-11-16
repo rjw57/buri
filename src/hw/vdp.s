@@ -23,6 +23,7 @@ VDP_NAM_TBL_BASE        = $0800
 
 .bss
 
+; A counter incremented on every VBLANK IRQ. ~50Hz
 vdp_tick: .res 2
 .export vdp_tick
 
