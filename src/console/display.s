@@ -1,9 +1,8 @@
-; Simple console driver using VDP
+; Console output support
 .include "macros.inc"
 
 .importzp tmp1, sp, ptr1
-.import keyboard_init, keyboard_get_next_scancode
-.import vdp_init, vdp_set_write_addr, vdp_set_read_addr
+.import vdp_set_write_addr, vdp_set_read_addr
 .import VDP_NAM_TBL_BASE, VDP_DATA
 
 CONSOLE_COLS = 40
@@ -26,38 +25,7 @@ console_cursor_col: .res 1
 console_cursor_row: .res 1
 .exportzp console_cursor_col, console_cursor_row
 
-.bss
-
-; Private flag byte containing modifiers from MSB to LSB:
-;
-; (reserved) (reserved) LShift LCtrl LAlt RAlt RCtrl RShift
-console_modifiers: .res 1
-
-CONSOLE_LSHIFT_MASK = $20
-CONSOLE_RSHIFT_MASK = $01
-CONSOLE_SHIFT_MASK = CONSOLE_LSHIFT_MASK | CONSOLE_RSHIFT_MASK
-
 .code
-
-; =========================================================================
-; console_init: initialise console driver
-;
-; calls: vdp_init, keyboard_init
-;
-; C: void console_init(void)
-; =========================================================================
-.export console_init
-.proc console_init
-        jsr vdp_init
-        jsr keyboard_init
-
-        lda #0
-        ldx #0
-        jmp console_cursor_set
-
-        rts
-.endproc
-.export _console_init := console_init
 
 ; =========================================================================
 ; console_cursor_set: move text mode cursor
@@ -147,85 +115,6 @@ CONSOLE_SHIFT_MASK = CONSOLE_LSHIFT_MASK | CONSOLE_RSHIFT_MASK
         rts
 .endproc
 .export _console_write_char := console_write_char
-
-; =========================================================================
-; console_read_char: retrieve next ASCII character from keyboard
-;
-; If a key has been pressed since the last call to console_read_char, the ASCII
-; value is written to A and X is set to $00. If no key has been pressed A and X
-; are both set to $FF.
-;
-; C: i16 console_read_char(void)
-; =========================================================================
-.export console_read_char
-.proc console_read_char
-loop:
-        jsr keyboard_get_next_scancode  ; A, X = next scancode
-        cpx #$0                         ; X != 0?
-        bne nochar                      ; if so, no character to read
-
-        ; The following macros test for specific modifier scancodes and update
-        ; console_modifiers if necessary before looping back to loop to get the
-        ; next code.
-
-.macro modifier_make scancode,mask
-.scope
-        cmp #scancode
-        bne notkey
-        lda #mask
-        tsb console_modifiers
-        bra loop
-notkey:
-.endscope
-.endmacro
-
-.macro modifier_break scancode,mask
-.scope
-        cmp #scancode
-        bne notkey
-        lda #mask
-        trb console_modifiers
-        bra loop
-notkey:
-.endscope
-.endmacro
-
-        modifier_make $2A, CONSOLE_LSHIFT_MASK
-        modifier_break $AA, CONSOLE_LSHIFT_MASK
-        modifier_make $36, CONSOLE_RSHIFT_MASK
-        modifier_break $B6, CONSOLE_RSHIFT_MASK
-
-        mx16                            ; 16-bit mode
-        and #$00FF                      ; mask off high bits from A
-        asl                             ; multiply by two to get offset
-        tax                             ; set X = A
-        m8                              ; accumulator back to 8-bit
-
-        lda #CONSOLE_SHIFT_MASK         ; shift pressed?
-        bit console_modifiers
-        beq noshift
-        inx                             ; shift => increment index by 1
-noshift:
-
-        cpx #CONSOLE_ASCII_TAB_LEN      ; compare index to table length
-        blt validcode                   ; valid: branch
-        x8                              ; invalid: restore 8-bit index
-        bra loop                        ; see if there are more scancodes
-
-validcode:
-        lda CONSOLE_ASCII_TAB, X        ; load ASCII translation
-        x8                              ; restore 8-bit index
-
-        cmp #0                          ; NUL code?
-        beq loop                        ; yes, see if there are more scancodes
-
-        rts
-nochar:                                 ; return "no character"
-        lda #$FF 
-        tax
-        rts
-.endproc
-.export _console_read_char := console_read_char
 
 ; =========================================================================
 ; console_scroll_up: scrolls console screen up by one row
@@ -328,22 +217,3 @@ nochar:                                 ; return "no character"
 
         rts                             ; Exit
 .endproc
-
-; =========================================================================
-; CONSOLE_ASCII_TAB: table mapping scancodes into lower and uppercase ASCII
-; =========================================================================
-CONSOLE_ASCII_TAB:
-        .byte $00, $00 ; $00
-        .byte $1B, $1B ; $01 - Escape
-        .byte "1!2@3#4$5%6^7&8*9(0)-_=+" ; $02-$0D
-        .byte $08, $08, $09, $09 ; $0E-$)F - Backspace, Tab
-        .byte "qQwWeErRtTyYuUiIoOpP[{]}" ; $10-$1B
-        .byte $0D, $0D, $00, $00 ; $1C-$1D - Enter, Left ctrl
-        .byte "aAsSdDfFgGhHjJkKlL;:'", '"', "'~" ; $1E-$29
-        .byte $00, $00 ; $2A - Left shift
-        .byte "\|zZxXcCvVbBnNmM,<.>/?" ; $2B-$35
-        .byte $00, $00, $00, $00, $00, $00 ; $36-$38 - R shift, PrtScrn, L alt
-        .byte " " ; $39
-CONSOLE_ASCII_TAB_END:
-CONSOLE_ASCII_TAB_LEN = CONSOLE_ASCII_TAB_END - CONSOLE_ASCII_TAB
-
