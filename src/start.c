@@ -1,4 +1,5 @@
 #include "console.h"
+#include "hw/spi.h"
 
 static const char msg[] = "Buri Microcomputer System";
 
@@ -17,11 +18,10 @@ static void put_hex_byte(u8 val) {
     put_hex_nibble(val&0xf);
 }
 
-i16 keyboard_get_next_scancode(void);
-
 void start(void) {
     int i=0;
     console_init();
+    spi_init();
 
     do {
         puts(msg);
@@ -35,6 +35,10 @@ void start(void) {
         console_idle();
 
         if(v < 0) { continue; }
+
+        spi_begin(SPI_MODE0 | 0);
+        spi_exchange((u8)v);
+        spi_end();
 
         if((u8)v >= 0x20) {
             console_write_char(v);

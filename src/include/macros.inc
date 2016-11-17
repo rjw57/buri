@@ -87,6 +87,7 @@
 ; Patch irq_handler into IRQ chain stashing next handler in next_handler.
 ; This requires that "irq_first_handler" has been .import-ed.
 .macro irq_add_handler this_handler, next_handler
+.import irq_first_handler
         sei                             ; disable interrupts
         m16                             ; insert our interrupt handler
         lda irq_first_handler

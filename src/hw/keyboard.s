@@ -3,13 +3,12 @@
 
 .import irq_first_handler
 
-; The Búri keyboard is attached to the 6522 VIA's port A. When a new byte is
-; available, it is presented on port A and CA1 is pulsed.
+; The Búri keyboard is attached to the 6522 VIA's port B. When a new byte is
+; available, it is presented on port B and CA1 is pulsed.
 
-VIA_BASE = $DEF0
-VIA_ORA = VIA_BASE + 1
-VIA_IFR = VIA_BASE + 13
-VIA_IER = VIA_BASE + 14
+.import VIA_ORB, VIA_IFR, VIA_IER
+
+INTERRUPT_MASK = $10 ; CA2 active edge
 
 KEYBOARD_BUF_LEN = 6
 
@@ -37,10 +36,10 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 ; =========================================================================
 .proc keyboard_irq_handler
 @test:
-        lda #$02                        ; is interrupt due to keyboard?
+        lda #INTERRUPT_MASK             ; is interrupt due to keyboard?
         bit VIA_IFR
         beq @next                       ; no, jump to next handler
-        lda VIA_ORA                     ; read keyboard byte from VIA
+        lda VIA_ORB                     ; read keyboard byte from VIA
 
         ldx keyboard_buf_count          ; keyboard buf full?
         cpx #KEYBOARD_BUF_LEN
@@ -113,7 +112,7 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 
         stz keyboard_buf_count          ; no bytes in keyboard buffer
 
-        lda #$02                        ; enable interrupt on CA1 active edge
+        lda #INTERRUPT_MASK             ; enable VIA interrupt
         tsb VIA_IER
 
         rts
