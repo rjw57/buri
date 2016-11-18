@@ -10,15 +10,11 @@
 ;
 ; Lines PA2, PA3 and PA4 are connected to a 74138 3-to-8 decoder to provide the
 ; chip select lines for the peripherals. Consequently there can be up to 7 SPI
-; peripherals attached with SPI device "0" being no device selected.
-;
-; The CA1 line is used as a peripheral interrupt. A rising edge on the CA1 line
-; causes an interrupt on the processor.
+; peripherals attached with SPI device "7" being no device selected.
 .include "macros.inc"
 
-.import VIA_IFR, VIA_IER, VIA_DDRA, VIA_ORA
-
-INTERRUPT_MASK = $02 ; CA1 active edge
+.importzp tmp1, tmp2
+.import VIA_DDRA, VIA_ORA
 
 ; Bits corresponding to particular lines
 CLK_MASK = $01
@@ -35,10 +31,6 @@ DDR_RESET_MASK = MISO_MASK
 .bss
 
 ; =========================================================================
-; Next IRQ handler routine to pass control to after spi_irq_handler is finished.
-next_handler: .res 2
-
-; =========================================================================
 ; current mode, bit order and device (argument to spi_begin)
 spi_begin_arg: .res 1
 
@@ -51,17 +43,13 @@ spi_begin_arg: .res 1
 ; =========================================================================
 .export spi_init
 .proc spi_init
-        irq_add_handler spi_irq_handler, next_handler
+        lda #SELECT_MASK                ; select device "7"
+        tsb VIA_ORA
 
-        lda #DDR_SET_MASK
-        trb VIA_ORA
+        lda #DDR_SET_MASK               ; set/reset bits in DDR
         tsb VIA_DDRA
-
         lda #DDR_RESET_MASK
         trb VIA_DDRA
-
-        lda #INTERRUPT_MASK             ; enable VIA interrupt
-        tsb VIA_IER
 
         rts
 .endproc
@@ -76,14 +64,42 @@ spi_begin_arg: .res 1
 ; =========================================================================
 .export spi_exchange
 .proc spi_exchange
+check_input:
+        pha                             ; save value on stack
+        lda #$20                        ; direction?
+        and spi_begin_arg
+        bne @norev                      ; 1 => MSB first
+        pla
+        jsr reverse
+        bra @done
+@norev:
+        pla
+@done:
+
         ldx #8
 send_loop:
+        asl                             ; C <- high bit of accum
+
         phx
-        lda #1
+        pha
         jsr spi_exchange_bit
+        pla
         plx
+
         dex
         bne send_loop
+
+check_output:
+        pha                             ; save value on stack
+        lda #$20                        ; direction?
+        and spi_begin_arg
+        bne @norev                      ; 1 => MSB first
+        pla
+        jsr reverse
+        bra @done
+@norev:
+        pla
+@done:
 
         rts
 .endproc
@@ -91,63 +107,80 @@ send_loop:
 
 ; =========================================================================
 ; spi_exchange_bit: exchange single bit on SPI bus
-;       A - low bit to send
+;       C flag - bit to send
 ;
-; On exit A is 0 if a bit 0 is received and 1 if a bit 1 is received
+; On exit the C flag is set to the recieved bit
 ; =========================================================================
 .proc spi_exchange_bit
-        tax                             ; X <- bit to send
+
+        ldx #0                          ; X <- MOSI mask or 0
+        bcc send0
+        ldx #MOSI_MASK
+send0:
+
         ldy #0                          ; Y <- received bit
 
         lda #$40                        ; test CPHA
         bit spi_begin_arg
-        bne @cpha1
-@cpha0:                                 ; CPHA = 0 - receive
-        lda #MISO_MASK
-        bit VIA_ORA
-        beq @cpha_end
-        ldy #1
-        bra @cpha_end
-@cpha1:                                 ; CPHA = 1 - send
-        cpx #1
-        bne @send0
-        lda #MOSI_MASK
-        tsb VIA_ORA
-        bra @cpha_end
-@send0:
-        lda #MOSI_MASK
-        trb VIA_ORA
-@cpha_end:
+        bne cpha1
+cpha0:
+        jsr send_and_recv
+        jsr toggle_clk
+        bra done
+cpha1:
+        jsr toggle_clk
+        jsr send_and_recv
+done:
+        jsr toggle_clk
 
-idle_to_active_edge:
-        lda #$01                        ; clock idle -> active
+        clc                             ; clear carry flag
+        tya                             ; A <- received bit
+        beq recv0                       ; A == 0, don's set carry
+        sec
+recv0:
+
+        rts
+
+        ; These are "sub-subroutines" :)
+toggle_clk:
+        lda #$01                        ; toggle clock line
         eor VIA_ORA
         sta VIA_ORA
+        rts
 
-        lda #$40                        ; test CPHA
-        bit spi_begin_arg
-        beq @cpha0
-@cpha1:                                 ; CPHA = 1 - receive
+send_and_recv:
         lda #MISO_MASK
-        bit VIA_ORA
-        beq @cpha_end
-        ldy #1
-        bra @cpha_end
-@cpha0:                                 ; CPHA = 0 - send
-        cpx #1
-        bne @send0
-        lda #MOSI_MASK
-        tsb VIA_ORA
-        bra @cpha_end
-@send0:
+        and VIA_ORA
+        tay
+
         lda #MOSI_MASK
         trb VIA_ORA
-@cpha_end:
+        txa
+        tsb VIA_ORA
+        rts
+.endproc
 
-active_to_idle_edge:
-        lda #$01                        ; clock active -> idle
-        eor VIA_ORA
-        sta VIA_ORA
+; Reverse bits in the accumulator
+.proc reverse
+        xba                             ; B will hold result
+        lda #0
+        xba
+
+        ldx #8
+loop:
+        xba                             ; B >>= 1
+        lsr
+        xba
+        asl                             ; A <<= 1, C = high bit
+        bcc next                        ; C == 0, continue
+        xba                             ; C == 1, B |= 0x80
+        ora #$80
+        xba
+next:
+        dex
+        bne loop
+
+        xba                             ; A <- B
 
         rts
 .endproc
@@ -170,7 +203,7 @@ active_to_idle_edge:
 ; |    1 |    1 | Clock idle 1, data captured on falling edge, output on rising
 ; |    1 |    0 | Clock idle 1, data captured on rising edge, output on falling
 ;
-; The END bit determines transmission order. END = 0 implies LSB first, END = 0
+; The END bit determines transmission order. END = 0 implies LSB first, END = 1
 ; implies MSB first.
 ;
 ; At a hardware level, this sets the CLK line to the idle state and takes the
@@ -215,23 +248,9 @@ cpol_set:
 ; =========================================================================
 .export spi_end
 .proc spi_end
-        lda #SELECT_MASK                ; ensure slave select is zero
-        trb VIA_ORA
+        lda #SELECT_MASK                ; ensure slave select is device 7
+        tsb VIA_ORA
 
         rts
 .endproc
 .export _spi_end := spi_end
-
-; =========================================================================
-; spi_irq_handler: handle spi interrupts if present
-; =========================================================================
-.proc spi_irq_handler
-@test:
-        lda #INTERRUPT_MASK             ; is interrupt due to spi?
-        bit VIA_IFR
-        beq @next                       ; no, jump to next handler
-
-        ; TODO: handle interrupt
-@next:
-        jmp (next_handler)
-.endproc

@@ -36,7 +36,7 @@ void start(void) {
 
         if(v < 0) { continue; }
 
-        spi_begin(SPI_MODE0 | SPI_MSB_FIRST | 1);
+        spi_begin(SPI_MODE0 | SPI_LSB_FIRST | SPI_DEVICE_0);
         spi_exchange((u8)v);
         spi_end();
 
