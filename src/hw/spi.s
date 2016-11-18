@@ -76,18 +76,37 @@ check_input:
         pla
 @done:
 
+        ldy #0                          ; Y <- recv. byte
         ldx #8
 send_loop:
+        pha                             ; Y >>= 1
+        tya
+        asl
+        tay
+        pla
+
         asl                             ; C <- high bit of accum
 
-        phx
+        phx                             ; Exchange bits in carry flag
         pha
+        phy
         jsr spi_exchange_bit
+        bcc @recv0
+@recv1:
+        pla
+        ora #$01
+        tay
+        bra @done
+@recv0:
+        ply
+@done:
         pla
         plx
 
         dex
         bne send_loop
+
+        tya                             ; A <- output byte
 
 check_output:
         pha                             ; save value on stack
@@ -124,12 +143,14 @@ send0:
         bit spi_begin_arg
         bne cpha1
 cpha0:
-        jsr send_and_recv
+        jsr recv
         jsr toggle_clk
+        jsr send
         bra done
 cpha1:
+        jsr send
         jsr toggle_clk
-        jsr send_and_recv
+        jsr recv
 done:
         jsr toggle_clk
 
@@ -148,11 +169,13 @@ toggle_clk:
         sta VIA_ORA
         rts
 
-send_and_recv:
+recv:
         lda #MISO_MASK
         and VIA_ORA
         tay
+        rts
 
+send:
         lda #MOSI_MASK
         trb VIA_ORA
         txa
