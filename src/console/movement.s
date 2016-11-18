@@ -180,9 +180,7 @@ undo:
         lda console_cursor_col          ; if cols < CONSOLE_COLS, exit
         cmp #CONSOLE_COLS
         beq newline
-
-        jsr console_cursor_draw
-        rts
+        jmp console_cursor_draw         ; tail call
 
 newline:
         stz console_cursor_col          ; reset column to zero
@@ -214,10 +212,7 @@ newline:
         m8
         lda console_cursor_row          ; if rows < CONSOLE_ROWS, exit
         cmp #CONSOLE_ROWS
-        beq scroll
-
-        jsr console_cursor_draw
-        rts
+        bne done
 
 scroll:
         ; We now enter the rare case where the cursor has gone off the bottom
@@ -229,8 +224,8 @@ scroll:
         sub #CONSOLE_COLS
         sta console_cursor_vram_addr
         m8
-
         jsr console_scroll_up
+done:
         jmp console_cursor_draw         ; tail call
 .endproc
 

@@ -68,12 +68,13 @@ setcc:
 .proc console_cursor_draw
         lda console_cursor_vram_addr
         ldx console_cursor_vram_addr+1
+        pha
+        phx
         jsr vdp_set_read_addr
         lda VDP_DATA
         sta console_cursor_save
-
-        lda console_cursor_vram_addr
-        ldx console_cursor_vram_addr+1
+        plx
+        pla
         jsr vdp_set_write_addr
         lda console_cursor_char
         beq nodraw
@@ -110,14 +111,7 @@ exit:
 .proc console_write_char
         cmp #$20                        ; printable
         blt noprint
-        pha                             ; save character
-        jsr console_cursor_erase
-        lda console_cursor_vram_addr
-        ldx console_cursor_vram_addr+1
-        jsr vdp_set_write_addr
-        pla                             ; restore character
-        sta VDP_DATA                    ; write character
-        jsr console_cursor_draw
+        sta console_cursor_save         ; replace char under cursor
         jmp console_cursor_right        ; advance cursor (tail call)
 
 noprint:
