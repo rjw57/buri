@@ -9,15 +9,6 @@
 .import console_cursor_right, console_cursor_down, console_cursor_set
 .import console_cursor_left
 
-CONSOLE_COLS = 40
-CONSOLE_ROWS = 24
-
-; When scrolling, CONSOLE_BLOCK_LEN specifies the number of bytes read from and
-; written to VRAM as one block. It should be a factor of CONSOLE_COLS. It also
-; shouldn't be too big because the C stack is used as temporary storage and
-; overflowing the stack is Bad News.
-CONSOLE_BLOCK_LEN = 8
-
 .code
 
 ; =========================================================================
