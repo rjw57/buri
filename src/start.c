@@ -1,5 +1,4 @@
 #include "console.h"
-#include "hw/spi.h"
 
 static const char msg[] = "Buri Microcomputer System";
 
@@ -20,10 +19,9 @@ static void put_hex_byte(u8 val) {
 
 void start(void) {
     int i = 0;
-    u8 v = 0;
+    i16 v = 0;
 
     console_init();
-    spi_init();
 
     do {
         puts(msg);
@@ -34,22 +32,9 @@ void start(void) {
 
     while(1) {
         console_idle();
+        v = console_read_char();
+        if(v < 0) { continue; }
 
-        //i16 v = console_read_char();
-        //if(v < 0) { continue; }
-
-        spi_begin(SPI_MODE1 | SPI_MSB_FIRST | SPI_DEVICE_0);
-        spi_exchange(0x00); // signal read
-        v = spi_exchange(0x00);
-        spi_end();
-
-        if(v) {
-            console_write_char('<');
-            put_hex_byte(v);
-            console_write_char('>');
-        }
-
-        /*
         if((u8)v >= 0x20) {
             console_write_char(v);
         } else if((u8)v == 0x08) {
@@ -66,7 +51,6 @@ void start(void) {
             put_hex_byte(v);
             console_write_char('>');
         }
-        */
     }
 }
 

@@ -39,6 +39,9 @@ spi_begin_arg: .res 1
 ; =========================================================================
 ; spi_init: initialise SPI hardware
 ;
+; spi_init may be called multiple times without side effect. Is should not be
+; called within a spi_begin/spi_end section.
+;
 ; C: void spi_init(void)
 ; =========================================================================
 .export spi_init

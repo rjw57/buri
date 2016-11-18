@@ -1,15 +1,16 @@
-; Device driver for PS/2 keyboard attached to 6522 VIA.
+; Device driver for SPI keyboard peripheral
+;
+; See HARDWARE.md for more information
 .include "macros.inc"
 
 .import irq_first_handler
 
-; The Búri keyboard is attached to the 6522 VIA's port B. When a new byte is
-; available, it is presented on port B and CA1 is pulsed.
+.import VIA_IFR, VIA_IER, VIA_PCR
+.import spi_init, spi_begin, spi_exchange, spi_end
 
-.import VIA_ORB, VIA_IFR, VIA_IER
+INTERRUPT_MASK = $02 ; CA1 active edge
 
-INTERRUPT_MASK = $10 ; CA2 active edge
-
+KEYBOARD_SPI_BEGIN = $60       ; MODE 1, MSB first, dev 0
 KEYBOARD_BUF_LEN = 6
 
 .segment "OSZP" : zeropage
@@ -34,12 +35,21 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 ; =========================================================================
 ; keyboard_irq_handler: handle keyboard interrupts if present
 ; =========================================================================
+.export keyboard_irq_handler
 .proc keyboard_irq_handler
 @test:
         lda #INTERRUPT_MASK             ; is interrupt due to keyboard?
         bit VIA_IFR
         beq @next                       ; no, jump to next handler
-        lda VIA_ORB                     ; read keyboard byte from VIA
+
+        lda #KEYBOARD_SPI_BEGIN
+        jsr spi_begin
+        lda #0
+        jsr spi_exchange                ; Read buffer
+        jsr spi_exchange                ; get scan code
+        pha
+        jsr spi_end
+        pla
 
         ldx keyboard_buf_count          ; keyboard buf full?
         cpx #KEYBOARD_BUF_LEN
@@ -108,12 +118,24 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 ; =========================================================================
 .export keyboard_init
 .proc keyboard_init
-        irq_add_handler keyboard_irq_handler, next_handler
+        jsr spi_init                    ; initialise SPI subsystem
 
         stz keyboard_buf_count          ; no bytes in keyboard buffer
 
+        lda #$01                        ; CA1 active edge is +ve
+        tsb VIA_PCR
+
         lda #INTERRUPT_MASK             ; enable VIA interrupt
         tsb VIA_IER
+
+        ; Install keyboar interrupt handler
+        irq_add_handler keyboard_irq_handler, next_handler
+
+        lda #KEYBOARD_SPI_BEGIN         ; reset the keyboard controller
+        jsr spi_begin
+        lda #$80
+        jsr spi_exchange                ; reset
+        jsr spi_end
 
         rts
 .endproc
