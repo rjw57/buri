@@ -13,7 +13,6 @@
 ; peripherals attached with SPI device "7" being no device selected.
 .include "macros.inc"
 
-.importzp tmp1, tmp2
 .import VIA_DDRA, VIA_ORA
 
 ; Bits corresponding to particular lines
