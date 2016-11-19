@@ -7,7 +7,46 @@
 #include "console.h"
 #include "cli.h"
 
-static const char msg[] = "Buri Microcomputer System";
+void __cdecl__ putc(u8 c);
+i16 getc(void);
+
+void puts(const char* s);
+void putln(const char* s);
+
+static void process_cli(void);
+static void print_banner(void);
+
+void start(void) {
+    int i = 0;
+    i16 v = 0;
+
+    // init hardware
+    acia6551_init();
+    keyboard_init();
+    vdp_init();
+
+    // init higher-level drivers
+    console_init();
+
+    print_banner();
+
+    cli_start(putc);
+    while(1) {
+        console_idle();
+        v = getc();
+        if(v < 0) { continue; }
+        if(cli_new_char((u8)v)) {
+            process_cli();
+            cli_start(putc);
+        }
+    }
+}
+
+static void print_banner(void) {
+    static const char msg[] = "Buri Microcomputer System";
+    putln(msg);
+    putln("");
+}
 
 void __cdecl__ putc(u8 c) {
     while(!acia6551_send_byte(c)) { }
@@ -20,11 +59,11 @@ i16 getc() {
     return acia6551_recv_byte();
 }
 
-static void puts(const char* s) {
+void puts(const char* s) {
     for(; *s != '\0'; ++s) { putc(*s); }
 }
 
-static void putln(const char* s) {
+void putln(const char* s) {
     puts(s);
     putc(0x0A);
     putc(0x0D);
@@ -62,7 +101,7 @@ static u16 parse_hex_16(const char* s) {
 }
 
 // return non zero if strings a and b are equal
-int streq(char *a, char *b) {
+static int streq(char *a, char *b) {
     int i=0;
     for(; (a[i] != '\0') && (b[i] != '\0'); ++i) {
         if(a[i] != b[i]) { return 0; }
@@ -101,38 +140,11 @@ void dump(void) {
     }
 }
 
-void process_cli(void) {
+static void process_cli(void) {
     if(streq(cli_buf, "help")) {
         putln("You need somebody");
     } else if(streq(cli_buf, "dump")) {
         dump();
-    }
-}
-
-void start(void) {
-    int i = 0;
-    i16 v = 0;
-
-    // init hardware
-    acia6551_init();
-    keyboard_init();
-    vdp_init();
-
-    // init higher-level drivers
-    console_init();
-
-    putln(msg);
-    putln("");
-
-    cli_start(putc);
-    while(1) {
-        console_idle();
-        v = getc();
-        if(v < 0) { continue; }
-        if(cli_new_char((u8)v)) {
-            process_cli();
-            cli_start(putc);
-        }
     }
 }
 
