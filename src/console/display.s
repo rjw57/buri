@@ -100,8 +100,17 @@ exit:
 ; =========================================================================
 .export console_write_char
 .proc console_write_char
-        cmp #$20                        ; printable
+        ; We don't actually write anything to VRAM in this function. Instead we
+        ; manipulate the cursor state. The input character either moves the
+        ; cursor or changes the character stored in the cursor save buffer so
+        ; that when the cursor is moved subsequently the correct character is
+        ; restored.
+
+        cmp #$20                        ; printable character?
         blt noprint
+        cmp #$7F
+        bge noprint
+
         sta console_cursor_save         ; replace char under cursor
         jmp console_cursor_right        ; advance cursor (tail call)
 
@@ -120,6 +129,6 @@ nocr:
         bne nobs
         jmp console_cursor_left         ; tail-call
 nobs:
-        rts
+        rts                             ; ignore unknown character
 .endproc
 .export _console_write_char := console_write_char
