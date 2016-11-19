@@ -6,12 +6,7 @@
 
 #include "console.h"
 #include "cli.h"
-
-void __cdecl__ putc(u8 c);
-i16 getc(void);
-
-void puts(const char* s);
-void putln(const char* s);
+#include "io.h"
 
 static void process_cli(void);
 static void print_banner(void);
@@ -30,14 +25,14 @@ void start(void) {
 
     print_banner();
 
-    cli_start(putc);
+    cli_start();
     while(1) {
         console_idle();
         v = getc();
         if(v < 0) { continue; }
         if(cli_new_char((u8)v)) {
             process_cli();
-            cli_start(putc);
+            cli_start();
         }
     }
 }
@@ -46,27 +41,6 @@ static void print_banner(void) {
     static const char msg[] = "Buri Microcomputer System";
     putln(msg);
     putln("");
-}
-
-void __cdecl__ putc(u8 c) {
-    while(!acia6551_send_byte(c)) { }
-    console_write_char(c);
-}
-
-i16 getc() {
-    i16 v = keyboard_read_ascii();
-    if(v >= 0) { return v; }
-    return acia6551_recv_byte();
-}
-
-void puts(const char* s) {
-    for(; *s != '\0'; ++s) { putc(*s); }
-}
-
-void putln(const char* s) {
-    puts(s);
-    putc(0x0A);
-    putc(0x0D);
 }
 
 static void put_hex_4(u8 val) {

@@ -1,18 +1,15 @@
 #include "cli.h"
+#include "io.h"
 
 char cli_buf[CLI_BUF_LEN];
 u8 cli_arg_offsets[CLI_MAX_ARGS];
-
 static u8 cli_buf_size;
-extern cli_write_char_func_t cli_write_func;
-cli_write_char_func_t cli_write_func;
 
 void cli_write_prompt(void) {
-    cli_write_func('>');
+    putc('>');
 }
 
-void cli_start(cli_write_char_func_t write_func) {
-    cli_write_func = write_func;
+void cli_start(void) {
     cli_buf[0] = '\0';
     cli_buf_size = 0;
     cli_write_prompt();
@@ -24,8 +21,8 @@ u8 cli_new_char(u8 c) {
         u8 i = 0, arg_n = 0;
 
         // enter
-        cli_write_func(0x0A);
-        cli_write_func(0x0D);
+        putc(0x0A);
+        putc(0x0D);
         cli_buf[cli_buf_size] = '\0';
         for(; i<cli_buf_size; ++i) {
             if(cli_buf[i] == ' ') {
@@ -44,9 +41,9 @@ u8 cli_new_char(u8 c) {
 
     // Backspace
     if(((c == 0x08) || (c == 0x7F)) && (cli_buf_size > 0)) {
-        cli_write_func(0x08);
-        cli_write_func(' ');
-        cli_write_func(0x08);
+        putc(0x08);
+        putc(' ');
+        putc(0x08);
         --cli_buf_size;
         return 0;
     }
@@ -59,7 +56,7 @@ u8 cli_new_char(u8 c) {
 
     cli_buf[cli_buf_size] = c;
     ++cli_buf_size;
-    cli_write_func(c);
+    putc(c);
 
     return 0;
 }
