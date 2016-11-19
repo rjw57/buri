@@ -29,7 +29,11 @@ irq_first_handler:    .res 2
         ply
         plx
         pla
-        mx8
+        pld
+        plb
+
+        ; The processor status register will be pulled which takes care of
+        ; restoring the M and X flags.
 
         rti
 .endproc
@@ -41,6 +45,8 @@ irq_first_handler:    .res 2
 .proc vector_irq
         ; TODO: PBR, DBR and SL?
 
+        phb
+        phd
         mx16
         pha
         phx

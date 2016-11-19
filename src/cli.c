@@ -43,7 +43,7 @@ u8 cli_new_char(u8 c) {
     }
 
     // Backspace
-    if((c == 0x08) && (cli_buf_size > 0)) {
+    if(((c == 0x08) || (c == 0x7F)) && (cli_buf_size > 0)) {
         cli_write_func(0x08);
         cli_write_func(' ');
         cli_write_func(0x08);

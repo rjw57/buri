@@ -1,9 +1,22 @@
+#include "types.h"
+
+#include "hw/acia6551.h"
+
 #include "console.h"
 #include "cli.h"
 
 static const char msg[] = "Buri Microcomputer System";
 
-void __cdecl__ putc(u8 c) { console_write_char(c); }
+void __cdecl__ putc(u8 c) {
+    while(!acia6551_send_byte(c)) { }
+    console_write_char(c);
+}
+
+i16 getc() {
+    i16 v = console_read_char();
+    if(v >= 0) { return v; }
+    return acia6551_recv_byte();
+}
 
 static void puts(const char* s) {
     for(; *s != '\0'; ++s) { putc(*s); }
@@ -98,6 +111,7 @@ void start(void) {
     int i = 0;
     i16 v = 0;
 
+    acia6551_init();
     console_init();
 
     putln(msg);
@@ -106,7 +120,7 @@ void start(void) {
     cli_start(putc);
     while(1) {
         console_idle();
-        v = console_read_char();
+        v = getc();
         if(v < 0) { continue; }
         if(cli_new_char((u8)v)) {
             process_cli();
