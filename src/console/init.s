@@ -1,7 +1,7 @@
 ; Console driver initialisation
 .include "macros.inc"
 
-.import keyboard_init, vdp_init
+.import vdp_init
 
 .importzp console_cursor_row, console_cursor_col
 .import console_cursor_recalc, console_cursor_save, console_cursor_char
@@ -10,16 +10,10 @@
 ; =========================================================================
 ; console_init: initialise console driver
 ;
-; calls: vdp_init, keyboard_init
-;
 ; C: void console_init(void)
 ; =========================================================================
 .export console_init
 .proc console_init
-        ; Initialise hardware
-        jsr vdp_init
-        jsr keyboard_init
-
         ; Initialise global state
         stz console_cursor_save
         stz console_cursor_row

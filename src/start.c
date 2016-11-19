@@ -1,6 +1,8 @@
 #include "types.h"
 
 #include "hw/acia6551.h"
+#include "hw/keyboard.h"
+#include "hw/vdp.h"
 
 #include "console.h"
 #include "cli.h"
@@ -13,7 +15,7 @@ void __cdecl__ putc(u8 c) {
 }
 
 i16 getc() {
-    i16 v = console_read_char();
+    i16 v = keyboard_read_ascii();
     if(v >= 0) { return v; }
     return acia6551_recv_byte();
 }
@@ -111,7 +113,12 @@ void start(void) {
     int i = 0;
     i16 v = 0;
 
+    // init hardware
     acia6551_init();
+    keyboard_init();
+    vdp_init();
+
+    // init higher-level drivers
     console_init();
 
     putln(msg);

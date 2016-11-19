@@ -64,15 +64,15 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 .endproc
 
 ; =========================================================================
-; keyboard_get_next_scancode: read incoming scan code byte from keyboard
+; keyboard_read_next_scancode: read incoming scan code byte from keyboard
 ;
 ; Sets A to scancode and X to 0 if there is a scancode present to read. Sets A
 ; and X to $FF if there's no byte
 ;
-; C: i16 keyboard_get_next_scancode(void)
+; C: i16 keyboard_read_next_scancode(void)
 ; =========================================================================
-.export keyboard_get_next_scancode
-.proc keyboard_get_next_scancode
+.export keyboard_read_next_scancode
+.proc keyboard_read_next_scancode
         lda keyboard_buf_count          ; keyboard buffer empty?
         bne @buf_non_empty              ; no, pop value
         lda #$FF                        ; yes, return no code
@@ -109,7 +109,7 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 
         rts
 .endproc
-.export _keyboard_get_next_scancode := keyboard_get_next_scancode
+.export _keyboard_read_next_scancode := keyboard_read_next_scancode
 
 ; =========================================================================
 ; keyboard_init: initialise the keyboard hardware
