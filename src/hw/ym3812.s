@@ -1,24 +1,11 @@
+.include "macros.inc"
+
+.importzp ptr1
+
 YM3812_BASE = $DE02
 YM3812_ADDR = YM3812_BASE
 YM3812_STATUS = YM3812_BASE
 YM3812_DATA = YM3812_BASE+1
-
-; Buri startup instrument
-;
-; FM synthesis
-;
-; CARRIER:
-;   Attack: 12          Freq, mul: 3
-;   Decay:  3           Level:     63
-;   Sust.:  1           KSL:       2
-;   Rel.:   3           Waveform:  0
-;
-; MODULATOR:
-;   Attack: 15          Freq, mul: 5
-;   Decay:  1           Level:     21
-;   Sust.:  1           KSL:       1
-;   Rel.:   5           Waveform:  0
-;                       FB:        3
 
 ; =========================================================================
 ; ym3812_init: initialise sound hardware
@@ -27,66 +14,79 @@ YM3812_DATA = YM3812_BASE+1
 ; =========================================================================
 .export ym3812_init
 .proc ym3812_init
-        ; Test register
+        ldx #$00                        ; clear all YM3812 registers to 0
+clear_loop:
+        phx
         lda #$00
-        ldx #$01
-        jsr write_reg
+        jsr ym3812_write_reg
+        plx
+        inx
+        bne clear_loop
 
-        ; Carrier
-        lda #20
-        ldx #%00000011
-        jsr write_reg
-        lda #40
-        ldx #%10111111
-        jsr write_reg
-        lda #60
-        ldx #%11000011
-        jsr write_reg
-        lda #80
-        ldx #%00010011
-        jsr write_reg
-
-        ; Modulator
-        lda #23
-        ldx #%00000101
-        jsr write_reg
-        lda #43
-        ldx #%01010101
-        jsr write_reg
-        lda #63
-        ldx #%11110001
-        jsr write_reg
-        lda #83
-        ldx #%00010101
-        jsr write_reg
-
-        lda #$A0
-        ldx #$FF
-        jsr write_reg
-        lda #$B0
-        ldx #%00110011
-        jsr write_reg
-
-        rts
+        jmp ym3812_beep                 ; tail-call
 .endproc
 .export _ym3812_init := ym3812_init
 
-; A - reg, X value
-.proc write_reg
-        sta YM3812_ADDR
-
-        ldy #$FF
-loop1:
-        dey
-        bne loop1
-
-        txa
+; =========================================================================
+; ym3812_write_reg: write value to a YM3812 register
+;
+;       A - value to write
+;       X - register to set
+; =========================================================================
+.proc ym3812_write_reg
+        stx YM3812_ADDR
         sta YM3812_DATA
-
-        ldy #$FF
-loop2:
-        dey
-        bne loop2
-
         rts
 .endproc
+
+; =========================================================================
+; ym3812_beep: emit a system beep
+; =========================================================================
+.proc ym3812_beep
+        ldy #$00
+set_loop:
+        ldx YM3812_DEF_INST_TBL, Y
+        iny
+
+        lda YM3812_DEF_INST_TBL, Y
+        iny
+
+        phy
+        jsr ym3812_write_reg
+        ply
+
+        cpy #YM3812_DEF_INST_TBL_LEN
+        blt set_loop
+
+        ldx #$A0
+        ldx #$6D
+        jsr ym3812_write_reg
+        ldx #$B0
+        lda #$20 | ($5<<2) | $1
+        jmp ym3812_write_reg            ; tail-call
+.endproc
+
+; =========================================================================
+; Buri system beep instrument
+;
+; FM synthesis
+;
+; MODULATOR:
+;   Attack: 15          Freq, mul: 5
+;   Decay:  1           Level:     21 (needs inverting)
+;   Sust.:  1           KSL:       1
+;   Rel.:   5           Waveform:  0
+;
+; CARRIER:
+;   Attack: 12          Freq, mul: 3
+;   Decay:  3           Level:     63 (needs inverting)
+;   Sust.:  1           KSL:       2
+;   Rel.:   3           Waveform:  0
+;                       FB:        3
+
+YM3812_DEF_INST_TBL:
+        .byte $20, $03, $40, $2A, $60, $F1, $80, $15
+        .byte $23, $05, $43, $00, $63, $C3, $83, $13
+        .byte $C0, $0E
+YM3812_DEF_INST_TBL_END:
+YM3812_DEF_INST_TBL_LEN = YM3812_DEF_INST_TBL_END - YM3812_DEF_INST_TBL
