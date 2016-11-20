@@ -3,6 +3,7 @@
 #include "hw/acia6551.h"
 #include "hw/keyboard.h"
 #include "hw/vdp.h"
+#include "hw/ym3812.h"
 
 #include "console.h"
 #include "cli.h"
@@ -19,6 +20,7 @@ void start(void) {
     acia6551_init();
     keyboard_init();
     vdp_init();
+    ym3812_init();
 
     // init higher-level drivers
     console_init();
