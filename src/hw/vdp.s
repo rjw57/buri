@@ -59,18 +59,6 @@ next_handler: .res 2
 .export _vdp_init := vdp_init
 
 ; =========================================================================
-; vdp_write_data: write byte to data register
-;
-; C: void vdp_write_data(u8 value)
-; =========================================================================
-.export vdp_write_data
-.proc vdp_write_data
-        sta VDP_DATA
-        rts
-.endproc
-.export _vdp_write_data = vdp_write_data
-
-; =========================================================================
 ; vdp_set_write_addr: set VRAM write address
 ;       A - low byte of address
 ;       X - high byte of address
@@ -106,34 +94,13 @@ next_handler: .res 2
 .export _vdp_set_read_addr := vdp_set_read_addr
 
 ; =========================================================================
-; vdp_read_data: read byte from data register
-;
-; C: u8 vdp_read_data(void)
-; =========================================================================
-.export vdp_read_data
-.proc vdp_read_data
-        lda VDP_DATA
-        rts
-.endproc
-.export _vdp_read_data = vdp_read_data
-
-; =========================================================================
-; vdp_write_ctrl: write byte to control register
-;       A - value
-; =========================================================================
-.export vdp_write_ctrl
-.proc vdp_write_ctrl
-        sta VDP_CTRL
-        rts
-.endproc
-
-; =========================================================================
 ; vdp_set_reg:
 ;       A - register to set
 ;       X - value
 ; =========================================================================
 .proc vdp_set_reg
         stx VDP_CTRL
+        and #$3F
         ora #$80
         sta VDP_CTRL
         rts
@@ -143,9 +110,7 @@ next_handler: .res 2
 ; vdp_clear_vram: set VRAM contents to zero
 ; =========================================================================
 .proc vdp_clear_vram
-        lda #$40                ; VRAM write address -> $0000
-        stz VDP_CTRL
-        sta VDP_CTRL
+        vdp_set_vram $0000
 
         x16                     ; index reg -> 16 -bit
         ldx #$8000
