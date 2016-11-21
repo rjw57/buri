@@ -26,16 +26,13 @@ ACIA_CTRL = ACIA_BASE+3
 .bss
 
 ring_buf_reserve acia6551_recv_buf
+ring_buf_reserve acia6551_send_buf
+.export acia6551_send_buf
 
 ; =========================================================================
 ; Next IRQ handler routine to pass control to after acia6551_irq_handler is
 ; finished.
 next_handler: .res 2
-
-ACIA_SEND_BUF_LEN = 4
-
-send_buf: .res ACIA_SEND_BUF_LEN
-send_buf_size: .res 1
 
 .code
 
@@ -49,7 +46,7 @@ send_buf_size: .res 1
         sta ACIA_RST                    ; reset ACIA
 
         ring_buf_init acia6551_recv_buf
-        stz send_buf_size
+        ring_buf_init acia6551_send_buf
 
         irq_add_handler acia6551_irq_handler, next_handler
 
@@ -75,29 +72,13 @@ send_buf_size: .res 1
 ; =========================================================================
 .export acia6551_send_byte
 .proc acia6551_send_byte
-        tay                             ; Y <- byte to send
-
-        ; We disable and re-enable interrupts here to make sure the IRQ handler
-        ; does not modify send_buf. Consider this poor-man's locking.
-        sei                             ; disable interrupts
-
-        lda send_buf_size               ; check we have space
-        cmp #ACIA_SEND_BUF_LEN
-        blt have_space
-        cli                             ; re-enable interrupts and return
-        lda #$00                        ; failure
+        ring_buf_push acia6551_send_buf
+        bcs fail
+        enable_tx_irq
+        lda #$FF
         rts
-have_space:
-
-        ldx send_buf_size               ; write buffer to send to send buf
-        tya
-        sta send_buf, X
-        inc send_buf_size
-
-        enable_tx_irq                   ; make sure the TX interrupt is enabled
-
-        cli                             ; enable interrupts
-
+fail:
+        lda #$00
         rts
 .endproc
 .export _acia6551_send_byte = acia6551_send_byte
@@ -142,37 +123,23 @@ loop:
         bpl exit                        ; if high bit clear, no interrupt
 
         bit #$08                        ; test recv. register full
-        beq recv_done
+        beq recv_done                   ; if empty, we're done
 
-        pha
+        pha                             ; save status reg.
         lda ACIA_TXRX                   ; A <- received byte
         ring_buf_push acia6551_recv_buf ; store byte in ring buffer
-        pla
+        pla                             ; restore status reg.
 recv_done:
 
-send_test:
         bit #$10                        ; test send. register empty
-        beq send_done                   ; no, wait for next IRQ
+        beq send_done                   ; full, don't send next byte
 
-        lda send_buf_size               ; is send buffer empty?
-        bne send_non_empty
+        ring_buf_pop acia6551_send_buf  ; pop byte to send from ring buf
+        bcs buf_empty                   ; if ring buf empty, skip
+        sta ACIA_TXRX                   ; send byte
+        bra send_done                   ; done
+buf_empty:
         disable_tx_irq                  ; send buffer is empty, disable IRQ
-        bra send_done
-
-send_non_empty:                         ; send buffer is non empty
-        lda send_buf                    ; transmit first char.
-        sta ACIA_TXRX
-        dec send_buf_size               ; decrement size
-
-        mx16                            ; shuffle buffer down
-        lda #ACIA_SEND_BUF_LEN-2
-        ldx #send_buf+1
-        ldy #send_buf
-        mvn $00, $00
-        mx8
-
-        lda ACIA_STATUS                 ; get status reg
-        bra send_test
 send_done:
 
         bra loop                        ; re-check interrupt flags
