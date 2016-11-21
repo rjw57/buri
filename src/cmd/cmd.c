@@ -9,6 +9,8 @@ void process_cli_cmd(void) {
         putln("You need somebody");
     } else if(streq(cli_buf, "dump")) {
         dump();
+    } else if(streq(cli_buf, "wdump")) {
+        wdump();
     }
 }
 

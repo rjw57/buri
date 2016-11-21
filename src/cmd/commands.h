@@ -2,5 +2,6 @@
 #define CMD_COMMANDS_H
 
 void dump(void);
+void wdump(void);
 
 #endif
