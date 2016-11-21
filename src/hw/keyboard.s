@@ -2,6 +2,7 @@
 ;
 ; See HARDWARE.md for more information
 .include "macros.inc"
+.include "ring_buf.inc"
 
 .import irq_first_handler
 
@@ -11,13 +12,6 @@
 INTERRUPT_MASK = $02 ; CA1 active edge
 
 KEYBOARD_SPI_BEGIN = $60       ; MODE 1, MSB first, dev 0
-KEYBOARD_BUF_LEN = 6
-
-.segment "OSZP" : zeropage
-
-; =========================================================================
-; Number of bytes currently in keyboard buffer
-keyboard_buf_count: .res 1
 
 .bss
 
@@ -28,7 +22,8 @@ next_handler: .res 2
 
 ; =========================================================================
 ; Buffer holding bytes received from keyboard
-keyboard_buf: .res KEYBOARD_BUF_LEN
+KEYBOARD_RB_LEN = 4
+ring_buf_reserve keyboard_ring_buf, KEYBOARD_RB_LEN
 
 .code
 
@@ -37,10 +32,9 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 ; =========================================================================
 .export keyboard_irq_handler
 .proc keyboard_irq_handler
-@test:
         lda #INTERRUPT_MASK             ; is interrupt due to keyboard?
         bit VIA_IFR
-        beq @next                       ; no, jump to next handler
+        beq done                        ; no, jump to next handler
 
         lda #KEYBOARD_SPI_BEGIN
         jsr spi_begin
@@ -51,15 +45,10 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
         jsr spi_end
         pla
 
-        ldx keyboard_buf_count          ; keyboard buf full?
-        cpx #KEYBOARD_BUF_LEN
-        bge @test                       ; yes? re-test interrupt
+        ; push into ring buffer
+        ring_buf_push keyboard_ring_buf, KEYBOARD_RB_LEN
 
-        sta keyboard_buf, X             ; write byte into buffer
-        inx
-        stx keyboard_buf_count          ; update count
-        bra @test                       ; check for more data
-@next:
+done:
         jmp (next_handler)
 .endproc
 
@@ -73,40 +62,13 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 ; =========================================================================
 .export keyboard_read_next_scancode
 .proc keyboard_read_next_scancode
-        lda keyboard_buf_count          ; keyboard buffer empty?
-        bne @buf_non_empty              ; no, pop value
-        lda #$FF                        ; yes, return no code
-        tax
-        rts
-@buf_non_empty:
-
-        lda keyboard_buf                ; store next byte on stack
-        pha
-
-        ; We disable interrupts here as a crude form of locking to ensure that
-        ; the keyboard IRQ handler does not modify the keyboard buffer while
-        ; we're examinging/modifying it. We didn't need it in the common case of
-        ; checking the buffer count above because we can bask in ur nice safe
-        ; single-CPU world where memory reads are atomic.
-
-        sei                             ; disable interrupts
-
-        mx16
-        lda #KEYBOARD_BUF_LEN-2
-        ldx #keyboard_buf+1
-        ldy #keyboard_buf
-        mvn $00, $00
-        mx8
-
-        lda keyboard_buf_count          ; decrement buffer count
-        dec
-        sta keyboard_buf_count
-
-        cli                             ; re-enable interrupt
-
-        pla                             ; set return value
+        ring_buf_pop keyboard_ring_buf, KEYBOARD_RB_LEN
+        bcs buf_empty
         ldx #$00
-
+        rts
+buf_empty:
+        lda #$FF
+        ldx #$FF
         rts
 .endproc
 .export _keyboard_read_next_scancode := keyboard_read_next_scancode
@@ -120,7 +82,8 @@ keyboard_buf: .res KEYBOARD_BUF_LEN
 .proc keyboard_init
         jsr spi_init                    ; initialise SPI subsystem
 
-        stz keyboard_buf_count          ; no bytes in keyboard buffer
+        ; initialise ring buffer
+        ring_buf_init keyboard_ring_buf, KEYBOARD_RB_LEN
 
         lda #$01                        ; CA1 active edge is +ve
         tsb VIA_PCR

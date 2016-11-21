@@ -25,9 +25,11 @@ ACIA_CTRL = ACIA_BASE+3
 
 .bss
 
-ring_buf_reserve acia6551_recv_buf
-ring_buf_reserve acia6551_send_buf
-.export acia6551_send_buf
+ACIA_RECV_RB_LEN = 8
+ring_buf_reserve acia6551_recv_buf, ACIA_RECV_RB_LEN
+
+ACIA_SEND_RB_LEN = 4
+ring_buf_reserve acia6551_send_buf, ACIA_SEND_RB_LEN
 
 ; =========================================================================
 ; Next IRQ handler routine to pass control to after acia6551_irq_handler is
@@ -45,8 +47,8 @@ next_handler: .res 2
 .proc acia6551_init
         sta ACIA_RST                    ; reset ACIA
 
-        ring_buf_init acia6551_recv_buf
-        ring_buf_init acia6551_send_buf
+        ring_buf_init acia6551_recv_buf, ACIA_RECV_RB_LEN
+        ring_buf_init acia6551_send_buf, ACIA_SEND_RB_LEN
 
         irq_add_handler acia6551_irq_handler, next_handler
 
@@ -72,7 +74,7 @@ next_handler: .res 2
 ; =========================================================================
 .export acia6551_send_byte
 .proc acia6551_send_byte
-        ring_buf_push acia6551_send_buf
+        ring_buf_push acia6551_send_buf, ACIA_SEND_RB_LEN
         bcs fail
         enable_tx_irq
         lda #$FF
@@ -96,7 +98,8 @@ fail:
 ; =========================================================================
 .export acia6551_recv_byte
 .proc acia6551_recv_byte
-        ring_buf_pop acia6551_recv_buf  ; get return value straight from r. buf.
+        ; get return value straight from r. buf.
+        ring_buf_pop acia6551_recv_buf, ACIA_RECV_RB_LEN
         rts
 .endproc
 
@@ -127,14 +130,16 @@ loop:
 
         pha                             ; save status reg.
         lda ACIA_TXRX                   ; A <- received byte
-        ring_buf_push acia6551_recv_buf ; store byte in ring buffer
+        ; store byte in ring buffer
+        ring_buf_push acia6551_recv_buf, ACIA_RECV_RB_LEN
         pla                             ; restore status reg.
 recv_done:
 
         bit #$10                        ; test send. register empty
         beq send_done                   ; full, don't send next byte
 
-        ring_buf_pop acia6551_send_buf  ; pop byte to send from ring buf
+        ; pop byte to send from ring buf
+        ring_buf_pop acia6551_send_buf, ACIA_SEND_RB_LEN
         bcs buf_empty                   ; if ring buf empty, skip
         sta ACIA_TXRX                   ; send byte
         bra send_done                   ; done
