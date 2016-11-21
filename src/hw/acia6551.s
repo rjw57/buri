@@ -118,8 +118,16 @@ have_space:
         sei                             ; disable interrupt
 
         lda recv_buf_size               ; check recv. buffer size
-        bne not_empty
+        beq recv_empty
 
+        cmp #(ACIA_RECV_BUF_LEN>>1)     ; over half full?
+        blt not_empty                   ; no, we know it's not empty tho'
+
+        lda #$01                        ; less than half full, signal ready
+        tsb ACIA_CMD
+        bra not_empty
+
+recv_empty:
         cli                             ; if empty, re-enable interrupts
         sec                             ; set C flag
         rts                             ; exit
@@ -170,9 +178,17 @@ loop:
         pha                             ; save status reg.
         ldy ACIA_TXRX                   ; Y <- received byte
 
-        lda recv_buf_size               ; is receive buffer full?
-        cmp #ACIA_RECV_BUF_LEN
-        beq recv_done                   ; yes, drop byte
+        lda recv_buf_size               ; look at recv. buffer size
+        cmp #(ACIA_RECV_BUF_LEN>>1)     ; over half full?
+        blt recv_ok                     ; no, OK, to receive more
+
+        lda #$01                        ; data terminal not ready
+        trb ACIA_CMD
+
+        lda recv_buf_size               ; look at recv. buffer size again
+        cmp #ACIA_RECV_BUF_LEN          ; full?
+        beq recv_done                   ; yes, drop byte :(
+recv_ok:
 
         ldx recv_buf_size               ; otherwise, store byte
         tya
