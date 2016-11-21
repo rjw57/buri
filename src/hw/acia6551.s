@@ -1,5 +1,6 @@
 ; 6551 UART controller
 .include "macros.inc"
+.include "ring_buf.inc"
 
 ACIA_BASE = $DFFC
 ACIA_TXRX = ACIA_BASE
@@ -7,8 +8,6 @@ ACIA_RST = ACIA_BASE+1
 ACIA_STATUS = ACIA_RST
 ACIA_CMD = ACIA_BASE+2
 ACIA_CTRL = ACIA_BASE+3
-
-.bss
 
 .macro disable_tx_irq
         lda ACIA_CMD
@@ -24,18 +23,19 @@ ACIA_CTRL = ACIA_BASE+3
         sta ACIA_CMD
 .endmacro
 
+.bss
+
+ring_buf_reserve acia6551_recv_buf
+
 ; =========================================================================
 ; Next IRQ handler routine to pass control to after acia6551_irq_handler is
 ; finished.
 next_handler: .res 2
 
 ACIA_SEND_BUF_LEN = 4
-ACIA_RECV_BUF_LEN = 60
 
 send_buf: .res ACIA_SEND_BUF_LEN
-recv_buf: .res ACIA_RECV_BUF_LEN
 send_buf_size: .res 1
-recv_buf_size: .res 1
 
 .code
 
@@ -48,8 +48,8 @@ recv_buf_size: .res 1
 .proc acia6551_init
         sta ACIA_RST                    ; reset ACIA
 
+        ring_buf_init acia6551_recv_buf
         stz send_buf_size
-        stz recv_buf_size
 
         irq_add_handler acia6551_irq_handler, next_handler
 
@@ -115,41 +115,7 @@ have_space:
 ; =========================================================================
 .export acia6551_recv_byte
 .proc acia6551_recv_byte
-        sei                             ; disable interrupt
-
-        lda recv_buf_size               ; check recv. buffer size
-        beq recv_empty
-
-        cmp #(ACIA_RECV_BUF_LEN>>1)     ; over half full?
-        blt not_empty                   ; no, we know it's not empty tho'
-
-        lda #$01                        ; less than half full, signal ready
-        tsb ACIA_CMD
-        bra not_empty
-
-recv_empty:
-        cli                             ; if empty, re-enable interrupts
-        sec                             ; set C flag
-        rts                             ; exit
-
-not_empty:
-        lda recv_buf                    ; push recv. byte on stack
-        pha
-        dec recv_buf_size               ; decrement recv. buf size
-        beq no_copy
-
-        ldx #0
-copy_loop:
-        lda recv_buf+1, X
-        sta recv_buf, X
-        inx
-        cpx recv_buf_size
-        bne copy_loop
-no_copy:
-
-        pla                             ; restore recv. byte
-        clc                             ; clear carry
-
+        ring_buf_pop acia6551_recv_buf  ; get return value straight from r. buf.
         rts
 .endproc
 
@@ -175,32 +141,13 @@ loop:
         lda ACIA_STATUS                 ; get status reg
         bpl exit                        ; if high bit clear, no interrupt
 
-recv_test:
         bit #$08                        ; test recv. register full
         beq recv_done
 
-        ldy ACIA_TXRX                   ; Y <- received byte
-
-        lda recv_buf_size               ; look at recv. buffer size
-        cmp #(ACIA_RECV_BUF_LEN>>1)     ; over half full?
-        blt recv_ok                     ; no, OK, to receive more
-
-        lda #$01                        ; data terminal not ready
-        trb ACIA_CMD
-
-        lda recv_buf_size               ; look at recv. buffer size again
-        cmp #ACIA_RECV_BUF_LEN          ; full?
-        beq recv_done                   ; yes, drop byte :(
-recv_ok:
-
-        ldx recv_buf_size               ; otherwise, store byte
-        tya
-        sta recv_buf, X
-
-        inc recv_buf_size               ; increment buffer size
-
-        lda ACIA_STATUS                 ; get status reg
-        bra recv_test
+        pha
+        lda ACIA_TXRX                   ; A <- received byte
+        ring_buf_push acia6551_recv_buf ; store byte in ring buffer
+        pla
 recv_done:
 
 send_test:
