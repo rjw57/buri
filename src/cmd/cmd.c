@@ -13,6 +13,10 @@ void process_cli_cmd(void) {
         wdump();
     } else if(streq(cli_buf, "iomask")) {
         iomask();
+    } else if(streq(cli_buf, "recv")) {
+        recv();
+    } else if(streq(cli_buf, "secho")) {
+        secho();
     }
 }
 

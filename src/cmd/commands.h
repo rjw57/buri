@@ -4,5 +4,7 @@
 void dump(void);
 void wdump(void);
 void iomask(void);
+void recv(void);
+void secho(void);
 
 #endif
