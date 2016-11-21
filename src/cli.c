@@ -40,11 +40,13 @@ u8 cli_new_char(u8 c) {
     }
 
     // Backspace
-    if(((c == 0x08) || (c == 0x7F)) && (cli_buf_size > 0)) {
-        putc(0x08);
-        putc(' ');
-        putc(0x08);
-        --cli_buf_size;
+    if((c == 0x08) || (c == 0x7F)) {
+        if(cli_buf_size > 0) {
+            putc(0x08);
+            putc(' ');
+            putc(0x08);
+            --cli_buf_size;
+        }
         return 0;
     }
 
