@@ -30,7 +30,7 @@ ACIA_CTRL = ACIA_BASE+3
 next_handler: .res 2
 
 ACIA_SEND_BUF_LEN = 4
-ACIA_RECV_BUF_LEN = 4
+ACIA_RECV_BUF_LEN = 60
 
 send_buf: .res ACIA_SEND_BUF_LEN
 recv_buf: .res ACIA_RECV_BUF_LEN
@@ -136,13 +136,16 @@ not_empty:
         lda recv_buf                    ; push recv. byte on stack
         pha
         dec recv_buf_size               ; decrement recv. buf size
+        beq no_copy
 
-        mx16                            ; shuffle recv. buffer
-        lda #ACIA_RECV_BUF_LEN-2
-        ldx #recv_buf+1
-        ldy #recv_buf
-        mvn $00, $00
-        mx8
+        ldx #0
+copy_loop:
+        lda recv_buf+1, X
+        sta recv_buf, X
+        inx
+        cpx recv_buf_size
+        bne copy_loop
+no_copy:
 
         pla                             ; restore recv. byte
         clc                             ; clear carry
@@ -172,10 +175,10 @@ loop:
         lda ACIA_STATUS                 ; get status reg
         bpl exit                        ; if high bit clear, no interrupt
 
+recv_test:
         bit #$08                        ; test recv. register full
         beq recv_done
 
-        pha                             ; save status reg.
         ldy ACIA_TXRX                   ; Y <- received byte
 
         lda recv_buf_size               ; look at recv. buffer size
@@ -195,9 +198,12 @@ recv_ok:
         sta recv_buf, X
 
         inc recv_buf_size               ; increment buffer size
-        pla                             ; restore status reg.
+
+        lda ACIA_STATUS                 ; get status reg
+        bra recv_test
 recv_done:
 
+send_test:
         bit #$10                        ; test send. register empty
         beq send_done                   ; no, wait for next IRQ
 
@@ -217,6 +223,9 @@ send_non_empty:                         ; send buffer is non empty
         ldy #send_buf
         mvn $00, $00
         mx8
+
+        lda ACIA_STATUS                 ; get status reg
+        bra send_test
 send_done:
 
         bra loop                        ; re-check interrupt flags
