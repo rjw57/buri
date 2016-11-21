@@ -167,6 +167,7 @@ loop:
         bit #$08                        ; test recv. register full
         beq recv_done
 
+        pha                             ; save status reg.
         ldy ACIA_TXRX                   ; Y <- received byte
 
         lda recv_buf_size               ; is receive buffer full?
@@ -178,6 +179,7 @@ loop:
         sta recv_buf, X
 
         inc recv_buf_size               ; increment buffer size
+        pla                             ; restore status reg.
 recv_done:
 
         bit #$10                        ; test send. register empty
