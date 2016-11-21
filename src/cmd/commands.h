@@ -3,5 +3,6 @@
 
 void dump(void);
 void wdump(void);
+void iomask(void);
 
 #endif

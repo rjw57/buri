@@ -27,6 +27,8 @@ void start(void) {
     // init higher-level drivers
     console_init();
 
+    io_mask = IO_OUTPUT_CONSOLE | IO_INPUT_CONSOLE;
+
     print_banner();
 
     cli_start();

@@ -11,6 +11,8 @@ void process_cli_cmd(void) {
         dump();
     } else if(streq(cli_buf, "wdump")) {
         wdump();
+    } else if(streq(cli_buf, "iomask")) {
+        iomask();
     }
 }
 

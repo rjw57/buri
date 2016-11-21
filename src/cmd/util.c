@@ -22,6 +22,16 @@ u8 parse_hex_4(char c) {
     return 0;
 }
 
+u8 parse_hex_8(const char* s) {
+    u8 i=0;
+    u8 out=0;
+    for(; s[i] != '\0'; ++i) {
+        out <<= 4;
+        out |= parse_hex_4(s[i]);
+    }
+    return out;
+}
+
 u16 parse_hex_16(const char* s) {
     u8 i=0;
     u16 out=0;
