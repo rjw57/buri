@@ -75,9 +75,9 @@ no_addr_out:
         phb
         pha
         plb
-        lda 0, X
-        plb
-        x8
+        lda a:0, X                      ; the address size operator is
+        plb                             ; req. here to make sure direct
+        x8                              ; page is not used
 
         tax
         lda dump_output_count           ; get output count mod 16
