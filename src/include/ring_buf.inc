@@ -51,7 +51,10 @@ buf_name: .res buf_len+2
 ; Push byte in A into the ring buffer. Sets carry if the buffer is full, clears
 ; carry otherwise. Corrupts X and Y.
 .macro ring_buf_push buf_name, buf_len
-.scope
+        .local do_write
+        .local buf_full
+        .local done
+
         pha                             ; save byte to write
         lda buf_name+buf_len            ; A <- write cursor
         sub buf_name+buf_len+1          ; compare to read cursor
@@ -73,13 +76,14 @@ buf_full:
         pla
         sec
 done:
-.endscope
 .endmacro
 
 ; Pop a byte from the ring buffer into A. Carry is set if the buffer was empty,
 ; clear otherwise. Corrupts X.
 .macro ring_buf_pop buf_name, buf_len
-.scope
+        .local have_data
+        .local done
+
         lda buf_name+buf_len+1          ; there is data to read if the cursors
         cmp buf_name+buf_len            ; are not equal
         bne have_data
@@ -92,7 +96,6 @@ have_data:
         inc buf_name+buf_len+1          ; increment read cursor
         clc
 done:
-.endscope
 .endmacro
 
 ; vi:ft=asm_ca65
