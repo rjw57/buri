@@ -15,9 +15,14 @@ dump_buffer: .res 16
 
 .code
 
-.export dump
-.proc dump
-        ldx #0
+; cli_get_arg: retrieve pointer to CLI argument
+;       A - argument index
+;
+; On exit:
+;       A - low byte of ptr
+;       X - high byte of ptr
+.proc cli_get_arg
+        tax
         lda _cli_arg_offsets, X
         m16                             ; A, X <- address of first arg
         and #$FF
@@ -26,6 +31,13 @@ dump_buffer: .res 16
         xba
         tax
         xba
+        rts
+.endproc
+
+.export dump
+.proc dump
+        lda #0
+        jsr cli_get_arg
         jsr parse_hex_32                ; parse argument
         bcc @parse_ok
         rts
@@ -37,15 +49,8 @@ dump_buffer: .res 16
         sta dump_bank
 
 parse_length:
-        ldx #1
-        lda _cli_arg_offsets, X
-        m16                             ; A, X <- address of first arg
-        and #$FF
-        add #_cli_buf
-        m8
-        xba
-        tax
-        xba
+        lda #1
+        jsr cli_get_arg
         jsr parse_hex_32                ; parse argument
         bcc @parse_ok
         rts
