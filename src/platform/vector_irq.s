@@ -45,6 +45,7 @@ irq_first_handler:    .res 2
 .proc vector_irq
         ; TODO: PBR, DBR and SL?
 
+        cld                             ; in case BCD is happening
         phb
         phd
         mx16
