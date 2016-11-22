@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define CLI_BUF_LEN 0x80
-#define CLI_MAX_ARGS 3
+#define CLI_MAX_ARGS 8
 
 extern char cli_buf[CLI_BUF_LEN];
 extern u8 cli_arg_offsets[CLI_MAX_ARGS];

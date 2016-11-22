@@ -3,6 +3,7 @@
 
 char cli_buf[CLI_BUF_LEN];
 u8 cli_arg_offsets[CLI_MAX_ARGS];
+u8 cli_arg_count;
 static u8 cli_buf_size;
 
 void cli_write_prompt(void) {
@@ -24,10 +25,14 @@ u8 cli_new_char(u8 c) {
         putc(0x0A);
         putc(0x0D);
         cli_buf[cli_buf_size] = '\0';
+        cli_arg_count = 0;
         for(; i<cli_buf_size; ++i) {
             if(cli_buf[i] == ' ') {
                 cli_buf[i] = '\0';
-                if(arg_n < CLI_MAX_ARGS) { cli_arg_offsets[arg_n] = i+1; }
+                if(arg_n < CLI_MAX_ARGS) {
+                    cli_arg_offsets[arg_n] = i+1;
+                    cli_arg_count = arg_n + 1;
+                }
                 ++arg_n;
             }
         }
