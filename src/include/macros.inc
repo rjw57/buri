@@ -76,16 +76,39 @@
         bcc arg
 .endmacro
 
-; branch if greater ot equal (another name for bcs)
+; branch if greater than or equal (another name for bcs)
 .macro bge arg
         bcs arg
+.endmacro
+
+; branch if greater than
+.macro bgt arg
+        .local L
+        beq L
+        bcs arg
+L:
+.endmacro
+
+; branch if less than or equal
+.macro ble arg
+        beq arg
+        bcc arg
+.endmacro
+
+; branch if not zero (another name for bne)
+.macro bnz arg
+        bne arg
+.endmacro
+
+; branch if zero (another name for beq)
+.macro bze arg
+        beq arg
 .endmacro
 
 ; ===========================================================================
 ; Interrupt routines
 
 ; Patch irq_handler into IRQ chain stashing next handler in next_handler.
-; This requires that "irq_first_handler" has been .import-ed.
 .macro irq_add_handler this_handler, next_handler
 .import irq_first_handler
         sei                             ; disable interrupts
