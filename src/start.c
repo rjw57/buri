@@ -28,7 +28,6 @@ void start(void) {
     console_init();
 
     io_mask = IO_OUTPUT_CONSOLE | IO_INPUT_CONSOLE;
-    io_mask |= IO_OUTPUT_SERIAL | IO_INPUT_SERIAL;
 
     print_banner();
 
