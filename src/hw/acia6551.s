@@ -52,7 +52,7 @@ next_handler: .res 2
 
         irq_add_handler acia6551_irq_handler, next_handler
 
-        lda #%00011110                  ; 8-bit, 1 stop, 9600 baud
+        lda #%00011111                  ; 8-bit, 1 stop, 19200 baud
         sta ACIA_CTRL
         lda #%00001001                  ; No parity, enable hw, rx irq
         sta ACIA_CMD
