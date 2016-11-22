@@ -101,14 +101,6 @@ write_loop:
         jsr _put_hex_8
         plx
 
-        cpx #$07
-        bne no_space
-        lda #' '
-        phx
-        jsr _putc
-        plx
-no_space:
-
         inx
         cpx #$10
         bne write_loop
