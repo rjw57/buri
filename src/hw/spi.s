@@ -11,6 +11,12 @@
 ; Lines PA2, PA3 and PA4 are connected to a 74138 3-to-8 decoder to provide the
 ; chip select lines for the peripherals. Consequently there can be up to 7 SPI
 ; peripherals attached with SPI device "7" being no device selected.
+;
+; This implementation bit-bangs the SPI protocol. It can probably be made more
+; efficient by having dedicated spi_exchange_{msb,lsb}_first subroutines and
+; spi_exchange_{0,1,2,3} subroutines. This might increase code size but since
+; SPI can be used inside IRQ handlers, speed is preferred.
+
 .include "macros.inc"
 
 .import VIA_DDRA, VIA_ORA
