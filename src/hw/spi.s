@@ -71,8 +71,8 @@ check_input:
         lda #$20                        ; direction?
         and spi_begin_arg
         bne @norev                      ; 1 => MSB first
-        pla
-        jsr reverse
+        pla                             ; rotate input byte
+        jsr reverse                     ; so we can send MSB first
         bra @done
 @norev:
         pla
@@ -81,34 +81,23 @@ check_input:
         ldy #0                          ; Y <- recv. byte
         ldx #8
 send_loop:
-        pha                             ; Y >>= 1
-        tya
-        asl
-        tay
-        pla
+        ; on each iteration: A - byte sending, Y - byte receiving
 
-        asl                             ; C <- high bit of accum
-
-        phx                             ; Exchange bits in carry flag
-        pha
+        rol                             ; C <- next bit
         phy
+        phx
         jsr spi_exchange_bit
-        bcc @recv0
-@recv1:
-        pla
-        ora #$01
-        tay
-        bra @done
-@recv0:
-        ply
-@done:
-        pla
         plx
+        ply
+
+        tya                             ; shift C into Y
+        rol
+        tay
 
         dex
         bne send_loop
-
-        tya                             ; A <- output byte
+send_done:
+        tya                             ; A <- recv. byte
 
 check_output:
         pha                             ; save value on stack
