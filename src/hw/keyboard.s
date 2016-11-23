@@ -6,10 +6,10 @@
 
 .import irq_first_handler
 
-.import VIA_IFR, VIA_IER, VIA_PCR
+.import VIA_IFR, VIA_IER, VIA_PCR, VIA_ORA
 .import spi_init, spi_begin, spi_exchange, spi_end
 
-INTERRUPT_MASK = $02 ; CA1 active edge
+INTERRUPT_MASK = $01 ; CA2 active edge
 
 KEYBOARD_SPI_BEGIN = $60       ; MODE 1, MSB first, dev 0
 
@@ -18,7 +18,16 @@ KEYBOARD_SPI_BEGIN = $60       ; MODE 1, MSB first, dev 0
 ; =========================================================================
 ; Next IRQ handler routine to pass control to after keyboard_irq_handler is
 ; finished.
-next_handler: .res 2
+next_irq_handler: .res 2
+
+; =========================================================================
+; Next idle handler routine to pass control to after keyboard_idle_handler is
+; finished.
+next_idle_handler: .res 2
+
+; =========================================================================
+; flag set in IRQ handler to note that we need to talk to the keyboard
+keyboard_wants_chat: .res 1
 
 ; =========================================================================
 ; Buffer holding bytes received from keyboard
@@ -29,12 +38,38 @@ ring_buf_reserve keyboard_ring_buf, KEYBOARD_RB_LEN
 
 ; =========================================================================
 ; keyboard_irq_handler: handle keyboard interrupts if present
+;
+; IRQ handlers need to be fast. This simply sets a flag if an interrupt is due
+; to the keyboard and lets the bottom end of the IRQ handler deal with it
 ; =========================================================================
 .export keyboard_irq_handler
 .proc keyboard_irq_handler
         lda #INTERRUPT_MASK             ; is interrupt due to keyboard?
         bit VIA_IFR
-        beq done                        ; no, jump to next handler
+        bze done                        ; no, jump to next handler
+
+        inc keyboard_wants_chat         ; increment chat flag
+
+        lda #INTERRUPT_MASK             ; clear interrupt flag
+        sta VIA_IFR                     ; this is why CA2 needs to be
+                                        ; independent we don't want the later
+                                        ; SPI exchange to clear the interrupt
+done:
+        jmp (next_irq_handler)
+.endproc
+
+; =========================================================================
+; keyboard_idle_handler: bottom end of irq handler
+;
+; We comunicate with the keyboard outside of the IRQ handler because in the
+; grand scheme of things the spi_exchange calls are quite slow and the IRQ
+; handler should be as fast as possible.
+; =========================================================================
+.export keyboard_idle_handler
+.proc keyboard_idle_handler
+        lda keyboard_wants_chat         ; do we need to run the handler?
+        bze done
+        dec keyboard_wants_chat         ; reset chat flag
 
         lda #KEYBOARD_SPI_BEGIN
         jsr spi_begin
@@ -45,11 +80,10 @@ ring_buf_reserve keyboard_ring_buf, KEYBOARD_RB_LEN
         jsr spi_end
         pla
 
-        ; push into ring buffer
+        ; push into ring buffer if non-zero
         ring_buf_push keyboard_ring_buf, KEYBOARD_RB_LEN
-
 done:
-        jmp (next_handler)
+        jmp (next_idle_handler)
 .endproc
 
 ; =========================================================================
@@ -85,14 +119,18 @@ buf_empty:
         ; initialise ring buffer
         ring_buf_init keyboard_ring_buf, KEYBOARD_RB_LEN
 
-        lda #$01                        ; CA1 active edge is +ve
-        tsb VIA_PCR
+        stz keyboard_wants_chat         ; reset IRQ set flag
+
+        ; Install keyboard interrupt & idle handler
+        irq_add_handler keyboard_irq_handler, next_irq_handler
+        idle_add_handler keyboard_idle_handler, next_idle_handler
+
+        lda #%00000110                  ; CA2 active edge is +ve
+        tsb VIA_PCR                     ; and CA2 is independent interrupt
 
         lda #INTERRUPT_MASK             ; enable VIA interrupt
-        tsb VIA_IER
-
-        ; Install keyboar interrupt handler
-        irq_add_handler keyboard_irq_handler, next_handler
+        and #$80
+        sta VIA_IER
 
         lda #KEYBOARD_SPI_BEGIN         ; reset the keyboard controller
         jsr spi_begin
