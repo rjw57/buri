@@ -120,4 +120,19 @@ L:
         m8
         cli                             ; enable interrupts
 .endmacro
+
+; ===========================================================================
+; Idle handlers
+
+; Patch idle_handler into idle chain stashing next handler in next_handler.
+.macro idle_add_handler this_handler, next_handler
+.import idle_first_handler
+        m16                             ; insert our handler
+        lda idle_first_handler
+        sta next_handler
+        lda #this_handler
+        sta idle_first_handler
+        m8
+.endmacro
+
 ; vi:ft=asm_ca65

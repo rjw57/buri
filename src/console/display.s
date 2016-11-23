@@ -1,37 +1,13 @@
 ; Console output support
 .include "macros.inc"
 
-.import vdp_set_write_addr, vdp_set_read_addr, vdp_tick
+.import vdp_set_write_addr, vdp_set_read_addr
 .import VDP_DATA
 
 .importzp console_cursor_col, console_cursor_row
 .import console_cursor_save, console_cursor_char, console_cursor_vram_addr
 .import console_cursor_right, console_cursor_down, console_cursor_set
 .import console_cursor_left
-
-.code
-
-; =========================================================================
-; console_idle: idle handler
-;
-; C: void console_idle(void)
-; =========================================================================
-.export console_idle
-.proc console_idle
-        lda vdp_tick
-        and #$10
-        beq tock
-tick:
-        lda #' '
-        bra setcc
-tock:
-        lda #'_'
-setcc:
-        jsr console_set_cursor_char
-
-        rts
-.endproc
-.export _console_idle := console_idle
 
 ; =========================================================================
 ; console_cursor_erase: restore saved character under cursor

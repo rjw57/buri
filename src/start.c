@@ -14,6 +14,8 @@
 static void process_cli(void);
 static void print_banner(void);
 
+void idle(void);
+
 void start(void) {
     int i = 0;
     i16 v = 0;
@@ -33,7 +35,7 @@ void start(void) {
 
     cli_start();
     while(1) {
-        console_idle();
+        idle();
         v = getc();
         if(v < 0) { continue; }
         if(cli_new_char((u8)v)) {

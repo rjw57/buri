@@ -1,7 +1,7 @@
 ; Reset vector for processor.
 .include "macros.inc"
 
-.import _start, irq_init
+.import _start, irq_init, idle_init
 
 .importzp sp                            ; C stack pointer
 .import __OSCSTACK_START__, __OSCSTACK_SIZE__
@@ -39,6 +39,7 @@
         m8
 
         jsr irq_init                    ; Initialise IRQ handler chain
+        jsr idle_init                   ; Initialise idle handlers
 
         cli                             ; re-enable interrupts
         jmp     _start                  ; jump to entry point
