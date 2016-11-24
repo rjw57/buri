@@ -14,7 +14,7 @@
 #include "../cli.h"
 #include "../io.h"
 
-#include "util.h"
+#include "../util.h"
 
 #define STX 0x02
 #define ACK 0x06

@@ -1,5 +1,5 @@
-#include "util.h"
 #include "commands.h"
+#include "../util.h"
 #include "../io.h"
 #include "../hw/acia6551.h"
 

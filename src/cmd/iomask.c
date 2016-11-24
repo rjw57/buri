@@ -1,5 +1,5 @@
-#include "util.h"
 #include "commands.h"
+#include "../util.h"
 #include "../cli.h"
 #include "../io.h"
 
