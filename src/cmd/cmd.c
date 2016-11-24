@@ -1,6 +1,6 @@
 #include "cmd.h"
 #include "commands.h"
-#include "util.h"
+#include "../util.h"
 #include "../cli.h"
 #include "../io.h"
 
@@ -17,6 +17,8 @@ void process_cli_cmd(void) {
         recv();
     } else if(streq(cli_buf, "secho")) {
         secho();
+    } else {
+        putln("?");
     }
 }
 
