@@ -72,52 +72,7 @@ spi_begin_arg: .res 1
 ; =========================================================================
 .export spi_exchange
 .proc spi_exchange
-check_input:
-        pha                             ; save value on stack
-        lda #$20                        ; direction?
-        and spi_begin_arg
-        bne @norev                      ; 1 => MSB first
-        pla                             ; rotate input byte
-        jsr reverse                     ; so we can send MSB first
-        bra @done
-@norev:
-        pla
-@done:
-
-        ldy #0                          ; Y <- recv. byte
-        ldx #8
-send_loop:
-        ; on each iteration: A - byte sending, Y - byte receiving
-
-        rol                             ; C <- next bit
-        phy
-        phx
-        jsr spi_exchange_bit
-        plx
-        ply
-
-        tya                             ; shift C into Y
-        rol
-        tay
-
-        dex
-        bne send_loop
-send_done:
-        tya                             ; A <- recv. byte
-
-check_output:
-        pha                             ; save value on stack
-        lda #$20                        ; direction?
-        and spi_begin_arg
-        bne @norev                      ; 1 => MSB first
-        pla
-        jsr reverse
-        bra @done
-@norev:
-        pla
-@done:
-
-        rts
+        jmp spi_exchange_msb_first
 .endproc
 .export _spi_exchange := spi_exchange
 
@@ -128,80 +83,69 @@ check_output:
 ; On exit the C flag is set to the recieved bit
 ; =========================================================================
 .proc spi_exchange_bit
+        jmp spi_exchange_bit_01
+.endproc
 
-        ldx #0                          ; X <- MOSI mask or 0
-        bcc send0
-        ldx #MOSI_MASK
-send0:
+; the following are fragments used to stitch each implementation
+; together
 
-        ldy #0                          ; Y <- received bit
+; TODO: other modes
 
-        lda #$40                        ; test CPHA
-        bit spi_begin_arg
-        bne cpha1
-cpha0:
-        jsr recv
-        jsr toggle_clk
-        jsr send
-        bra done
-cpha1:
-        jsr send
-        jsr toggle_clk
-        jsr recv
-done:
-        jsr toggle_clk
+.proc spi_exchange_msb_first
+        ldy #0                          ; Y <- recv. byte
+        ldx #8
+send_loop:
+        ; on each iteration: A - byte sending, Y - byte receiving
 
-        clc                             ; clear carry flag
-        tya                             ; A <- received bit
-        beq recv0                       ; A == 0, don's set carry
-        sec
-recv0:
-
-        rts
-
-        ; These are "sub-subroutines" :)
-toggle_clk:
-        lda #$01                        ; toggle clock line
-        eor VIA_ORA
-        sta VIA_ORA
-        rts
-
-recv:
-        lda #MISO_MASK
-        and VIA_ORA
+        rol                             ; C <- next bit
+        jsr fragment_exchange_bit       ; exchange bit
+        tya                             ; shift C into Y
+        rol
         tay
-        rts
 
-send:
-        lda #MOSI_MASK
-        trb VIA_ORA
-        txa
-        tsb VIA_ORA
+        dex
+        bne send_loop
+send_done:
+        tya                             ; A <- recv. byte
+
         rts
 .endproc
 
-; Reverse bits in the accumulator
-.proc reverse
-        xba                             ; B will hold result
-        lda #0
-        xba
+; spi_exchange but preserves 8-bit regs
+.proc fragment_exchange_bit
+        phy
+        phx
+        pha
+        jsr spi_exchange_bit
+        pla
+        plx
+        ply
+        rts
+.endproc
 
-        ldx #8
-loop:
-        xba                             ; B >>= 1
-        lsr
-        xba
-        asl                             ; A <<= 1, C = high bit
-        bcc next                        ; C == 0, continue
-        xba                             ; C == 1, B |= 0x80
-        ora #$80
-        xba
-next:
-        dex
-        bne loop
+.macro clk_0_to_1
+        inc VIA_ORA
+.endmacro
 
-        xba                             ; A <- B
+.macro clk_1_to_0
+        inc VIA_ORA
+.endmacro
 
+; CPOL=0, CPHA = 1
+.proc spi_exchange_bit_01
+        lda #MOSI_MASK
+        trb VIA_ORA
+        lda #$00                        ; if carry set, A = 1
+        adc #$00
+        asl                             ; carry bit is now bit 1 (MOSI)
+        tsb VIA_ORA
+        clk_0_to_1
+        sec
+        bit VIA_ORA
+        bmi recv1
+        clc
+recv1:
+        clk_1_to_0
         rts
 .endproc
 
