@@ -46,7 +46,8 @@ void start(void) {
 }
 
 static void print_banner(void) {
-    static const char msg[] = "Buri Microcomputer System";
+    static const char msg[] =
+        "Buri Microcomputer System\n\r"
+        "Rich Wareham\n\r";
     putln(msg);
-    putln("");
 }
