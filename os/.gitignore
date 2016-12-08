@@ -1,0 +1,8 @@
+Makefile.depends
+rom.bin
+rom.bin.map
+rom.bin.hex
+*.o
+*.bak
+*.c.s
+crt.lib
