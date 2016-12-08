@@ -1,7 +1,7 @@
 ---
-priority: 0
+priority: 10
 layout: page
-title: CPU Board
+title: CPU Board (v1)
 permalink: /hardware/cpu-board/
 categories: hardware
 excerpt: >
