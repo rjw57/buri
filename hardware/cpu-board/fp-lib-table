@@ -1,4 +1,0 @@
-(fp_lib_table
-  (lib (name IHeartKiCad)(type Legacy)(uri ${KIPRJMOD}/../lib/iheart-kicad-lib/IHE.mod)(options "")(descr ""))
-  (lib (name SwitchMisc)(type Legacy)(uri ${KIPRJMOD}/../lib/switch-misc.mod)(options "")(descr ""))
-)

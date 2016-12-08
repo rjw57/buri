@@ -1,6 +1,0 @@
-root = true
-
-[*.{c,cpp,h,ino}]
-indent_style = space
-indent_size = 4
-
