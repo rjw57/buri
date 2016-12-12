@@ -1,4 +1,4 @@
-update=Mon 12 Dec 2016 13:29:41 GMT
+update=Mon 12 Dec 2016 14:18:01 GMT
 version=1
 last_client=kicad
 [pcbnew]
@@ -59,3 +59,7 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=65xx/65xx
+LibName31=tms9929
+LibName32=ym3014
+LibName33=ym3812
+LibName34=cy62256

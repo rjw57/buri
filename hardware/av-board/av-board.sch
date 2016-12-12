@@ -29,12 +29,16 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:65xx
+LIBS:tms9929
+LIBS:ym3014
+LIBS:ym3812
+LIBS:cy62256
 LIBS:av-board-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 1
+Sheet 1 2
 Title ""
 Date ""
 Rev ""
@@ -684,4 +688,68 @@ NoConn ~ 2700 2900
 NoConn ~ 2700 3000
 Text Notes 2650 1850 2    60   ~ 0
 VIA at $00-$0F\nin IO page
+$Sheet
+S 8000 3400 600  900 
+U 584EB0A1
+F0 "Video" 60
+F1 "vdp.sch" 60
+F2 "D0" B R 8600 3500 60 
+F3 "D1" B R 8600 3600 60 
+F4 "D2" B R 8600 3700 60 
+F5 "D3" B R 8600 3800 60 
+F6 "D4" B R 8600 3900 60 
+F7 "D5" B R 8600 4000 60 
+F8 "D6" B R 8600 4100 60 
+F9 "D7" B R 8600 4200 60 
+F10 "A0" I L 8000 3500 60 
+F11 "SEL" I L 8000 3700 60 
+F12 "R" I L 8000 3800 60 
+F13 "W" I L 8000 3900 60 
+F14 "~RST" I L 8000 4200 60 
+F15 "~IRQ" O L 8000 4100 60 
+$EndSheet
+Text Label 8800 3500 2    60   ~ 0
+D0
+Text Label 8800 3600 2    60   ~ 0
+D1
+Text Label 8800 3700 2    60   ~ 0
+D2
+Text Label 8800 3800 2    60   ~ 0
+D3
+Text Label 8800 3900 2    60   ~ 0
+D4
+Text Label 8800 4000 2    60   ~ 0
+D5
+Text Label 8800 4100 2    60   ~ 0
+D6
+Text Label 8800 4200 2    60   ~ 0
+D7
+Wire Wire Line
+	8800 3500 8600 3500
+Wire Wire Line
+	8800 3600 8600 3600
+Wire Wire Line
+	8800 3700 8600 3700
+Wire Wire Line
+	8800 3800 8600 3800
+Wire Wire Line
+	8800 3900 8600 3900
+Wire Wire Line
+	8800 4000 8600 4000
+Wire Wire Line
+	8800 4100 8600 4100
+Wire Wire Line
+	8800 4200 8600 4200
+Text Label 7800 3500 0    60   ~ 0
+A0
+Wire Wire Line
+	7800 3500 8000 3500
+Text Label 7800 4200 0    60   ~ 0
+~RST
+Wire Wire Line
+	7800 4200 8000 4200
+Text Label 7800 4100 0    60   ~ 0
+~IRQ
+Wire Wire Line
+	7800 4100 8000 4100
 $EndSCHEMATC
