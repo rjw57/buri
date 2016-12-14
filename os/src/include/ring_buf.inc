@@ -1,8 +1,8 @@
 ; Ring buffer implementation
 ;
 ; This file provides macro implementations of a ring buffer. Ring buffers are
-; used in interrupt driven applications where a FIFO is required to provie data
-; for IRQ handlers to condume or for IRQ handlers to record data for later
+; used in interrupt driven applications where a FIFO is required to provide data
+; for IRQ handlers to consume or for IRQ handlers to record data for later
 ; processing.
 ;
 ; A ring buffer is a fixed length area of memory with a red and write cursor.
