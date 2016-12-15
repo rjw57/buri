@@ -1,4 +1,4 @@
-update=Mon 12 Dec 2016 14:18:01 GMT
+update=Thu 15 Dec 2016 15:21:20 GMT
 version=1
 last_client=kicad
 [pcbnew]
@@ -27,7 +27,7 @@ NetIExt=net
 version=1
 [eeschema]
 version=1
-LibDir=../lib
+LibDir=../lib;../lib/packages3d
 [eeschema/libraries]
 LibName1=power
 LibName2=device
