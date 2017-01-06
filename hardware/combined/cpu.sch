@@ -1,0 +1,528 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:w65c816
+LIBS:tl7705a
+LIBS:fixed_pin_7805
+LIBS:combined-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 3
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L +5V #PWR06
+U 1 1 586FB860
+P 3900 1900
+F 0 "#PWR06" H 3900 1750 50  0001 C CNN
+F 1 "+5V" H 3900 2040 50  0000 C CNN
+F 2 "" H 3900 1900 50  0000 C CNN
+F 3 "" H 3900 1900 50  0000 C CNN
+	1    3900 1900
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR07
+U 1 1 586FB866
+P 3900 4100
+F 0 "#PWR07" H 3900 3850 50  0001 C CNN
+F 1 "GND" H 3900 3950 50  0000 C CNN
+F 2 "" H 3900 4100 50  0000 C CNN
+F 3 "" H 3900 4100 50  0000 C CNN
+	1    3900 4100
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR08
+U 1 1 586FB888
+P 7100 4150
+F 0 "#PWR08" H 7100 4000 50  0001 C CNN
+F 1 "+5V" H 7100 4290 50  0000 C CNN
+F 2 "" H 7100 4150 50  0000 C CNN
+F 3 "" H 7100 4150 50  0000 C CNN
+	1    7100 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR09
+U 1 1 586FB88E
+P 7100 5250
+F 0 "#PWR09" H 7100 5000 50  0001 C CNN
+F 1 "GND" H 7100 5100 50  0000 C CNN
+F 2 "" H 7100 5250 50  0000 C CNN
+F 3 "" H 7100 5250 50  0000 C CNN
+	1    7100 5250
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HC245 U4
+U 1 1 586FB894
+P 7100 2500
+F 0 "U4" H 6700 1900 50  0000 L TNN
+F 1 "74HC245" H 7100 2300 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-20W_7.5x12.8mm_Pitch1.27mm" H 7100 2500 50  0001 C CNN
+F 3 "" H 7100 2500 50  0000 C CNN
+	1    7100 2500
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR010
+U 1 1 586FB89B
+P 7100 3050
+F 0 "#PWR010" H 7100 2800 50  0001 C CNN
+F 1 "GND" H 7100 2900 50  0000 C CNN
+F 2 "" H 7100 3050 50  0000 C CNN
+F 3 "" H 7100 3050 50  0000 C CNN
+	1    7100 3050
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR011
+U 1 1 586FB8A1
+P 7100 1950
+F 0 "#PWR011" H 7100 1800 50  0001 C CNN
+F 1 "+5V" H 7100 2090 50  0000 C CNN
+F 2 "" H 7100 1950 50  0000 C CNN
+F 3 "" H 7100 1950 50  0000 C CNN
+	1    7100 1950
+	-1   0    0    -1  
+$EndComp
+$Comp
+L 74HC04 U2
+U 2 1 586FB8BC
+P 5650 5800
+F 0 "U2" H 5800 5900 50  0000 C CNN
+F 1 "74HC04" H 5850 5700 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 5650 5800 50  0001 C CNN
+F 3 "" H 5650 5800 50  0000 C CNN
+	2    5650 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR012
+U 1 1 586FB8D3
+P 5600 5700
+F 0 "#PWR012" H 5600 5550 50  0001 C CNN
+F 1 "+5V" H 5600 5840 50  0000 C CNN
+F 2 "" H 5600 5700 50  0000 C CNN
+F 3 "" H 5600 5700 50  0000 C CNN
+	1    5600 5700
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR013
+U 1 1 586FB8D9
+P 5600 5900
+F 0 "#PWR013" H 5600 5650 50  0001 C CNN
+F 1 "GND" H 5600 5750 50  0000 C CNN
+F 2 "" H 5600 5900 50  0000 C CNN
+F 3 "" H 5600 5900 50  0000 C CNN
+	1    5600 5900
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR014
+U 1 1 586FB8DF
+P 6800 3800
+F 0 "#PWR014" H 6800 3550 50  0001 C CNN
+F 1 "GND" H 6800 3650 50  0000 C CNN
+F 2 "" H 6800 3800 50  0000 C CNN
+F 3 "" H 6800 3800 50  0000 C CNN
+	1    6800 3800
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR015
+U 1 1 586FB8E5
+P 6800 3400
+F 0 "#PWR015" H 6800 3250 50  0001 C CNN
+F 1 "+5V" H 6800 3540 50  0000 C CNN
+F 2 "" H 6800 3400 50  0000 C CNN
+F 3 "" H 6800 3400 50  0000 C CNN
+	1    6800 3400
+	-1   0    0    -1  
+$EndComp
+$Comp
+L 74HC00 U3
+U 1 1 586FB8F4
+P 7000 3600
+F 0 "U3" H 7000 3650 50  0000 C CNN
+F 1 "74HC00" H 7000 3500 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 7000 3600 50  0001 C CNN
+F 3 "" H 7000 3600 50  0000 C CNN
+	1    7000 3600
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LS573 U5
+U 1 1 586FB94E
+P 7100 4700
+F 0 "U5" H 6700 4100 50  0000 L TNN
+F 1 "74HC573" H 7350 4100 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-20W_7.5x12.8mm_Pitch1.27mm" H 7100 4700 50  0001 C CNN
+F 3 "" H 7100 4700 50  0000 C CNN
+	1    7100 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR016
+U 1 1 586FB95C
+P 5600 5200
+F 0 "#PWR016" H 5600 4950 50  0001 C CNN
+F 1 "GND" H 5600 5050 50  0000 C CNN
+F 2 "" H 5600 5200 50  0000 C CNN
+F 3 "" H 5600 5200 50  0000 C CNN
+	1    5600 5200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR017
+U 1 1 586FB962
+P 5600 5000
+F 0 "#PWR017" H 5600 4850 50  0001 C CNN
+F 1 "+5V" H 5600 5140 50  0000 C CNN
+F 2 "" H 5600 5000 50  0000 C CNN
+F 3 "" H 5600 5000 50  0000 C CNN
+	1    5600 5000
+	-1   0    0    -1  
+$EndComp
+$Comp
+L W65C816 U1
+U 1 1 586F9F06
+P 3900 3000
+F 0 "U1" H 3400 1850 60  0000 L TNN
+F 1 "W65C816" H 3900 3000 60  0000 C CNN
+F 2 "Housings_DIP:DIP-40_W15.24mm_Socket_LongPads" H 4700 2950 60  0001 C CNN
+F 3 "" H 4700 2950 60  0000 C CNN
+	1    3900 3000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4600 2000 6400 2000
+Wire Wire Line
+	4600 2100 6400 2100
+Wire Wire Line
+	4600 2200 6400 2200
+Wire Wire Line
+	4600 2300 6400 2300
+Wire Wire Line
+	4600 2400 6400 2400
+Wire Wire Line
+	4600 2500 6400 2500
+Wire Wire Line
+	4600 2600 6400 2600
+Wire Wire Line
+	4600 2700 6400 2700
+Wire Wire Line
+	4700 3400 4600 3400
+Wire Wire Line
+	5200 3700 6400 3700
+Wire Wire Line
+	4600 3500 6400 3500
+Wire Wire Line
+	8000 2000 7800 2000
+Wire Wire Line
+	8000 2100 7800 2100
+Wire Wire Line
+	8000 2200 7800 2200
+Wire Wire Line
+	8000 2300 7800 2300
+Wire Wire Line
+	8000 2400 7800 2400
+Wire Wire Line
+	8000 2500 7800 2500
+Wire Wire Line
+	8000 2600 7800 2600
+Wire Wire Line
+	8000 2700 7800 2700
+Wire Wire Line
+	8000 4200 7800 4200
+Wire Wire Line
+	8000 4300 7800 4300
+Wire Wire Line
+	8000 4400 7800 4400
+Wire Wire Line
+	8000 4500 7800 4500
+Wire Wire Line
+	8000 4600 7800 4600
+Wire Wire Line
+	8000 4700 7800 4700
+Wire Wire Line
+	8000 4800 7800 4800
+Wire Wire Line
+	8000 4900 7800 4900
+Wire Wire Line
+	4600 2900 4900 2900
+Wire Wire Line
+	7800 2900 8600 2900
+Wire Wire Line
+	5300 4200 6400 4200
+Wire Wire Line
+	5400 4300 6400 4300
+Wire Wire Line
+	5500 4400 6400 4400
+Wire Wire Line
+	5600 4500 6400 4500
+Wire Wire Line
+	5700 4600 6400 4600
+Wire Wire Line
+	5800 4700 6400 4700
+Wire Wire Line
+	5900 4800 6400 4800
+Wire Wire Line
+	6000 4900 6400 4900
+Wire Wire Line
+	4600 4000 5200 4000
+Wire Wire Line
+	4600 5800 5200 5800
+Wire Wire Line
+	6100 5100 6400 5100
+Wire Wire Line
+	4600 5100 5200 5100
+Wire Wire Line
+	6400 5200 6200 5200
+Wire Wire Line
+	8600 3000 7800 3000
+Wire Wire Line
+	2900 2000 3200 2000
+Wire Wire Line
+	2900 2100 3200 2100
+Wire Wire Line
+	2900 2200 3200 2200
+Wire Wire Line
+	2900 2300 3200 2300
+Wire Wire Line
+	2900 2400 3200 2400
+Wire Wire Line
+	2900 2500 3200 2500
+Wire Wire Line
+	2900 2600 3200 2600
+Wire Wire Line
+	2900 2700 3200 2700
+Wire Wire Line
+	2900 2800 3200 2800
+Wire Wire Line
+	2900 2900 3200 2900
+Wire Wire Line
+	2900 3000 3200 3000
+Wire Wire Line
+	2900 3100 3200 3100
+Wire Wire Line
+	2900 3200 3200 3200
+Wire Wire Line
+	2900 3300 3200 3300
+Wire Wire Line
+	2900 3400 3200 3400
+Wire Wire Line
+	2900 3500 3200 3500
+Wire Wire Line
+	6200 5200 6200 5800
+Wire Wire Line
+	8600 3000 8600 3600
+Wire Wire Line
+	8600 3600 7600 3600
+Wire Wire Line
+	4700 3600 4600 3600
+Wire Wire Line
+	4700 3700 4600 3700
+Wire Wire Line
+	4700 3800 4600 3800
+Wire Wire Line
+	4700 3900 4600 3900
+Wire Wire Line
+	4700 3100 4600 3100
+Wire Wire Line
+	4700 3200 4600 3200
+Wire Wire Line
+	3200 3800 2900 3800
+Wire Wire Line
+	2900 3900 3200 3900
+Wire Wire Line
+	6000 2700 6000 4900
+Wire Wire Line
+	5900 4800 5900 2600
+Wire Wire Line
+	5800 2500 5800 4700
+Wire Wire Line
+	5700 4600 5700 2400
+Wire Wire Line
+	5600 2300 5600 4500
+Wire Wire Line
+	5500 4400 5500 2200
+Wire Wire Line
+	5400 2100 5400 4300
+Wire Wire Line
+	5300 4200 5300 2000
+Wire Wire Line
+	6200 5800 6100 5800
+Connection ~ 5300 2000
+Connection ~ 5400 2100
+Connection ~ 5500 2200
+Connection ~ 5600 2300
+Connection ~ 5700 2400
+Connection ~ 5800 2500
+Connection ~ 5900 2600
+Connection ~ 6000 2700
+Wire Wire Line
+	5000 4000 5000 5800
+Connection ~ 5000 5800
+Wire Wire Line
+	5200 4000 5200 3700
+Connection ~ 5000 4000
+Text Notes 7350 7500 0    60   ~ 0
+CPU
+Wire Wire Line
+	3200 4000 2900 4000
+Wire Wire Line
+	2900 3700 3200 3700
+$Comp
+L 74HC04 U2
+U 1 1 586FB955
+P 5650 5100
+F 0 "U2" H 5800 5200 50  0000 C CNN
+F 1 "74HC04" H 5850 5000 50  0000 C CNN
+F 2 "Housings_SOIC:SOIC-14_3.9x8.7mm_Pitch1.27mm" H 5650 5100 50  0001 C CNN
+F 3 "" H 5650 5100 50  0000 C CNN
+	1    5650 5100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5100 3500 5100 5100
+Connection ~ 5100 5100
+Connection ~ 5100 3500
+Wire Wire Line
+	4800 2900 4800 1600
+Wire Wire Line
+	4800 1600 8600 1600
+Wire Wire Line
+	8600 1600 8600 2900
+Text GLabel 2900 2000 0    60   Output ~ 0
+A0
+Text GLabel 2900 2100 0    60   Output ~ 0
+A1
+Text GLabel 2900 2200 0    60   Output ~ 0
+A2
+Text GLabel 2900 2300 0    60   Output ~ 0
+A3
+Text GLabel 2900 2400 0    60   Output ~ 0
+A4
+Text GLabel 2900 2500 0    60   Output ~ 0
+A5
+Text GLabel 2900 2600 0    60   Output ~ 0
+A6
+Text GLabel 2900 2700 0    60   Output ~ 0
+A7
+Text GLabel 2900 2800 0    60   Output ~ 0
+A8
+Text GLabel 2900 2900 0    60   Output ~ 0
+A9
+Text GLabel 2900 3000 0    60   Output ~ 0
+A10
+Text GLabel 2900 3100 0    60   Output ~ 0
+A11
+Text GLabel 2900 3200 0    60   Output ~ 0
+A12
+Text GLabel 2900 3300 0    60   Output ~ 0
+A13
+Text GLabel 2900 3400 0    60   Output ~ 0
+A14
+Text GLabel 2900 3500 0    60   Output ~ 0
+A15
+Text GLabel 8000 4200 2    60   Output ~ 0
+A16
+Text GLabel 8000 4300 2    60   Output ~ 0
+A17
+Text GLabel 8000 4400 2    60   Output ~ 0
+A18
+Text GLabel 8000 4500 2    60   Output ~ 0
+A19
+Text GLabel 8000 4600 2    60   Output ~ 0
+A20
+Text GLabel 8000 4700 2    60   Output ~ 0
+A21
+Text GLabel 8000 4800 2    60   Output ~ 0
+A22
+Text GLabel 8000 4900 2    60   Output ~ 0
+A23
+Text GLabel 8000 2000 2    60   BiDi ~ 0
+D0
+Text GLabel 8000 2100 2    60   BiDi ~ 0
+D1
+Text GLabel 8000 2200 2    60   BiDi ~ 0
+D2
+Text GLabel 8000 2300 2    60   BiDi ~ 0
+D3
+Text GLabel 8000 2400 2    60   BiDi ~ 0
+D4
+Text GLabel 8000 2500 2    60   BiDi ~ 0
+D5
+Text GLabel 8000 2600 2    60   BiDi ~ 0
+D6
+Text GLabel 8000 2700 2    60   BiDi ~ 0
+D7
+Text HLabel 4700 3400 2    60   Input ~ 0
+~RST
+Text HLabel 4700 3600 2    60   Input ~ 0
+~IRQ
+Text HLabel 4700 3700 2    60   Input ~ 0
+~NMI
+Text HLabel 4700 3800 2    60   Input ~ 0
+~ABORT
+Text HLabel 4700 3900 2    60   Input ~ 0
+RDY
+Text HLabel 4900 2900 2    60   Output ~ 0
+R/~W
+Connection ~ 4800 2900
+Text HLabel 4600 5100 0    60   Input ~ 0
+PHI2
+Text HLabel 4600 5800 0    60   Input ~ 0
+BE
+Text HLabel 2900 3700 0    60   Output ~ 0
+E
+Text HLabel 2900 3800 0    60   Output ~ 0
+~VP
+Text HLabel 2900 3900 0    60   Output ~ 0
+~ML
+Text HLabel 2900 4000 0    60   Output ~ 0
+MX
+Text HLabel 4700 3100 2    60   Output ~ 0
+VPA
+Text HLabel 4700 3200 2    60   Output ~ 0
+VDA
+$EndSCHEMATC
